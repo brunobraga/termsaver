@@ -1,0 +1,246 @@
+#!/usr/bin/python
+###############################################################################
+#
+# file:     termsaver
+#
+# Purpose:  refer to python doc for documentation details.
+#
+# Note:     This file is part of Termsaver application, and should not be used
+#           or executed separately.
+#
+###############################################################################
+#
+# Copyright 2012 Termsaver
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+###############################################################################
+"""
+The entry point script for termsaver application.
+
+Usage: simplest form, just hit "termsaver" and go through
+       the available options.
+
+This script will basically handle simple parsing of arguments, also
+transferring some of the arguments to a selected screen for additional and
+customizable options.
+
+See more details of this documentation in:
+
+    * `usage` function
+    * `parse_args` function
+"""
+
+#
+# Python built-in modules
+#
+import sys
+import errno
+
+#
+# Internal modules
+#
+from termsaverlib.screen import build_screen_usage_list, get_available_screens
+from termsaverlib.screen.base import ScreenBase
+from termsaverlib.screen.helper import ScreenHelperBase
+from termsaverlib import common, exception, constants
+from termsaverlib.i18n import _
+
+verbose = False
+"""
+Defines if the error output should contain more debuging information.
+The verbose mode here does not actually refer to printing logs on screen
+(because this makes no sense for a screensaver), so any exceptions thrown that
+kills the application will be just completely printed out for troubleshooting
+purposes only.
+"""
+
+
+def usage():
+    """
+    Prints a simple description of termsaver, with a complete list of all
+    available screens (installed in termsaverlib.screen package).
+    """
+    # Print the main termsaver header
+    ScreenBase.usage_header()
+
+    print _("""Usage: %(app_name)s [screen] [options]
+
+Screens:
+
+ %(screens)s
+
+Options:
+
+ -h, --help     Displays this help message
+ -v, --verbose  Displays python exception errors (for debugging)
+
+Refer also to each screen's help by typing: %(app_name)s [screen] -h
+""") % {
+        'app_name': constants.App.NAME,
+        'screens': build_screen_usage_list()
+       }
+
+    # Print the main termsaver footer
+    ScreenBase.usage_footer()
+
+
+def parse_args(args):
+    """
+    Simple routine to parse and handle arguments passed to termsaver.
+    Here, a manual parsing is required because we need to transfer the
+    arguments to the corresponding screen being called, if applicable.
+
+    Some arguments are universal, though:
+
+        * -v, --verbose: can only be used by the main termsaver script
+                         it will be removed from the arguments list before
+                         being transferred to the corresnponding screen.
+
+                         It basically prints out python exception details
+                         that can be useful for troubleshooting.
+
+        * -h, --help:    reused by screens, to display each screen's usage
+                         information. If no screens have been informed in
+                         the arguments, the main usage information will be
+                         then displayed.
+    """
+    #
+    # We have to parse them the hard-way to allow getopt to act within each
+    # screen class instead.
+    #
+
+    # force parsing verbose mode from any screen
+    global verbose
+    for arg in args:
+        if arg in ('-v', '--verbose'):
+            verbose = True
+            args.remove(arg)
+
+    if len(args) < 1:
+        usage()
+        sys.exit(0)
+
+    elif args[0] in ('-h', '--help'):
+        usage()
+        sys.exit(0)
+
+    elif args[0] in [s().name for s in get_available_screens()]:
+        # a proper screen was chosen, so send the args to be parsed
+        # by the screen class
+        for screen in \
+            [s for s in get_available_screens() if args[0] == s().name]:
+            screen().autorun(args[1:])
+
+    else:
+        raise exception.InvalidOptionException('',
+            _('It seems you chose an invalid %s.') % ('option' if str(args[0])
+                    .startswith('-') else 'screen'))
+
+
+if __name__ == '__main__':
+    #
+    # The entry point of this application, as this should not be accessible as
+    # a python module to be imported by another application.
+    #
+
+    try:
+        # parse arguments and execute them accordingly
+        parse_args(sys.argv[1:])
+    except KeyboardInterrupt, e:
+        #
+        # Handles keyboard interrupt to exit this application
+        # by cleaning up the screen for "left-overs"
+        ScreenHelperBase.clear_screen()
+
+        if verbose:
+            common.prettify_exception(e)
+
+        # Just finish gracefully
+        sys.exit(0)
+
+    except exception.TermSaverException, e:
+
+        error_number = errno.EPERM  # 1
+
+        if isinstance(e, exception.PathNotFoundException):
+            #
+            # Handles issues with file or directory reading errors
+            #
+            error_number = errno.ENOENT
+            print _("Oops! Could not find path for %s. %s") % \
+                (e.path, e.message)
+
+        elif isinstance(e, exception.InvalidOptionException):
+            #
+            # Handles issues with invalid options
+            #
+            error_number = errno.EINVAL
+            suf = ''
+            if e.option_name not in (None, ''):
+                suf = " '%s'" % e.option_name
+            print _("Oops! Invalid use of option%s. %s.%s") % \
+                (suf, e.message, _(' See --help for details.'))
+
+        elif isinstance(e, exception.UrlException):
+            #
+            # Handles issues with invalid URLs
+            #
+            error_number = errno.ENETUNREACH
+            print _("Oops! Error while trying to fetch from %s. %s") \
+                 % (e.url, e.message)
+
+        elif isinstance(e, exception.XmlException):
+            #
+            # Handles issues with invalid URLs
+            #
+            error_number = errno.ENOEXEC
+            suf = ''
+            if e.name not in (None, ''):
+                suf = " with '%s'" % e.name
+            print _("Oops! There were parsing issues%s. %s") % (suf, e.message)
+
+        if verbose:
+            common.prettify_exception(e)
+
+        if e.help_msg not in (None, ''):
+            print e.help_msg
+
+        sys.exit(error_number)
+
+    except Exception, e:
+        #
+        # Handles keyboard interrupt to exit this application
+        # by cleaning up the screen for "left-overs"
+        #
+
+        print _("""Oops! Something went terribly wrong.
+Error details: %s""" % e.message)
+
+        if verbose:
+            common.prettify_exception(e)
+
+        print _("""
+You are more than welcome to report this at:
+        %s
+""" % constants.App.SOURCE_URL)
+
+        if not verbose:
+            print _("""
+Just before you do so, please run termsaver again with the
+option --verbose and copy the output when you are filling
+the bug report, that will help track faster the problem.
+Thanks!
+""")
+
+        sys.exit(errno.EPERM)
