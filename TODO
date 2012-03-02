@@ -43,3 +43,9 @@ from the Issues ticket system of GitHub.
     build a screen to draw ascii based numbers and display time, as a clock.
     -- 2012-03-01 17:35 +1000, Bruno Braga <bruno.braga@gmail.com>
     
+    Windows Support
+    Python is cross-platform, but there are tricks to make this work in the
+    rudimentar DOS screen. Most of components are in place, just need a proper
+    update in installation scripts, and possibly creation of an EXE file.
+    -- 2012-03-03 01:05 +1000, Bruno Braga <bruno.braga@gmail.com>
+ 
