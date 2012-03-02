@@ -111,10 +111,19 @@ def unescape_string(escaped_text):
 
         * <br>, replaced to \n
     """
-    unescaped = HTMLParser.HTMLParser().unescape(escaped_text)
-    unescaped = str(unescaped).lstrip().rstrip()
-    # replace most common HTML data
-    unescaped = unescaped.replace('<br>', '\n')
-    unescaped = unescaped.replace('<br/>', '\n')
-    unescaped = unescaped.replace('<br />', '\n')
-    return unescaped.decode('string_escape')
+    unescaped = escaped_text
+    try:
+        unescaped = HTMLParser.HTMLParser().unescape(escaped_text)
+        unescaped = str(unescaped).lstrip().rstrip()
+        # replace most common HTML data
+        unescaped = unescaped.replace('<br>', '\n')
+        unescaped = unescaped.replace('<br/>', '\n')
+        unescaped = unescaped.replace('<br />', '\n')
+        unescaped = unescaped.decode('string_escape')
+    except:
+        #
+        # If there were errors here, just ignore them and try to give back
+        # the string the best it could do
+        #
+        pass
+    return unescaped
