@@ -102,7 +102,7 @@ class Settings(PropertyClass):
     values between 0.01 and 0.001.
     """
 
-    FETCH_INTERVAL_SECONDS = 36
+    FETCH_INTERVAL_SECONDS = 3600
     """
     Defines the interval between each fetching of data over the Internet.
     Default value is 1 hour.
