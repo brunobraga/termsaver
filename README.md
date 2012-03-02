@@ -33,10 +33,11 @@ TermSaver
 
 *A simple text-based screensaver for terminal windows.*
 
->You may also want to visit our website: 
->>>**<http://termsaver.info>**
+You may also want to visit our website: 
 
->>![termsaver](https://github.com/brunobraga/termsaver/raw/master/extras/termsaver-main_medium.jpeg)
+**<http://termsaver.info>**
+
+![termsaver](https://github.com/brunobraga/termsaver/raw/master/extras/termsaver-main_medium.jpeg)
 
 
 Background
@@ -98,83 +99,83 @@ screensavers to be added to its core. Developers, please read the section below.
 
 The current published screensavers are:
 
->#### Ascii Art Farts
->
->This is a screensaver that displays ascii art from asciiartfarts.com 
->RSS feed in an animation format. 
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### Dot
->
->A extremely simple screensaver, created more with the idea to guide developers 
->on how to use the termsaver libraries to build their own, and help grow the 
->termsaver screensaver gallery in future.
->
->This screensaver only displays a running dot that appears in random locations 
->and sizes.
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### Jokes For All
->
->This is a screensaver that displays recent jokes from <http://jokes4all.net>
->website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### Programmer
->
->This is a screensaver that displays source code from a specified path in
->visual animation.
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### Quotes For All
->
->This is a screensaver that displays recent quotes from <http://quotes4all.net>
->website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### Random Text
->
->This is a screensaver that displays a text (your name, or whatever) on a 
-> randomized position of the screen, changing position every N seconds.
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### Request for Change
->
->This is a screensaver that fetches documents from RFC (Request for Comments)
->in visual animation, which are documents elaborated by the  Internet 
->Engineering Task Force, available at <http://tools.ietf.org/rfc/>. This 
->screensaver randomizes documents to display, from a list of latest valid
->documents. See more information about this in 
->[Wikipedia](http://en.wikipedia.org/wiki/Request_for_Comments).
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### RSS Feeds
->
->This is a screensaver that displays any 
->[RSS](http://en.wikipedia.org/wiki/RSS) feed you want to show in your
->terminal, with customizable settings and format.
->
->A video showing this screensaver in action will be uploaded shortly.
->
->#### URL Fetcher
->
->This is a screensaver that displays content from a specified 
->[URL](http://en.wikipedia.org/wiki/Uniform_resource_locator) directly
->on screen, in visual animation.
->
->A video showing this screensaver in action will be uploaded shortly.
->
-> - - -
->
->**Disclaimer Note**: termsaver holds no responsibility for the contents offered 
->by third-parties, nor it has controls to filter them. Use it at your own risk.
+#### Ascii Art Farts
+
+This is a screensaver that displays ascii art from asciiartfarts.com 
+RSS feed in an animation format. 
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### Dot
+
+A extremely simple screensaver, created more with the idea to guide developers 
+on how to use the termsaver libraries to build their own, and help grow the 
+termsaver screensaver gallery in future.
+
+This screensaver only displays a running dot that appears in random locations 
+and sizes.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### Jokes For All
+
+This is a screensaver that displays recent jokes from <http://jokes4all.net>
+website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### Programmer
+
+This is a screensaver that displays source code from a specified path in
+visual animation.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### Quotes For All
+
+This is a screensaver that displays recent quotes from <http://quotes4all.net>
+website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### Random Text
+
+This is a screensaver that displays a text (your name, or whatever) on a 
+ randomized position of the screen, changing position every N seconds.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### Request for Change
+
+This is a screensaver that fetches documents from RFC (Request for Comments)
+in visual animation, which are documents elaborated by the  Internet 
+Engineering Task Force, available at <http://tools.ietf.org/rfc/>. This 
+screensaver randomizes documents to display, from a list of latest valid
+documents. See more information about this in 
+[Wikipedia](http://en.wikipedia.org/wiki/Request_for_Comments).
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### RSS Feeds
+
+This is a screensaver that displays any 
+[RSS](http://en.wikipedia.org/wiki/RSS) feed you want to show in your
+terminal, with customizable settings and format.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+#### URL Fetcher
+
+This is a screensaver that displays content from a specified 
+[URL](http://en.wikipedia.org/wiki/Uniform_resource_locator) directly
+on screen, in visual animation.
+
+A video showing this screensaver in action will be uploaded shortly.
+
+ - - -
+
+**Disclaimer Note**: termsaver holds no responsibility for the contents offered 
+by third-parties, nor it has controls to filter them. Use it at your own risk.
 
 
 Developers
@@ -194,20 +195,20 @@ list can be found in the source code itself, or within the
 
 A sneak peak of what is in our mind:
 
->#### Keyboard events
->For example, to allow the app to run in background and start the foreground
->if idle for N minutes. Then, it would be back by any keyboard action.
->
->#### i18n
->Just support to many languages to help spread the word! 
->Work in progress.
->
->#### Digital Clock
->build a screen to draw ascii based numbers and display time, as a clock.
->
->#### Windows Support
->Python is cross-platform, but there are tricks to make this work in the
->rudimentary DOS screen. Work in progress.
+#### Keyboard events
+For example, to allow the app to run in background and start the foreground
+if idle for N minutes. Then, it would be back by any keyboard action.
+
+#### i18n
+Just support to many languages to help spread the word! 
+Work in progress.
+
+#### Digital Clock
+build a screen to draw ascii based numbers and display time, as a clock.
+
+#### Windows Support
+Python is cross-platform, but there are tricks to make this work in the
+rudimentary DOS screen. Work in progress.
 
 
 Contribute
