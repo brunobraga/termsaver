@@ -127,3 +127,17 @@ def unescape_string(escaped_text):
         #
         pass
     return unescaped
+
+
+def get_day_suffix(day):
+    """
+    Returns the suffix of the day, such as in 1st, 2nd, ...
+    """
+    if day in (1, 11, 21, 31):
+        return 'st'
+    elif day in (2, 12, 22):
+        return 'nd'
+    elif day in (3, 13, 23):
+        return 'rd'
+    else:
+        return 'th'
