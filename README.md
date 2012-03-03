@@ -172,6 +172,12 @@ on screen, in visual animation.
 
 A video showing this screensaver in action will be uploaded shortly.
 
+#### Clock
+
+This is a screensaver that displays a digital clock using ascii letters..
+
+A video showing this screensaver in action will be uploaded shortly.
+
  - - -
 
 **Disclaimer Note**: termsaver holds no responsibility for the contents offered 
