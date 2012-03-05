@@ -157,6 +157,7 @@ class URLFetcherHelperBase(ScreenHelperBase):
 
         # execute URL fetch
         req = Request(url, data, headers)
+        resp = None
         try:
             resp = urlopen(req)
         except HTTPError, e:
@@ -173,8 +174,11 @@ class URLFetcherHelperBase(ScreenHelperBase):
             # make sure the content is not binary (eg. image)
             if self.__is_response_binary(self.raw):
                 raise exception.UrlException(uri, _("Fetched data is binary."))
+        finally:
+            if resp:
+                resp.close()
 
-            return self.raw
+        return self.raw
 
     def __is_response_binary(self, raw):
         """
