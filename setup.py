@@ -42,13 +42,21 @@ below for details:
 """
 
 import os
+import sys
 from distutils.core import setup
 from distutils.cmd import Command
 from distutils.log import warn, info
 from distutils.errors import DistutilsFileError
-from distutils.command.install_data import install_data
 from distutils.command.build import build
 from termsaverlib import constants
+
+min_python = (2, 5)
+if sys.version_info < min_python:
+    print "Trac requires Python %d.%d or later" % min_python
+    sys.exit(1)
+if sys.version_info >= (3,):
+    print "Trac doesn't support Python 3 (yet)"
+    sys.exit(1)
 
 
 class Uninstall(Command):
@@ -151,37 +159,43 @@ class Build(build):
         build.run(self)
 
 
-class InstallData(install_data):
-
-    def run(self):
-        if not self.data_files: self.data_files = []
-        for lang in os.listdir('build/locale/'):
-            lang_dir = os.path.join('share', 'locale', lang, 'LC_MESSAGES')
-            lang_file = os.path.join('build', 'locale', lang, 'LC_MESSAGES', 
-                'termsaver.mo')
-            self.data_files.append((lang_dir, [lang_file]))
-            print 'Copying %s -> %s' % (lang_dir, lang_file)
-        install_data.run(self)
-
-setup(name='termsaver',
-      version=constants.App.VERSION,
-      description='Simple text-based terminal screensaver.',
-      author='Bruno Braga',
-      author_email='bruno.braga@gmail.com',
-      url='http://termsaver.info',
-      packages=[
+setup(name = 'termsaver',
+      version = constants.App.VERSION,
+      description = 'Simple text-based terminal screensaver.',
+      author = 'Bruno Braga',
+      author_email = 'bruno.braga@gmail.com',
+      classifiers = [
+            'Development Status :: 4 - Beta',
+            'Environment :: Console',
+            'Intended Audience :: Developers',
+            'Intended Audience :: Information Technology',
+            'Intended Audience :: System Administrators',
+            'License :: OSI Approved :: Apache Software License',
+            'Natural Language :: English',
+            'Operating System :: MacOS',
+            'Operating System :: POSIX',
+            'Programming Language :: Python',
+            'Topic :: Terminals',
+            'Topic :: Utilities',
+      ],
+      url = 'http://termsaver.info',
+      download_url = 'https://github.com/brunobraga/termsaver/downloads',
+      packages = [
             'termsaverlib',
             'termsaverlib.screen',
             'termsaverlib.screen.base',
             'termsaverlib.screen.helper',
       ],
-      license='Apache License v2',
-      scripts=['termsaver'],
-      cmdclass={
-                'build': Build,
-                'build_trans': build_trans,
-                'install_data': InstallData,
-                'uninstall': Uninstall
+      license = 'Apache License v2',
+      scripts = ['termsaver'],
+      data_files = [
+            (os.path.join('share', 'locale', 'en', 'LC_MESSAGES'), [os.path.join('build', 'locale', 'en', 'LC_MESSAGES', 'termsaver.mo')]),
+            (os.path.join('share', 'locale', 'ja', 'LC_MESSAGES'), [os.path.join('build', 'locale', 'ja', 'LC_MESSAGES', 'termsaver.mo')]),
+      ],
+      cmdclass = {
+            'build': Build,
+            'build_trans': build_trans,
+            'uninstall': Uninstall
       },
 )
 
@@ -191,4 +205,6 @@ if __name__ == '__main__':
     # The entry point of this application, as this should not be accessible as
     # a python module to be imported by another application.
     #
-    print """Thank you for trying termsaver."""
+    print """
+Thank you for trying termsaver.
+"""
