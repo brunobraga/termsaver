@@ -188,10 +188,9 @@ setup(name = 'termsaver',
       ],
       license = 'Apache License v2',
       scripts = ['termsaver'],
-      data_files = [
-            (os.path.join('share', 'locale', 'en', 'LC_MESSAGES'), [os.path.join('build', 'locale', 'en', 'LC_MESSAGES', 'termsaver.mo')]),
-            (os.path.join('share', 'locale', 'ja', 'LC_MESSAGES'), [os.path.join('build', 'locale', 'ja', 'LC_MESSAGES', 'termsaver.mo')]),
-      ],
+      data_files = [(os.path.join('share', 'locale', lang[:-3], 'LC_MESSAGES'),
+                    [os.path.join('build', 'locale', lang[:-3], 'LC_MESSAGES',
+                    'termsaver.mo')]) for lang in os.listdir('locale')],
       cmdclass = {
             'build': Build,
             'build_trans': build_trans,
