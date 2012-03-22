@@ -39,22 +39,22 @@ import time
 
 PROGRAM = 'markdown'
 """
-The markdown parser program.
+The HTML render/parser program.
 """
 
-OUTPUT = '/tmp/readme.markdown.html'
+OUTPUT = '/tmp/readme.html'
 """
-The temporary location for the HTML rendered file based on the README markdown.
+The temporary location for the HTML rendered file based on the README.
 """
 
-README = '../README'
+README = 'README.md'
 """
 The location of the readme markdown file.
 """
 
 def usage():
 
-    print """Usage: %s [options]
+    print """Usage: %(program)s [OPTIONS]
 
 This script will automatically output the HTML of the markdown of the README
 file, and open it on the system default browser, for convenience.
@@ -64,32 +64,54 @@ Options:
  -h, --help      displays this help message
  -m, --monitor   automatically update the HTML rendering file whenever 
                  the README file is modified (it will not trigger the browser)
+ -f file, --file=file 
+                 the file to be monitored and parsed. If none informed, it will
+                 use %(file)s
+ -p program, --program=program   
+                 the program used for rendering the file into a HTML format
+                 If none informed, it uses markdown.
+                 
+Examples:
 
-""" % (os.path.basename(__file__))
+%(program)s -m -f README.md -p markdown
+This will generate a HTML view of the Markdown syntax, used by GitHub.
+
+%(program)s -m -f extras/README.dist -p rst2html
+This will generate a HTML view of the Restructured Text syntax, 
+used by Python PyPi.
+
+""" % {'program': os.path.basename(__file__)}
 
 
-def render():
-    if os.system("which %s >/dev/null" % PROGRAM) != 0:
+def render(program, readme, output):
+    chk_program(program)
+    if os.system("%s %s > %s" % (program, readme, output)) != 0:
+        raise Exception("Unable to properly execute rendering.")
+
+
+def chk_program(program):
+    if os.system("which %s >/dev/null" % program) != 0:
         print """%(script)s script requires %(program)s program. 
 In Ubuntu, you can simply install it by executing: 
-        sudo apt-get install %(program)s""" % {'script': os.path.basename(__file__), 
-                                               'program': PROGRAM}
-        sys.exit(2)
-
-    os.system("%s %s > %s" % (PROGRAM, README, OUTPUT))
+        sudo apt-get install %(program)s""" % {
+            'script': os.path.basename(__file__), 
+            'program': program
+        }
+        sys.exit(2)    
     
-    
-def trigger_browser():
-    os.system("xdg-open %s &" % OUTPUT)
+def trigger_browser(output):
+    if os.system("xdg-open %s &" % output) != 0:
+        raise Exception("Unable to properly open default browser.")
 
 
-def sha1sum():
-    f = open(README, "rb")
+def sha1sum(readme):
+    f = open(readme, "rb")
     h = hashlib.sha1()
     h.update(f.read())
     filehash = h.hexdigest()
     f.close()
     return filehash.lower()
+
 
 def echo(text, new_line=False):
     sys.stdout.write("%s%s - %s" % (
@@ -98,14 +120,18 @@ def echo(text, new_line=False):
         text))
     sys.stdout.flush()
 
+
 def main():
 
+    global PROGRAM, README, OUTPUT
+    
     monitor = False
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hm", ["help", "monitor"])
+        opts, args = getopt.getopt(sys.argv[1:], "hmf:p:", 
+            ["program=", "file=", "help", "monitor"])
     except getopt.GetoptError, err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print str(err) 
         usage()
         sys.exit(2)
     output = None
@@ -116,23 +142,31 @@ def main():
             sys.exit()
         elif o in ("-m", "--monitor"):
             monitor = True
+        elif o in ("-f", "--file"):
+            README = a
+            if not os.path.exists(README):
+                raise Exception("File %s does not exist!" % a)
+        elif o in ("-p", "--program"):
+            PROGRAM = a
+            chk_program(a)
         else:
             assert False, "unhandled option"    
 
     if monitor:
-        print "Running a monitor at [%s]..." % README
+        print "Running a monitor at file [%s] for program [%s]..." % \
+            (README, PROGRAM)
         sumhash = ''
         while True:
-            if sumhash != sha1sum():
+            if sumhash != sha1sum(README):
                 echo("Detected change. updating HTML file...\n")
-                render()
-                sumhash = sha1sum()
+                render(PROGRAM, README, OUTPUT)
+                sumhash = sha1sum(README)
             else:
                 echo("monitoring [%s]...")  
                 time.sleep(1)      
     else:
-        render()
-        trigger_browser()
+        render(PROGRAM, README, OUTPUT)
+        trigger_browser(OUTPUT)
 
 
 if __name__ == "__main__":
