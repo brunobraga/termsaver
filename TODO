@@ -25,27 +25,4 @@
 #
 ###############################################################################
 
-Refer also to http://github.com/brunobraga/termsaver for a complete todo list
-from the Issues ticket system of GitHub.
-
-
-    keyboard event-base handler
-    For example, to allow the app to run in background and start the foreground
-    if idle for N minutes. Then, it would be back by any keyboard action.
-    -- 2012-03-01 17:35 +1000, Bruno Braga <bruno.braga@gmail.com>
-
-    i18n
-    Just support to many languages to help spread the word! Work in progress.
-    -- 2012-03-01 17:35 +1000, Bruno Braga <bruno.braga@gmail.com>
-
-
-    clock
-    build a screen to draw ascii based numbers and display time, as a clock.
-    -- 2012-03-01 17:35 +1000, Bruno Braga <bruno.braga@gmail.com>
-    
-    Windows Support
-    Python is cross-platform, but there are tricks to make this work in the
-    rudimentar DOS screen. Most of components are in place, just need a proper
-    update in installation scripts, and possibly creation of an EXE file.
-    -- 2012-03-03 01:05 +1000, Bruno Braga <bruno.braga@gmail.com>
- 
+Refer to https://github.com/brunobraga/termsaver/wiki/Brainstorming

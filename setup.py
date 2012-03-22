@@ -43,6 +43,7 @@ below for details:
 
 import os
 import sys
+import platform
 from distutils.core import setup
 from distutils.cmd import Command
 from distutils.log import warn, info
@@ -158,6 +159,15 @@ class Build(build):
     def run(self):
         build.run(self)
 
+if platform.system() == 'FreeBSD':
+  man_dir = 'man'
+else:
+  man_dir = 'share/man'
+
+data_files = [(os.path.join('share', 'locale', lang[:-3], 'LC_MESSAGES'),
+                [os.path.join('build', 'locale', lang[:-3], 'LC_MESSAGES',
+                'termsaver.mo')]) for lang in os.listdir('locale')]
+data_files.append((os.path.join(man_dir, 'man1'), ['doc/termsaver.1']))
 
 setup(name = 'termsaver',
       version = constants.App.VERSION,
@@ -188,9 +198,7 @@ setup(name = 'termsaver',
       ],
       license = 'Apache License v2',
       scripts = ['termsaver'],
-      data_files = [(os.path.join('share', 'locale', lang[:-3], 'LC_MESSAGES'),
-                    [os.path.join('build', 'locale', lang[:-3], 'LC_MESSAGES',
-                    'termsaver.mo')]) for lang in os.listdir('locale')],
+      data_files = data_files,
       cmdclass = {
             'build': Build,
             'build_trans': build_trans,

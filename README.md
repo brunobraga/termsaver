@@ -104,8 +104,6 @@ The current published screensavers are:
 This is a screensaver that displays ascii art from asciiartfarts.com 
 RSS feed in an animation format. 
 
-A video showing this screensaver in action will be uploaded shortly.
-
 #### Dot
 
 A extremely simple screensaver, created more with the idea to guide developers 
@@ -115,35 +113,25 @@ termsaver screensaver gallery in future.
 This screensaver only displays a running dot that appears in random locations 
 and sizes.
 
-A video showing this screensaver in action will be uploaded shortly.
-
 #### Jokes For All
 
 This is a screensaver that displays recent jokes from <http://jokes4all.net>
 website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
-
-A video showing this screensaver in action will be uploaded shortly.
 
 #### Programmer
 
 This is a screensaver that displays source code from a specified path in
 visual animation.
 
-A video showing this screensaver in action will be uploaded shortly.
-
 #### Quotes For All
 
 This is a screensaver that displays recent quotes from <http://quotes4all.net>
 website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
 
-A video showing this screensaver in action will be uploaded shortly.
-
 #### Random Text
 
 This is a screensaver that displays a text (your name, or whatever) on a 
  randomized position of the screen, changing position every N seconds.
-
-A video showing this screensaver in action will be uploaded shortly.
 
 #### Request for Change
 
@@ -154,15 +142,11 @@ screensaver randomizes documents to display, from a list of latest valid
 documents. See more information about this in 
 [Wikipedia](http://en.wikipedia.org/wiki/Request_for_Comments).
 
-A video showing this screensaver in action will be uploaded shortly.
-
 #### RSS Feeds
 
 This is a screensaver that displays any 
 [RSS](http://en.wikipedia.org/wiki/RSS) feed you want to show in your
 terminal, with customizable settings and format.
-
-A video showing this screensaver in action will be uploaded shortly.
 
 #### URL Fetcher
 
@@ -170,13 +154,9 @@ This is a screensaver that displays content from a specified
 [URL](http://en.wikipedia.org/wiki/Uniform_resource_locator) directly
 on screen, in visual animation.
 
-A video showing this screensaver in action will be uploaded shortly.
-
 #### Clock
 
 This is a screensaver that displays a digital clock using ascii letters..
-
-A video showing this screensaver in action will be uploaded shortly.
 
  - - -
 
@@ -194,28 +174,10 @@ screensavers for termsaver will be available soon.
 Roadmap
 -------
 
-A complete description of a 
-[TODO](https://github.com/brunobraga/termsaver/blob/master/TODO) 
-list can be found in the source code itself, or within the 
+There is no current roadmap defined, besides improvement tickets created in
 [Issues](https://github.com/brunobraga/termsaver/issues) tab in GitHub.
-
-A sneak peak of what is in our mind:
-
-#### Keyboard events
-For example, to allow the app to run in background and start the foreground
-if idle for N minutes. Then, it would be back by any keyboard action.
-
-#### i18n
-Just support to many languages to help spread the word! 
-Work in progress.
-
-#### Digital Clock
-build a screen to draw ascii based numbers and display time, as a clock.
-
-#### Windows Support
-Python is cross-platform, but there are tricks to make this work in the
-rudimentary DOS screen. Work in progress.
-
+Refer also to <http://github.com/brunobraga/termsaver/wiki/Brainstorming> for
+some insights of stuff we are thinking about.
 
 Contribute
 ----------
@@ -254,7 +216,8 @@ participate. You can:
 Uninstall
 ----------
 
-To uninstall termsaver, you will need to run some additional commands:
+To uninstall termsaver, you will need to run the installation command with 
+some additional arguments:
 
     # Step 1 - re-install creating a manifest file
     sudo python setup.py install --record /tmp/termsaver.install.record.txt

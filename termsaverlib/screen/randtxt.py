@@ -127,9 +127,10 @@ class RandTxtScreen(ScreenBase,
 Options:
 
  -w, --word   Sets the word to be displayed
-              default is the name of this application
+              default is the name of this application (if you need to use 
+              spaces, don't forget to place the word with quotes)
  -d, --delay  Sets how long the word will be displayed before
-              randomized again. Default is%(default_delay)s of a second
+              randomized again. Default is %(default_delay)s second(s)
  -h, --help   Displays this help message
 
 Example:
