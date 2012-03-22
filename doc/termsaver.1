@@ -1,0 +1,128 @@
+.TH "TERMSAVER" "1" "22 March 2012" "Termsaver" ""
+.SH "NAME"
+Termsaver \- A simple text-based terminal screensaver
+.SH "SYNTAX"
+.B termsaver
+.RI [ SCREEN ]
+.RI [ OPTIONS ]  
+.br 
+.SH "DESCRIPTION"
+.BTermsaver
+is a simple alternative for simulating command-line based 
+screensavers right on the terminal, in text-based format. 
+.P
+To start the screensaver, execute 
+.B Termsaver
+command with proper options as described in detail below, and to close it, 
+just use the standard 
+.I Ctrl+C 
+to interrupt it (or close the terminal window if you are on a desktop 
+environment and no longer need it).
+.br
+.SH "SCREEN"
+The 
+.B Termsaver
+application, to work properly, requires a 
+.I screen
+as argument, which represents the name of the screensaver to be loaded. Each 
+.i screen, 
+in turn, will have its own set of optional arguments, documented in its 
+.B help
+option.
+.
+.P
+Here follows a list of currently available screens (note that this information
+might become outdated if updates are not fully documented here, so always rely
+on the 
+.B help
+option to display all 
+.I screens
+available):
+.TP 
+.B quotes4all     
+displays recent quotes from quotes4all.net
+.TP 
+.B asciiartfarts  
+displays ascii images from asciiartfarts.com (NSFW)
+.TP 
+.B rssfeed       
+displays rss feed information
+.TP 
+.B clock          
+displays a digital clock on screen
+.TP 
+.B randtxt       
+displays word in random places on screen
+.TP 
+.B dot            
+displays a random running dot
+.TP 
+.B rfc           
+randomly displays RFC contents
+.TP 
+.B programmer     
+displays source code in typing animation
+.TP 
+.B urlfetcher     
+displays url contents with typing animation
+.TP 
+.B jokes4all      
+displays recent jokes from jokes4all.net (NSFW)
+.P
+Refer to 
+.B help
+option for additional information for each
+.I screen
+usage and example.
+.br
+.SH "OPTIONS"
+This program follow the usual GNU command line syntax, with long
+options starting with two dashes (`\-').
+A summary of options is included below.
+.TP 
+.B \-h, \-\-help
+Displays this help message
+.TP 
+.B \-v, \-\-verbose
+Displays python exception errors (for debugging)
+.P
+.SH "EXAMPLES"
+.TP
+Check all available screens to use:
+.B    termsaver --help
+.br
+.TP
+Run random text screensaver with extra arguments:
+.B    termsaver
+.I randtxt 
+.BR --word " HelloWorld " --delay " 1 "
+
+.SH "SEE ALSO"
+See more information about this project at:
+.br
+.I http://termsaver.info
+
+.br
+.SH "COPYRIGHT"
+ Licensed under the Apache License, Version 2.0 (the "License"); you may
+ not use this file except in compliance with the License. You may obtain
+ a copy of the License at
+.P
+     http://www.apache.org/licenses/LICENSE-2.0
+.P
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ License for the specific language governing permissions and limitations
+ under the License.
+.br
+.SH "AUTHORS"
+Termsaver was written by Bruno Braga
+.RI < bruno.braga@gmail.com >.
+.PP 
+.SH "BUGS"
+Report bugs to authors at:
+.br
+.I http://github.com/brunobraga/termsaver
+
+
