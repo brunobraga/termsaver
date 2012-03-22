@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ###############################################################################
 #
 # file:     termsaver
@@ -178,8 +178,8 @@ if __name__ == '__main__':
             # Handles issues with file or directory reading errors
             #
             error_number = errno.ENOENT
-            print _("Oops! Could not find path for %s. %s") % \
-                (e.path, e.message)
+            print _('Oops! Could not find path for %(path)s. %(msg)s') % \
+                {'path': e.path, 'msg': e.message}
 
         elif isinstance(e, exception.InvalidOptionException):
             #
@@ -189,16 +189,18 @@ if __name__ == '__main__':
             suf = ''
             if e.option_name not in (None, ''):
                 suf = " '%s'" % e.option_name
-            print _("Oops! Invalid use of option%s. %s.%s") % \
-                (suf, e.message, _(' See --help for details.'))
+            print _('Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s') % \
+                {'suf': suf,
+                 'msg': e.message,
+                 'help': _(' See --help for details.')}
 
         elif isinstance(e, exception.UrlException):
             #
             # Handles issues with invalid URLs
             #
             error_number = errno.ENETUNREACH
-            print _("Oops! Error while trying to fetch from %s. %s") \
-                 % (e.url, e.message)
+            print _('Oops! Error while trying to fetch from %(url)s. %(msg)s')\
+                 % {'url': e.url, 'msg': e.message}
 
         elif isinstance(e, exception.XmlException):
             #
@@ -208,7 +210,8 @@ if __name__ == '__main__':
             suf = ''
             if e.name not in (None, ''):
                 suf = " with '%s'" % e.name
-            print _("Oops! There were parsing issues%s. %s") % (suf, e.message)
+            print _('Oops! There were parsing issues%(suf)s. %(msg)s') % \
+                {'suf': suf, 'msg': e.message}
 
         if verbose:
             common.prettify_exception(e)
@@ -232,8 +235,8 @@ Error details: %s""" % e.message)
 
         print _("""
 You are more than welcome to report this at:
-        %s
-""" % constants.App.SOURCE_URL)
+        %(url)s
+""") % {'url': constants.App.SOURCE_URL}
 
         if not verbose:
             print _("""
