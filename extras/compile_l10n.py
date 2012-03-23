@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 ###############################################################################
 #
-# file:     MANIFEST.in
+# file:     compile_l10n.py
 #
-# Purpose:  required for python packaging
+# Purpose:  Recreate MO files for localization.
 #
 # Note:     This file is part of Termsaver application, and should not be used
 #           or executed separately.
@@ -25,8 +26,30 @@
 #
 ###############################################################################
 
-#
-# Add l10n files to package
-#
-recursive-include locale/ *.mo
+import os
+import sys
 
+
+def main():
+
+    print "Starting to compile available l10n messages..."
+    po_dir = os.path.join(sys.path[0], '..', 'locale')
+    for lang in os.listdir(po_dir):
+
+        lang_path = os.path.join('locale', lang, 'LC_MESSAGES')
+        src = os.path.join(lang_path, 'termsaver.po')
+        dest = os.path.join(lang_path, 'termsaver.mo')
+        print 'Compiling %s' % src
+        if os.system("msgfmt %s -o %s" % (src, dest)) != 0:
+            print "Error while compiling file!"
+            sys.exit(2)
+
+    print "Done!"
+
+
+if __name__ == '__main__':
+    #
+    # The entry point of this application, as this should not be accessible as
+    # a python module to be imported by another application.
+    #
+    main()

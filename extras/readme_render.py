@@ -52,8 +52,10 @@ README = 'README.md'
 The location of the readme markdown file.
 """
 
+
 def usage():
 
+    global README
     print """Usage: %(program)s [OPTIONS]
 
 This script will automatically output the HTML of the markdown of the README
@@ -62,25 +64,25 @@ file, and open it on the system default browser, for convenience.
 Options:
 
  -h, --help      displays this help message
- -m, --monitor   automatically update the HTML rendering file whenever 
+ -m, --monitor   automatically update the HTML rendering file whenever
                  the README file is modified (it will not trigger the browser)
- -f file, --file=file 
+ -f file, --file=file
                  the file to be monitored and parsed. If none informed, it will
                  use %(file)s
- -p program, --program=program   
+ -p program, --program=program
                  the program used for rendering the file into a HTML format
                  If none informed, it uses markdown.
-                 
+
 Examples:
 
 %(program)s -m -f README.md -p markdown
 This will generate a HTML view of the Markdown syntax, used by GitHub.
 
 %(program)s -m -f extras/README.dist -p rst2html
-This will generate a HTML view of the Restructured Text syntax, 
+This will generate a HTML view of the Restructured Text syntax,
 used by Python PyPi.
 
-""" % {'program': os.path.basename(__file__)}
+""" % {'program': sys.argv[0], 'file': README}
 
 
 def render(program, readme, output):
@@ -91,14 +93,15 @@ def render(program, readme, output):
 
 def chk_program(program):
     if os.system("which %s >/dev/null" % program) != 0:
-        print """%(script)s script requires %(program)s program. 
-In Ubuntu, you can simply install it by executing: 
+        print """%(script)s script requires %(program)s program.
+In Ubuntu, you can simply install it by executing:
         sudo apt-get install %(program)s""" % {
-            'script': os.path.basename(__file__), 
+            'script': sys.argv[0],
             'program': program
         }
-        sys.exit(2)    
-    
+        sys.exit(2)
+
+
 def trigger_browser(output):
     if os.system("xdg-open %s &" % output) != 0:
         raise Exception("Unable to properly open default browser.")
@@ -124,18 +127,16 @@ def echo(text, new_line=False):
 def main():
 
     global PROGRAM, README, OUTPUT
-    
+
     monitor = False
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hmf:p:", 
+        opts, __ = getopt.getopt(sys.argv[1:], "hmf:p:",
             ["program=", "file=", "help", "monitor"])
     except getopt.GetoptError, err:
         # print help information and exit:
-        print str(err) 
+        print str(err)
         usage()
         sys.exit(2)
-    output = None
-    verbose = False
     for o, a in opts:
         if o in ("-h", "--help"):
             usage()
@@ -150,7 +151,7 @@ def main():
             PROGRAM = a
             chk_program(a)
         else:
-            assert False, "unhandled option"    
+            assert False, "unhandled option"
 
     if monitor:
         print "Running a monitor at file [%s] for program [%s]..." % \
@@ -162,13 +163,14 @@ def main():
                 render(PROGRAM, README, OUTPUT)
                 sumhash = sha1sum(README)
             else:
-                echo("monitoring [%s]...")  
-                time.sleep(1)      
+                echo("monitoring [%s]...")
+                time.sleep(1)
     else:
+        print "Rendering a single time for file [%s] for program [%s]..." % \
+            (README, PROGRAM)
         render(PROGRAM, README, OUTPUT)
         trigger_browser(OUTPUT)
 
 
 if __name__ == "__main__":
     main()
-

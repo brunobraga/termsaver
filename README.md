@@ -75,11 +75,23 @@ Requirements
 Installation
 ------------
 
+#### Fast and Simple
+
 For those without the time or patience to scan through the rest of this 
 document, here is the installation procedure, plain and simple:
 
+        pip install termsaver
+
+And you are done!
+
+**Note**: I discourage the use of *easy_install* (does not add man pages, or 
+localization files)
+
+
+#### From the Source
+
 1. Download the Source 
-[here](https://github.com/brunobraga/termsaver/downloads)
+[here](http://pypi.python.org/pypi/termsaver/)
 2. Unpack it
      
         tar -zxvf termsaver-{version}.tar.gz
@@ -216,14 +228,18 @@ participate. You can:
 Uninstall
 ----------
 
-To uninstall termsaver, you will need to run the installation command with 
-some additional arguments:
+### Using Pip
 
-    # Step 1 - re-install creating a manifest file
-    sudo python setup.py install --record /tmp/termsaver.install.record.txt
+    pip uninstall termsaver
 
-    # Step 2 - uninstall referencing the manifest file
-    sudo python setup.py uninstall --manifest /tmp/termsaver.install.record.txt
-    
-    # Done!
+### Manual Uninstall
+
+Just remove manually the following files:
+
+    # For Linux boxes
+    rm -rvf /usr/local/bin/termsaver 
+    rm -rvf /usr/local/lib/python2.7/dist-packages/termsaver* 
+    rm -rvf /usr/local/share/man/man1/termsaver.1 
+    find /usr/local/share/locale/ -name "termsaver.mo" -exec rm -rfv {} \; 
+
 
