@@ -27,7 +27,7 @@
 
 # compiled files
 *.py[co]
-*.mo
+#*.mo
 
 # Packages
 *.egg
