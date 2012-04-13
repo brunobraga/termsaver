@@ -48,7 +48,7 @@ class App(PropertyClass):
     Refer to each of the available properties for detailed documentation.
     """
 
-    VERSION = "0.1"
+    VERSION = "0.1.1"
     """
     Defines the version of termsaver application. This is accessed during
     install process, and to any help and usage messages informed by it.
