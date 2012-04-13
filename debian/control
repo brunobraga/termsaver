@@ -1,16 +1,14 @@
 Source: termsaver
 Section: misc
-Maintainer: Bruno Braga <bruno.braga@gmail.com>
 Priority: optional
+Maintainer: Bruno Braga <bruno.braga@gmail.com>
 Build-Depends: python, debhelper (>= 7.4.3)
 Standards-Version: 3.9.1
-XS-Python-Version: >= 2.5
+Vcs-Git: git://github.com/brunobraga/termsaver.git
+Vcs-Browser: https://github.com/brunobraga/termsaver
+Homepage: http://termsaver.info
+
 Package: termsaver
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}
 Description: Simple text-based terminal screensaver.
-Vcs-Git: git://github.com/brunobraga/termsaver.git
-Vcs-Browser: https://github.com/brunobraga/termsaver
-Homepage: http://termsaver.info
-XB-Python-Version: ${python:Versions}
-
