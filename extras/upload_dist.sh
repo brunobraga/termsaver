@@ -35,6 +35,9 @@ rm -rvf ./README ./dist ./build ./MANIFEST termsaver.egg-info/
 echo "Copying distribution README file to root directory..."
 cp -vf extras/README.dist ./README
 
+echo "Registering user..."
+python setup.py register
+
 echo "Executing python source distribution upload..."
 python setup.py sdist upload
 

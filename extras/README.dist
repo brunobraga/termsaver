@@ -199,7 +199,15 @@ URL_ directly on screen, in visual animation.
 Clock
 -----
 
-This is a screensaver that displays a digital clock using ascii letters..
+This is a screensaver that displays a digital clock using ascii letters.
+
+Matrix
+------
+
+This is a screensaver that displays falling (rising) Japanese characters
+simulating the screen from the movie The_Matrix_
+
+.. _The_Matrix : http://en.wikipedia.org/wiki/The_Matrix
 
 ------
 
