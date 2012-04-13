@@ -85,7 +85,7 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     executed in `get_char_list`.
     """
 
-    zengaku_space = '　'  # WARNING: This is NOT a simple space char
+    space_zenkaku = '　'  # WARNING: This is NOT a simple space char
     """
     Represent a full-width space character, used to fill in the blanks on the
     screen and guarantee good positioning.
@@ -93,7 +93,15 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     http://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms
     """
 
-    digmap_alpha_num = [
+    space_hangaku = ' '
+    """
+    Represent a half-width space character, used to fill in the blanks on the
+    screen and guarantee good positioning.
+    See more information about full-width characters in:
+    http://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms
+    """
+
+    digmap_alpha_num_zenkaku = [
         '０', '１', '２', '３', '４', '５', '６', '７', '８', '９',
         'Ａ', 'Ｂ', 'Ｃ', 'Ｄ', 'Ｅ', 'Ｆ', 'Ｇ', 'Ｈ', 'Ｉ', 'Ｊ',
         'Ｋ', 'Ｌ', 'Ｍ', 'Ｎ', 'Ｏ', 'Ｐ', 'Ｑ', 'Ｒ', 'Ｓ', 'Ｔ',
@@ -106,30 +114,61 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     http://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms
     """
 
-    digmap_kana = [
-        'ア', 'イ', 'ウ', 'エ', 'オ',
-        'カ', 'キ', 'ク', 'ケ', 'コ',
-        'サ', 'シ', 'ス', 'セ', 'ソ',
-        'タ', 'チ', 'ツ', 'テ', 'ト',
-        'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',
-        'ハ', 'ヒ', 'フ', 'ヘ', 'ホ',
-        'マ', 'ミ', 'ム', 'メ', 'モ',
-        'ヤ', 'ユ', 'ヨ',
-        'ラ', 'リ', 'ル', 'レ', 'ロ',
-        'ワ', 'ヰ', 'ヱ', 'ヲ',
-        'ン', 'ー',
-        # 'ッ' --removed because it gives ugly layout compared to the size of others
+    digmap_alpha_num_hangaku = [
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'X', 'W', 'Y', 'Z',
+    ]
+    """
+    Holds the list of alpha-numeric characters, formatted with half-width
+    formatting, to ensure char positioning on the screen during display.
+    See more information about this at:
+    http://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms
+    """
+
+    digmap_kana_hangaku = [
+        'ｱ', 'ｲ', 'ｳ', 'ｴ', 'ｵ', 'ｶ', 'ｷ', 'ｸ', 'ｹ', 'ｺ', 'ｻ', 'ｼ', 'ｽ', 'ｾ', 'ｿ', 
+        'ﾀ', 'ﾁ', 'ﾂ', 'ﾃ', 'ﾄ', 'ﾅ', 'ﾆ', 'ﾇ', 'ﾈ', 'ﾉ', 'ﾊ', 'ﾋ', 'ﾌ', 'ﾍ', 'ﾎ', 'ﾏ', 
+        'ﾐ', 'ﾑ', 'ﾒ', 'ﾓ', 'ﾔ', 'ﾕ', 'ﾖ', 'ﾗ', 'ﾘ', 'ﾙ', 'ﾚ', 'ﾛ', 'ﾜ', 'ﾝ', 'ｦ', 'ｰ', 
     ]
     """
     Holds the list of Japanese Katakana used to display the screensaver.
     Based on information available on Wikipedia:
     http://en.wikipedia.org/wiki/Katakana
+    All characters here are formatted with half-width
+    formatting, to ensure char positioning on the screen during display.
+    See more information about this at:
+    http://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms
+    """
+
+    digmap_kana_zenkaku = [
+        'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ',
+        'サ', 'シ', 'ス', 'セ', 'ソ', 'タ', 'チ', 'ツ', 'テ', 'ト',
+        'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',  'ハ', 'ヒ', 'フ', 'ヘ', 'ホ',
+        'マ', 'ミ', 'ム', 'メ', 'モ', 'ヤ', 'ユ', 'ヨ',
+        'ラ', 'リ', 'ル', 'レ', 'ロ', 'ワ', 'ヰ', 'ヱ', 'ヲ', 'ン', 'ー',
+    ]
+    """
+    Holds the list of Japanese Katakana used to display the screensaver.
+    Based on information available on Wikipedia:
+    http://en.wikipedia.org/wiki/Katakana
+    All characters here are formatted with full-width
+    formatting, to ensure char positioning on the screen during display.
+    See more information about this at:
+    http://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms
+    """
+
+    space = ""
+    """
+    The actual space property used for blank printing. This will be based on
+    `space_hangaku`, unless specified otherwise.
     """
 
     digmap = []
     """
-    The actual used property for character picking. This will be based on
-    both `digmap_alpha_num` and `digmap_kana` value, unless specified
+    The actual property used for character picking. This will be based on
+    both `digmap_alpha_num_*` and `digmap_kana_*` value, unless specified
     otherwise.
     """
 
@@ -138,7 +177,19 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     The mapping of xy position and length of each line. This will hold the
     randomized values that are show on screen line by line.
     """
-
+    
+    use_zenkaku = False
+    """
+    Defines if all characters and size calculations should be done for
+    full-width or half-width.
+    """
+    
+    proportion = 1
+    """
+    Defines the granulation proportion for displaying characters in full-width
+    of half-width size.
+    """
+    
     cur_geo = (0, 0)
     """
     A helper property to identify if the terminal has changed its geometry.
@@ -152,8 +203,8 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         ScreenBase.__init__(self,
             "matrix",
             _("displays a matrix movie alike screensaver"),
-            {'opts': 'hkd:g:', 'long_opts': ['kana', 'help', 'granularity=', 
-                                             'delay=']},
+            {'opts': 'hkzd:g:', 'long_opts': ['kana', 'zenkaku', 'help', 
+                                              'granularity=', 'delay=']},
         )
         self.cleanup_per_cycle = False
 
@@ -201,11 +252,15 @@ Options:
               Default value is [%(granularity)s]. Use something like [1]
               for clean style, or a [100] for total dirt.
 
- -d, --delay  Defines the speed of the character movement
+ -d, --delay  Defines the speed (in seconds) of the character movement
               Default value is [%(line_delay)s] (in seconds).
 
  -k, --kana-only
               Displays only Japanese characters (excludes alpha numeric).  
+
+ -z, --zenkaku
+              Displays full-width (fattish) Japanese characters.
+              By default it displays half-width characters.  
 
  -h, --help   Displays this help message
 
@@ -244,28 +299,47 @@ Examples:
             if o in ("-h", "--help"):
                 self.usage()
                 self.screen_exit()
-            if o in ("-k", "--kana"):
+            elif o in ("-k", "--kana"):
                 use_kana_only = True
+            elif o in ("-z", "--zenkaku"):
+                self.use_zenkaku = True
             elif o in ("-g", "--granularity"):
                 try:
                     # make sure argument is a valid value (int)
                     self.granularity = int(a)
                 except:
                     raise exception.InvalidOptionException("granularity")
+                if self.granularity <= 0:
+                    raise exception.InvalidOptionException("granularity",
+                        "Must be higher than zero")
             elif o in ("-d", "--delay"):
                 try:
                     # make sure argument is a valid value (float)
                     self.line_delay = float(a)
                 except:
                     raise exception.InvalidOptionException("delay")
+                if self.line_delay <= 0:
+                    raise exception.InvalidOptionException("delay",
+                        "Must be higher than zero")
             else:
                 # this should never happen!
                 raise Exception(_("Unhandled option. See --help for details."))
 
-        # fill digmap based on options
-        self.digmap.extend(self.digmap_kana)
+        # fill in other important properties
+        if self.use_zenkaku:
+            digmap_kana = self.digmap_kana_zenkaku
+            digmap_alpha_num = self.digmap_alpha_num_zenkaku
+            self.space = self.space_zenkaku
+            self.proportion = 2
+        else:
+            digmap_kana = self.digmap_kana_hangaku
+            digmap_alpha_num = self.digmap_alpha_num_hangaku
+            self.space = self.space_hangaku
+            self.proportion = 1
+
+        self.digmap.extend(digmap_kana)
         if not use_kana_only:
-            self.digmap.extend(self.digmap_alpha_num)
+            self.digmap.extend(digmap_alpha_num)
 
 
     def __build_screen_map(self):
@@ -279,13 +353,12 @@ Examples:
         # clean up previous
         self.screen_map = []
 
-        # create screen map
-        for __ in range(0, self.screen_width / 2): # Japanese chars are 2 chars 
+        for __ in range(0, self.screen_width / self.proportion): 
 
             if random.random() > 0.5:
                 char_list = self.get_char_list()
             else:
-                char_list = [self.zengaku_space for __ in \
+                char_list = [self.space for __ in \
                     range(0, random.randint(0, self.screen_height))]
             self.screen_map.append(char_list)
 
@@ -295,9 +368,10 @@ Examples:
         """
         result = []
         while(len(result) == 0):
-            bt = [self.zengaku_space for __ in range(0, 
+            bt = [self.space for __ in range(0, 
                     min((self.screen_height, random.randint(0, 
-                        self.screen_height * 10 / self.granularity))))]
+                        self.screen_height * 20 / (self.granularity * \
+                            self.proportion)))))]
             cl = [self.digmap[random.randint(0, len(self.digmap)) - 1] \
                   for __ in range(0, random.randint(0, 
                       self.screen_height - len(bt)))]
