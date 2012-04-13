@@ -3,8 +3,15 @@ Fri, 13 Apr 2012 15:12:10 +0000
 
 Upstream Author: Bruno Braga <bruno.braga@gmail.com>
 
-Copyright (c) 2012, TermSaver
+Copyright:
+    <Copyright (c) 2012, Bruno Braga>
 
-This software is licensed under the Apache License 2.0. On Debian 
-GNU/Linux systems you can find the complete text of the Apache-2.0
-license in `/usr/share/common-licenses/Apache-2.0'.
+
+License:
+
+    This software is licensed under the Apache License 2.0. On Debian 
+    GNU/Linux systems you can find the complete text of the Apache-2.0
+    license in `/usr/share/common-licenses/Apache-2.0'.
+
+The Debian package is (C) 2012, Bruno Braga <bruno.braga@gmail.com> and
+is licensed under the Apache License 2.0, see above.
