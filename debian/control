@@ -2,8 +2,8 @@ Source: termsaver
 Section: misc
 Priority: optional
 Maintainer: Bruno Braga <bruno.braga@gmail.com>
-Build-Depends: python, debhelper (>= 7.4.3)
-Standards-Version: 3.9.1
+Build-Depends: python, debhelper (>= 7.4.3), cdbs (>= 0.4.49), python-support
+Standards-Version: 3.9.3
 Vcs-Git: git://github.com/brunobraga/termsaver.git
 Vcs-Browser: https://github.com/brunobraga/termsaver
 Homepage: http://termsaver.info
@@ -12,3 +12,11 @@ Package: termsaver
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}
 Description: Simple text-based terminal screensaver.
+ TermSaver is a very simple project that aims at bringing
+ the feel of a screensaver feature in text-based terminal
+ environment.
+ .
+ There are many screens that can be chosen and customized
+ with command-line options, and the application has been
+ developed to accept future plugins to additional screens.
+
