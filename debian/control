@@ -11,7 +11,7 @@ Homepage: http://termsaver.info
 Package: termsaver
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}
-Description: Simple text-based terminal screensaver.
+Description: Simple text-based terminal screensaver
  TermSaver is a very simple project that aims at bringing
  the feel of a screensaver feature in text-based terminal
  environment.
