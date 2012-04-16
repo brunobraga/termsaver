@@ -1,7 +1,0 @@
-#!/bin/sh -e
-
-if [ "$1" = remove ]; then
-        update-alternatives --remove terminator /usr/bin/termsaver || true
-fi
-
-#DEBHELPER#
