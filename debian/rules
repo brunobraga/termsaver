@@ -1,5 +1,9 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+override_dh_auto_install:
+	dh_auto_install -- --install-lib=/usr/share/termsaver --install-script=/usr/share/termsaver
+
 %:
 	dh $@ --with=python2
+
