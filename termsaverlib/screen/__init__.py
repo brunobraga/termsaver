@@ -54,6 +54,8 @@ The modules available in this package are:
 
     * `urlfetcher`: displays url contents with typing animation
 
+    * `matrix`: displays a matrix movie alike screensaver
+
 This also contains the following sub-packages:
 
     * `base`: holds base classes that are used by all screens within termsaver

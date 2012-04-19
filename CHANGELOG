@@ -25,6 +25,17 @@
 #
 ###############################################################################
 
+v.0.1.2
+=======
+
+    Fixed #7 - randtxt crashed for long words
+    Fixed #8 - asciiartfarts bad outpu on first/last lines
+    Created plugin support.
+    Fixed missing char in clock for number "2" ascii art.
+    Cleaned HTML tags from rssfeed screensaver.
+    -- 2012-04-19 21:13 +1000, Bruno Braga <bruno.braga@gmail.com>
+     
+
 v.0.1.1
 =======
 
