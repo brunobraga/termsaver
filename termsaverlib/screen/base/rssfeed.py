@@ -112,6 +112,11 @@ class RSSFeedScreenBase(UrlFetcherBase,
     screen.
     """
 
+    clean_html = True
+    """
+    Defines that the output text must be cleaned from HTML tags.
+    """
+
     def __init__(self, name, description, url=None, tags=None,
                  print_format=None, delay=None, cli_opts=None):
         """
@@ -141,8 +146,9 @@ class RSSFeedScreenBase(UrlFetcherBase,
         # build deafults
         if not cli_opts:
             self.cli_opts = {
-                             'opts': 'hd:u:f:',
-                             'long_opts': ['help', 'delay=', 'url=', 'format=']
+                             'opts': 'hrd:u:f:',
+                             'long_opts': ['raw', 'help', 'delay=',
+                                           'url=', 'format=']
             }
 
         if not print_format:
@@ -164,6 +170,7 @@ Options:
 
  -h,  --help   Displays this help message
  -u,  --url    The URL path of the RSS feed (text) to be displayed
+ -r,  --raw    Shows all text available (with HTML if any)
  -f, --format  The printing format according to values available in RSS feed:
                    * pubDate
                    * title
@@ -206,6 +213,8 @@ Example:
             if o in ("-h", "--help"):
                 self.usage()
                 self.screen_exit()
+            elif o in ("-r", "--raw"):
+                self.clean_html = False
             elif o in ("-f", "--format"):
                 #remove escaping
                 self.print_format = common.unescape_string(a)
@@ -240,9 +249,12 @@ Example:
         self.clear_screen()
 
         for item in self.data:
-            new_text = ""
+            new_text = item
             try:
-                new_text = common.unescape_string(self.print_format % item)
+                new_text = common.unescape_string(self.print_format % new_text)
+                # remove HTML tags is applicable
+                if self.clean_html:
+                    new_text = common.strip_html(new_text)
             except:
                 raise exception.InvalidOptionException("format",
                     _("There was an error while using your format."))

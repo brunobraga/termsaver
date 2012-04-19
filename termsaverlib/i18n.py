@@ -44,14 +44,31 @@ The unicode text dealer for i18n stuff, renamed as an underscore to keep same
 standards used by gettext.
 """
 
-try:
-    gettext.textdomain(constants.App.NAME)
-    _ = gettext.gettext
-except:
-    #
-    # If we can not handle i18n, just deal with text as it is
-    #
-    _ = lambda x: x
 
-    # For debugging
-    #raise
+def set_app(application_name):
+    """
+    Defines the application name for the binding text files.
+    """
+    result = None
+
+    try:
+        gettext.textdomain(application_name)
+        result = gettext.gettext
+    except:
+        #
+        # If we can not handle i18n, just deal with text as it is
+        #
+        result = lambda x: x
+    
+        # For debugging
+        #raise
+
+    return result
+
+#
+# Call the default (termsaver app name)
+#    
+_ = set_app(constants.App.NAME)
+#
+# This should be overriden by plugins, as they can have their own i18n files
+#

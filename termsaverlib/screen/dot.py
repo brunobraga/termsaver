@@ -84,22 +84,23 @@ class DotScreen(ScreenBase, PositionHelperBase):
 
         if len(self.text) == 0:
             self.text = self.char
-        if self.pos_x in (self.screen_width - len(self.text),
-                self.screen_width):
-            self.pos_x = 1
-            self.pos_y = random.randint(1, self.screen_height)
+        if self.position['x'] in (self.geometry['x'] - len(self.text),
+                self.geometry['x']):
+            self.position['x'] = 1
+            self.position['y'] = random.randint(1, self.geometry['y'])
 
             # change char size randomly
-            if (len(self.text) > 1 or len(self.text) == self.screen_width) \
+            if (len(self.text) > 1 or len(self.text) == self.geometry['x']) \
                     and random.random() < 0.5:
                 self.text = self.text[:-1]  # remove trailing char
             else:
                 self.text += self.char  # add char
 
-        self.pos_x += 1
+        self.position['x'] += 1
 
-        txt = "\n" * self.pos_y + " " * self.pos_x + self.text \
-             + " " * (self.screen_width - self.pos_x - len(self.text))
+        txt = "\n" * self.position['y'] + " " * self.position['x'] \
+            + self.text + " " * (self.geometry['x'] - self.position['x'] \
+            - len(self.text))
 
         # just print the whole text
         print txt

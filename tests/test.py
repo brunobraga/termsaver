@@ -1,15 +1,151 @@
-#import os
-#import random
-#import unittest
-#import string
-#import shutil
+###############################################################################
 #
-#import sys
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-#    os.path.pardir)))
+# file:     test.py
 #
-#from termsaverlib import common
+# Purpose:  refer to module documentation for details
+#
+# Note:     This file is part of Termsaver application, and should not be used
+#           or executed separately.
+#
+###############################################################################
+#
+# Copyright 2012 Termsaver
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+###############################################################################
 
+#
+# Python built-in modules
+#
+import os
+import unittest
+import sys
+#
+# Import from parent path
+#
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+    os.path.pardir)))
+
+#
+# Internal Modules (can only call this after the above PATH update)
+#
+from termsaverlib.screen.helper import position
+
+
+class PositionHelperTestCase(unittest.TestCase):
+
+    p = None
+
+    def setUp(self):
+        self.p = position.PositionHelperBase()
+        self.p.get_terminal_size()
+
+    def testCenterHorizontallyText(self):
+
+        # check no text
+        t = ""
+        self.p.center_text_horizontally(t)
+
+        # test small word(s)
+        t = "x"
+        for __ in range(3):
+            t += t
+            nt = self.p.center_text_horizontally(t)
+            self.assertEqual(nt.find(t),
+                (self.p.geometry['x'] - len(t)) / 2)
+
+        # test long word(s)
+        t = "x" * 500
+        for __ in range(3):
+            t += t
+            nt = self.p.center_text_horizontally(t)
+            self.assertEqual(nt.find(t[0]), 0)
+
+        # test multiple lines
+        t = "\n".join(["x" * 25 for __ in range(10)])
+        for __ in range(3):
+            t += t
+            nt = self.p.center_text_horizontally(t)
+
+        # test long multiple lines
+        t = "\n".join(["x" * 500 for __ in range(10)])
+        for __ in range(3):
+            t += t
+            nt = self.p.center_text_horizontally(t)
+
+    def testHorizontallyRandomizeText(self):
+
+        # check no text
+        t = ""
+        self.p.randomize_text_horizontally(t)
+
+        # test small word(s)
+        t = "x"
+        for __ in range(3):
+            t += t
+            self.p.randomize_text_horizontally(t)
+
+        # test long word(s)
+        t = "x" * 500
+        for __ in range(3):
+            t += t
+            self.p.randomize_text_horizontally(t)
+
+        # test multiple lines
+        t = "\n".join(["x" * 25 for __ in range(10)])
+        for __ in range(3):
+            t += t
+            self.p.randomize_text_horizontally(t)
+
+        # test long multiple lines
+        t = "\n".join(["x" * 500 for __ in range(10)])
+        for __ in range(3):
+            t += t
+            self.p.randomize_text_horizontally(t)
+
+    def testCenterVerticallyText(self):
+
+        # check no text
+        t = ""
+        self.p.center_text_vertically(t)
+
+        # test small word(s)
+        t = "x"
+        for __ in range(5):
+            t += t
+            nt = self.p.center_text_vertically(t)
+            self.assertEqual(len(nt.split('\n')),
+                (self.p.geometry['y'] - len(t.split('\n'))) / 2 + 1)
+            self.assertEqual(len(nt.split('\n')) - 1, self.p.position['y'])
+
+        # test long word(s)
+        t = "x" * 500
+        for __ in range(3):
+            t += t
+            self.p.center_text_vertically(t)
+
+        # test multiple lines
+        t = "\n".join(["x" * 25 for __ in range(10)])
+        for __ in range(3):
+            t += t
+            self.p.center_text_vertically(t)
+
+        # test long multiple lines
+        t = "\n".join(["x" * 500 for __ in range(10)])
+        for __ in range(3):
+            t += t
+            self.p.center_text_vertically(t)
 
 #class CommonTestCase(unittest.TestCase):
 #
@@ -83,7 +219,7 @@
 #        self.files_list.sort()
 #
 #        self.assertListEqual(files_list, self.files_list)
-#
-#
-#if __name__ == '__main__':
-#    unittest.main()
+
+
+if __name__ == '__main__':
+    unittest.main()

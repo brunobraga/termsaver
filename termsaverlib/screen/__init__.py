@@ -73,6 +73,7 @@ import inspect
 # Internal modules
 #
 from termsaverlib.screen import base
+from termsaverlib.plugins import get_available_plugin_screens
 
 
 def get_available_screens():
@@ -93,6 +94,10 @@ def get_available_screens():
             if inspect.isclass(obj) and issubclass(obj, base.ScreenBase) \
                     and not name.endswith("Base"):
                 screens.append(obj)
+
+    # find plugins
+    screens.extend(get_available_plugin_screens())
+
     return screens
 
 

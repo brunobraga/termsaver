@@ -35,6 +35,8 @@ import os
 import sys
 import traceback
 import HTMLParser
+import subprocess
+import re
 
 
 def is_windows():
@@ -114,7 +116,6 @@ def unescape_string(escaped_text):
     unescaped = escaped_text
     try:
         unescaped = HTMLParser.HTMLParser().unescape(escaped_text)
-        unescaped = str(unescaped).lstrip().rstrip()
         # replace most common HTML data
         unescaped = unescaped.replace('<br>', '\n')
         unescaped = unescaped.replace('<br/>', '\n')
@@ -141,3 +142,30 @@ def get_day_suffix(day):
         return 'rd'
     else:
         return 'th'
+
+
+def execute_shell(cmd, ignore_errors=False):
+    """
+    Simple routine to execute shell commands.
+    If `ignore_errors` is false (default) errors here will be thrown, and
+    must be treated individually, to ensure proper message to end-user.
+
+    The `cmd` argument must be an array, formatted for subprocess.Popen.
+    If you are not sure on how to do that, just use:  shlex.split(string).
+    """
+    try:
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE, close_fds=True)
+        out, __ = p.communicate()
+    except Exception, e:
+        if not ignore_errors:
+            raise e
+    return out.rstrip()
+
+
+def strip_html(text):
+    """
+    Simple regex that cleans a string of any HTML tags (for terminal output,
+    there isn't much sense to have them printed anyway).
+    """
+    return re.sub('<[^<]+?>', '', text)

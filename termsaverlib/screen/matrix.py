@@ -190,12 +190,6 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     of half-width size.
     """
     
-    cur_geo = (0, 0)
-    """
-    A helper property to identify if the terminal has changed its geometry.
-    This is calculated in `_run_cycle`.
-    """
-
     def __init__(self):
         """
         The constructor of this class.
@@ -220,13 +214,8 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
 
         # Identify terminal geometry
         self.get_terminal_size()
-        geometry = (self.screen_width, self.screen_height)
-        changed_geometry = False
-        if self.cur_geo != geometry:
-            changed_geometry = True
-        self.cur_geo = geometry            
-
-        if len(self.screen_map) == 0 or changed_geometry:
+        
+        if len(self.screen_map) == 0 or self.changed_geometry:
             # build it for the first time or whenever the geometry changes
             self.__build_screen_map()
 
@@ -251,17 +240,13 @@ Options:
               an integer value to define how dirt should the screen be. 
               Default value is [%(granularity)s]. Use something like [1]
               for clean style, or a [100] for total dirt.
-
  -d, --delay  Defines the speed (in seconds) of the character movement
               Default value is [%(line_delay)s] (in seconds).
-
  -k, --kana-only
               Displays only Japanese characters (excludes alpha numeric).  
-
  -z, --zenkaku
               Displays full-width (fattish) Japanese characters.
               By default it displays half-width characters.  
-
  -h, --help   Displays this help message
 
 Examples:
@@ -353,13 +338,13 @@ Examples:
         # clean up previous
         self.screen_map = []
 
-        for __ in range(0, self.screen_width / self.proportion): 
+        for __ in range(0, self.geometry['x'] / self.proportion): 
 
             if random.random() > 0.5:
                 char_list = self.get_char_list()
             else:
                 char_list = [self.space for __ in \
-                    range(0, random.randint(0, self.screen_height))]
+                    range(0, random.randint(0, self.geometry['y']))]
             self.screen_map.append(char_list)
 
     def get_char_list(self):
@@ -369,12 +354,12 @@ Examples:
         result = []
         while(len(result) == 0):
             bt = [self.space for __ in range(0, 
-                    min((self.screen_height, random.randint(0, 
-                        self.screen_height * 20 / (self.granularity * \
+                    min((self.geometry['y'], random.randint(0, 
+                        self.geometry['y'] * 20 / (self.granularity * \
                             self.proportion)))))]
             cl = [self.digmap[random.randint(0, len(self.digmap)) - 1] \
                   for __ in range(0, random.randint(0, 
-                      self.screen_height - len(bt)))]
+                      self.geometry['y'] - len(bt)))]
             result = bt
             result.extend(cl)
         return result

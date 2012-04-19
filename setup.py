@@ -75,6 +75,7 @@ setup(name='termsaver',
       keywords=['command-line', 'terminal', 'screensaver'],
       packages=[
             'termsaverlib',
+            'termsaverlib.plugins',
             'termsaverlib.screen',
             'termsaverlib.screen.base',
             'termsaverlib.screen.helper',

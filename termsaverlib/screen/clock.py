@@ -66,7 +66,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
     digmap = {
         '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n',
         '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n',
-        '2': ' ____  \n|___ \ \n  __)  \n / __/ \n|_____|\n',
+        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n',
         '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n',
         '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n',
         '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n',
@@ -122,7 +122,6 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         text = self.center_text_vertically(text)
 
         print text
-
         time.sleep(1)
 
     def _usage_options_example(self):
