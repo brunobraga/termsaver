@@ -75,20 +75,24 @@ Requirements
 Installation
 ------------
 
-#### Fast and Simple
+#### Apt (Advanced Packaging Tool)
 
-For those without the time or patience to scan through the rest of this 
-document, here is the installation procedure, plain and simple:
+For Ubuntu (12.04) distro, you can use:
 
-        pip install termsaver
+        sudo add-apt-repository ppa:bruno-braga/termsaver
+        sudo apt-get update
+        sudo apt-get install termsaver
 
-And you are done!
+#### Pip (Pip Installs Packages, for Python Package Index)
 
-**Note**: I discourage the use of *easy_install* (does not add man pages, or 
-localization files)
+For those using others, and still want to do it the easy way, I recommend:
+
+        sudo pip install termsaver
 
 
 #### From the Source
+
+For the brave (laughs), you can compile/install from the source:
 
 1. Download the Source 
 [here](http://pypi.python.org/pypi/termsaver/)
@@ -99,8 +103,6 @@ localization files)
 3. Install it
 
         sudo python setup.py install 
-
-4. All done! 
 
 
 Features
@@ -234,18 +236,25 @@ participate. You can:
 Uninstall
 ----------
 
-### Using Pip
+### Using Apt (Advanced Packaging Tool)
 
-    pip uninstall termsaver
+        sudo apt-get remove termsaver
+
+### Using Pip (Pip Install Packages, for Python Package Index)
+
+        sudo pip uninstall termsaver
 
 ### Manual Uninstall
 
 Just remove manually the following files:
 
-    # For Linux boxes
-    rm -rvf /usr/local/bin/termsaver 
-    rm -rvf /usr/local/lib/python2.7/dist-packages/termsaver* 
-    rm -rvf /usr/local/share/man/man1/termsaver.1 
-    find /usr/local/share/locale/ -name "termsaver.mo" -exec rm -rfv {} \; 
+        # For Linux boxes
+        rm -rvf /usr/local/bin/termsaver 
+        rm -rvf /usr/local/lib/python2.7/dist-packages/termsaver* 
+        rm -rvf /usr/local/share/man/man1/termsaver.1 
+        find /usr/local/share/locale/ -name "termsaver.mo" -exec rm -rfv {} \; 
 
+If the actuall location differ from the above, it might be worth it to just
+run the find command and look for them yourself (should not be hard):
 
+        find /usr/ -name "*termsaver*" 

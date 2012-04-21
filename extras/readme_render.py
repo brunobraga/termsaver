@@ -52,6 +52,15 @@ README = 'README.md'
 The location of the readme markdown file.
 """
 
+valid_programs = {
+    "markdown": {
+     'package': "markdown",
+     },
+    "rst2html": {
+     'package': "python-docutils",
+     }
+}
+
 
 def usage():
 
@@ -92,12 +101,18 @@ def render(program, readme, output):
 
 
 def chk_program(program):
+
+    if program not in valid_programs.keys():
+        print """ Program not supported. Choose %s.""" \
+            % " or ".join(valid_programs.keys())
+        sys.exit(2)
+
     if os.system("which %s >/dev/null" % program) != 0:
         print """%(script)s script requires %(program)s program.
 In Ubuntu, you can simply install it by executing:
         sudo apt-get install %(program)s""" % {
             'script': sys.argv[0],
-            'program': program
+            'program': valid_programs[program]['package']
         }
         sys.exit(2)
 
@@ -163,7 +178,7 @@ def main():
                 render(PROGRAM, README, OUTPUT)
                 sumhash = sha1sum(README)
             else:
-                echo("monitoring [%s]...")
+                echo("monitoring [%s]..." % README)
                 time.sleep(1)
     else:
         print "Rendering a single time for file [%s] for program [%s]..." % \

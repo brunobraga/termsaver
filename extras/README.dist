@@ -76,20 +76,25 @@ Requirements
 Installation
 ------------
 
-Fast and Simple
----------------
+Apt (Advanced Packaging Tool)
+-----------------------------
 
-For those without the time or patience to scan through the rest of this 
-document, here is the installation procedure, plain and simple:
+For Ubuntu (12.04) distro, you can use:
 
 ::
 
-        pip install termsaver
+        sudo add-apt-repository ppa:bruno-braga/termsaver
+        sudo apt-get update
+        sudo apt-get install termsaver
 
-And you are done!
+Pip (Pip Installs Packages, for Python Package Index)
+-----------------------------------------------------
 
-**Note**: I discourage the use of *easy_install* (does not add man pages, or 
-localization files)
+For those using others, and still want to do it the easy way, I recommend:
+
+::
+
+        sudo pip install termsaver
 
 
 From the Source
@@ -110,8 +115,6 @@ From the Source
 ::
 
         sudo python setup.py install 
-
-4. All done! 
 
 
 --------
@@ -277,12 +280,21 @@ participate. You can:
 Uninstall
 ---------
 
-Using Pip
----------
+Using Apt (Advanced Packaging Tool)
+-----------------------------------
 
 ::
 
-    pip uninstall termsaver
+        sudo apt-get remove termsaver
+
+
+Using Pip (Pip Install Packages, for Python Package Index)
+----------------------------------------------------------
+
+::
+
+        sudo pip uninstall termsaver
+
 
 Manual Uninstall
 ----------------
@@ -297,3 +309,9 @@ Just remove manually the following files:
     rm -rvf /usr/local/share/man/man1/termsaver.1 
     find /usr/local/share/locale/ -name "termsaver.mo" -exec rm -rfv {} \; 
 
+If the actuall location differ from the above, it might be worth it to just
+run the find command and look for them yourself (should not be hard):
+
+::
+
+        find /usr/ -name "*termsaver*" 
