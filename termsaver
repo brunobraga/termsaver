@@ -143,9 +143,11 @@ def parse_args(args):
             screen().autorun(args[1:])
 
     else:
+        txt = 'screen'
+        if str(args[0]).startswith('-'):
+            txt = 'option'
         raise exception.InvalidOptionException('',
-            _('It seems you chose an invalid %s.') % ('option' if str(args[0])
-                    .startswith('-') else 'screen'))
+                _('It seems you chose an invalid %s.') % txt)
 
 
 if __name__ == '__main__':
