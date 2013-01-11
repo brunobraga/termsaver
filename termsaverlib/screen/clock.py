@@ -63,28 +63,33 @@ class ClockScreen(ScreenBase, PositionHelperBase):
           cycle is displayed
     """
 
+    cformat = "24h"
     digmap = {
         '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n',
-        '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n',
-        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n',
-        '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n',
-        '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n',
-        '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n',
-        '6': '  __   \n / /_  \n| \'_ \ \n| (_) |\n \___/ \n',
-        '7': ' _____ \n|___  |\n   / / \n  / /  \n /_/   \n',
-        '8': '  ___  \n ( _ ) \n / _ \ \n| (_) |\n \___/ \n',
-        '9': '  ___  \n / _ \ \n| (_) |\n \__, |\n   /_/ \n',
-        ':': '       \n   _   \n  (_)  \n   _   \n  (_)  \n',
+        '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n       \n',
+        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n       \n',
+        '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n       \n',
+        '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n       \n',
+        '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n       \n',
+        '6': '  __   \n / /_  \n| \'_ \ \n| (_) |\n \___/ \n       \n',
+        '7': ' _____ \n|___  |\n   / / \n  / /  \n /_/   \n       \n',
+        '8': '  ___  \n ( _ ) \n / _ \ \n| (_) |\n \___/ \n       \n',
+        '9': '  ___  \n / _ \ \n| (_) |\n \__, |\n   /_/ \n       \n',
+        ':': '       \n   _   \n  (_)  \n   _   \n  (_)  \n       \n',
+        'm': '       \n _ _ _ \n|     |\n| | | |\n|_|_|_|\n       \n',
+        'p': '       \n _ __  \n| `_ \ \n| |_) |\n| .__/ \n|_|    \n', #Added 6th line to use lowercase "p" tail
+        'a': '       \n  __ _ \n / _` |\n| (_| |\n \__,_|\n       \n',
 
     }
     """
     Holds the ascii characters to be used by this screen. It is the
     simplification of:
-      ___   _  ____   _____  _  _    ____    __    _____   ___    ___
-     / _ \ / ||___ \ |___ / | || |  | ___|  / /_  |___  | ( _ )  / _ \  _
-    | | | || |  __) |  |_ \ | || |_ |___ \ | '_ \    / /  / _ \ | (_) |(_)
-    | |_| || | / __/  ___)  |__   _| ___) || (_) |  / /  | (_) | \__, | _
-     \___/ |_||_____||____/    |_|  |____/  \___/  /_/    \___/    /_/ (_)
+      ___   _  ____   _____  _  _    ____    __    _____   ___    ___                     
+     / _ \ / ||___ \ |___ / | || |  | ___|  / /_  |___  | ( _ )  / _ \  _   _ _ _   _ __     __ _ 
+    | | | || |  __) |  |_ \ | || |_ |___ \ | '_ \    / /  / _ \ | (_) |(_) |     | | `_ \   / _` |
+    | |_| || | / __/  ___)  |__   _| ___) || (_) |  / /  | (_) | \__, | _  | | | | | |_) | | (_| |
+     \___/ |_||_____||____/    |_|  |____/  \___/  /_/    \___/    /_/ (_) |_|_|_| | .__/   \__,_|
+                                                                                   |_|    
 
     Extracted from standard font of Figlet (http://www.figlet.org/)
     """
@@ -96,7 +101,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         ScreenBase.__init__(self,
             "clock",
             _("displays a digital clock on screen"),
-            {'opts': 'h', 'long_opts': ['help']},
+            {'opts': 'hf', 'long_opts': ['help', 'format']},
         )
         self.cleanup_per_cycle = True
 
@@ -122,6 +127,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         text = self.center_text_vertically(text)
 
         print text
+
         time.sleep(1)
 
     def _usage_options_example(self):
@@ -139,6 +145,9 @@ class ClockScreen(ScreenBase, PositionHelperBase):
 Options:
 
  -h, --help   Displays this help message
+ 
+ -f, --format Shows the clock in 12 hour format
+ 
 
 """)
 
@@ -159,6 +168,8 @@ Options:
             if o in ("-h", "--help"):
                 self.usage()
                 self.screen_exit()
+            elif o in ("-f"):
+                self.cformat = "12h"
             else:
                 # this should never happen!
                 raise Exception(_("Unhandled option. See --help for details."))
@@ -167,12 +178,37 @@ Options:
         """
         Returns the ASCII representation of a date.
         """
-        clock = date_time.strftime('%H:%M:%S')
+        #Calculates 12 hour clock output if -f is set
+        if self.cformat == "12h":
+         hour = date_time.strftime('%H')
+   	
+         pm = "am" 
+		
+         if int(hour) == 12:
+              pm = "pm"
+         
+         if int(hour) == 0:
+             hour = 12 
+		
+         if int(hour) < 2:
+             hour = 1 
+		
+         if int(hour) > 12:
+             hour =  int(hour) - 12
+             pm = "pm"
+             if int(hour) == 12:
+                  pm = "am"
+          
+         clock = str(hour) + date_time.strftime(':%M') + pm
+        else:  #Uses 24 hour format if -f is not set
+         hour = date_time.strftime('%H')
+         clock = str(hour) + date_time.strftime(':%M')
+			
         items = []
         for c in clock:
             items.append(self.digmap[c])
         output = ''
-        for i in range(5):  # loop lines of chars
+        for i in range(6):  # loop lines of chars - Increased to six for extra font line
             temp = ''
             for item in items:
                 temp += item.split('\n')[i]
