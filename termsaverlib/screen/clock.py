@@ -63,28 +63,47 @@ class ClockScreen(ScreenBase, PositionHelperBase):
           cycle is displayed
     """
 
-    digmap = {
-        '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n',
-        '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n',
-        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n',
-        '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n',
-        '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n',
-        '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n',
-        '6': '  __   \n / /_  \n| \'_ \ \n| (_) |\n \___/ \n',
-        '7': ' _____ \n|___  |\n   / / \n  / /  \n /_/   \n',
-        '8': '  ___  \n ( _ ) \n / _ \ \n| (_) |\n \___/ \n',
-        '9': '  ___  \n / _ \ \n| (_) |\n \__, |\n   /_/ \n',
-        ':': '       \n   _   \n  (_)  \n   _   \n  (_)  \n',
+    ampm = False
+    """
+    Defines the format of the datetime to be displayed.
+    """
 
+    cseparator = ":"
+    """
+    Do not change this (if you do, change also its ASCII representation)
+    """
+
+    show_separator = True
+    """
+    Defines if the clock separator should be displayed
+    """
+
+    digmap = {
+        '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n       \n',
+        '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n       \n',
+        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n       \n',
+        '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n       \n',
+        '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n       \n',
+        '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n       \n',
+        '6': '  __   \n / /_  \n| \'_ \ \n| (_) |\n \___/ \n       \n',
+        '7': ' _____ \n|___  |\n   / / \n  / /  \n /_/   \n       \n',
+        '8': '  ___  \n ( _ ) \n / _ \ \n| (_) |\n \___/ \n       \n',
+        '9': '  ___  \n / _ \ \n| (_) |\n \__, |\n   /_/ \n       \n',
+        ':': '       \n   _   \n  (_)  \n   _   \n  (_)  \n       \n',
+        'm': '       \n _ _ _ \n|     |\n| | | |\n|_|_|_|\n       \n',
+        'p': '       \n _ __  \n| `_ \ \n| |_) |\n| .__/ \n|_|    \n',
+        'a': '       \n  __ _ \n / _` |\n| (_| |\n \__,_|\n       \n',
+        ' ': '       \n       \n       \n       \n       \n       \n',
     }
     """
     Holds the ascii characters to be used by this screen. It is the
     simplification of:
       ___   _  ____   _____  _  _    ____    __    _____   ___    ___
-     / _ \ / ||___ \ |___ / | || |  | ___|  / /_  |___  | ( _ )  / _ \  _
-    | | | || |  __) |  |_ \ | || |_ |___ \ | '_ \    / /  / _ \ | (_) |(_)
-    | |_| || | / __/  ___)  |__   _| ___) || (_) |  / /  | (_) | \__, | _
-     \___/ |_||_____||____/    |_|  |____/  \___/  /_/    \___/    /_/ (_)
+     / _ \ / ||___ \ |___ / | || |  | ___|  / /_  |___  | ( _ )  / _ \  _   _ _ _   _ __     __ _
+    | | | || |  __) |  |_ \ | || |_ |___ \ | '_ \    / /  / _ \ | (_) |(_) |     | | `_ \   / _` |
+    | |_| || | / __/  ___)  |__   _| ___) || (_) |  / /  | (_) | \__, | _  | | | | | |_) | | (_| |
+     \___/ |_||_____||____/    |_|  |____/  \___/  /_/    \___/    /_/ (_) |_|_|_| | .__/   \__,_|
+                                                                                   |_|
 
     Extracted from standard font of Figlet (http://www.figlet.org/)
     """
@@ -96,7 +115,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         ScreenBase.__init__(self,
             "clock",
             _("displays a digital clock on screen"),
-            {'opts': 'h', 'long_opts': ['help']},
+            {'opts': 'hm', 'long_opts': ['help', 'ampm']},
         )
         self.cleanup_per_cycle = True
 
@@ -122,7 +141,13 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         text = self.center_text_vertically(text)
 
         print text
-        time.sleep(1)
+
+        sleep_time = 1 # usually one cycle per second
+        if self.ampm:
+            # special case to show blinking separator
+            sleep_time = 0.7
+
+        time.sleep(sleep_time)
 
     def _usage_options_example(self):
         """
@@ -139,6 +164,9 @@ class ClockScreen(ScreenBase, PositionHelperBase):
 Options:
 
  -h, --help   Displays this help message
+
+ -m, --ampm   Shows the clock in am/pm 12-hour format, without seconds.
+
 
 """)
 
@@ -159,6 +187,8 @@ Options:
             if o in ("-h", "--help"):
                 self.usage()
                 self.screen_exit()
+            elif o in ("-m", "--ampm"):
+                self.ampm = True
             else:
                 # this should never happen!
                 raise Exception(_("Unhandled option. See --help for details."))
@@ -167,12 +197,40 @@ Options:
         """
         Returns the ASCII representation of a date.
         """
-        clock = date_time.strftime('%H:%M:%S')
+
+        # define clock string based on options (12/24)
+        if self.ampm:
+            hour = int(date_time.strftime('%H'))
+
+            suffix = "am"
+            if hour >= 12:
+                suffix = "pm"
+
+            # fix the hour value into modulus of 12
+            hour = hour % 12
+            # fix the zero hour value
+            if hour == 0:
+                hour = 12
+
+            # shows/hides separator for a blinking effect
+            separator = ""
+            if self.show_separator:
+                separator = self.cseparator
+                self.show_separator = False
+            else:
+                separator = " "
+                self.show_separator = True
+
+            clock = "%s%s%s%s" % (hour, separator, date_time.strftime('%M'), suffix)
+        else:
+            # 24hs format includes seconds
+            clock = date_time.strftime('%H' + self.cseparator + '%M' + self.cseparator + '%S')
+
         items = []
         for c in clock:
             items.append(self.digmap[c])
         output = ''
-        for i in range(5):  # loop lines of chars
+        for i in range(6):  # loop lines of chars - Increased to six for extra font line
             temp = ''
             for item in items:
                 temp += item.split('\n')[i]
