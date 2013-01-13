@@ -30,6 +30,10 @@ The installation script of termsaver application.
 
     sudo python setup.py install
 
+    # For debian based installation style
+    sudo ./setup.py install --install-lib=/usr/local/share/termsaver --install-scripts=/usr/local/share/termsaver --install-data=/usr/local
+    sudo ln -s /usr/local/share/termsaver/termsaver /usr/local/bin/termsaver
+
 You may also refer to:
 
     sudo pip install termsaver

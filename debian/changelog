@@ -1,3 +1,13 @@
+termsaver (0.1.2-1) unstable; urgency=low
+
+  * Fixed syntax for python 2.5 support.
+  * Fixed small char bug on clock screen.
+  * Fixed issue for longer words in random text screen.
+  * Removed HTML tags from RSS feeds screen.
+  * Other improvements in the code (screen geometry, etc). 
+
+ -- Bruno Braga <bruno.braga@gmail.com>  Tue, 22 May 2012 22:08:22 +1000
+
 termsaver (0.1.1-1) unstable; urgency=low
 
   * Packaging work for initial inclusion in Debian. (Closes: #668618)

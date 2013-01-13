@@ -128,6 +128,10 @@ class PositionHelperBase(ScreenHelperBase):
         Wraps the text to the geometry size, maintaining existing new lines.
         """
 
+        # fail safe if the screen does not properly set geometry
+        if self.geometry['x'] == 0:
+            return text
+
         temp = text.split("\n")
         longest_line = max([len(x) for x in temp])
         new_text = []

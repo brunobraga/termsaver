@@ -1,0 +1,60 @@
+##############################################################################
+#
+# file:     termsaver
+#
+# Purpose:  Bash auto-complete functionality for Termsaver.
+#
+# Note:     This file is part of Termsaver application, and should not be used
+#           or executed separately.
+#
+###############################################################################
+#
+# Copyright 2012 Termsaver
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+###############################################################################
+
+have termsaver && _termsaver()
+{
+    local cur prev opts args
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="matrix dot asciiartfarts rssfeed urlfetcher quotes4all jokes4all clock randtxt rfc programmer"
+    
+    # For plugins adding new screens, you can append to the below area
+    # with a line such as:
+    #
+    #   plugin_opts=$plugin_opts" plugin-screen-1 ... plugin-screen-N"
+    #
+    # To patch this section, use sed:
+    # sed -e 's:plugin_opts=$plugin_opts:plugin_opts=$plugin_opts" plugin-screen-1 ... plugin-screen-N":'
+    #
+    plugin_opts=
+    # Plugin Appending: BEGIN
+
+    plugin_opts=$plugin_opts
+    
+    # Plugin Appending: END
+    
+    # avoid repeating screens once one has been already selected
+    if [ `echo "$opts $plugin_opts" | grep $prev | wc -l` -eq 1 ]; then
+        return 0
+    fi
+
+    COMPREPLY=( $( compgen -W "${opts}" -- "${cur}" ) )
+    return 0
+} &&
+complete -F _termsaver termsaver
+
+

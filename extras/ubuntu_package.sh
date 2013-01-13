@@ -29,6 +29,9 @@
 base_path="`pwd`/`dirname $0`/.."
 cur_dir=`pwd`
 
+# precise oneiric hardy lucid natty
+ubuntu_release=lucid
+
 function get_prop() {
     python -c "from termsaverlib import constants; print constants.App.$@"
 }
@@ -67,7 +70,7 @@ echo "Done"
 # Fix stuff for Ubuntu
 echo "Fixing Ubuntu stuff..."
 # fix changelog
-sed -i -s "s/($package_version-1) unstable/($package_version-ubuntu1) precise/" debian/changelog
+sed -i -s "s/($package_version-1) unstable/($package_version-ubuntu1) $ubuntu_release/" debian/changelog
 
 # remove quilt
 rm -rfv debian/source/format
