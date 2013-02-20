@@ -234,7 +234,14 @@ class ScreenBase(ScreenHelperBase):
         self.clear_screen()
 
         while(loop):
-            self._run_cycle()
+            try:
+                self._run_cycle()
+            except KeyboardInterrupt, e:
+                #
+                # do some cleanup if applicable
+                #
+                self._on_keyboard_interrupt()
+                raise e
 
             # Clear screen if appropriate
             if self.cleanup_per_cycle:
@@ -335,3 +342,10 @@ Usage: %(app_name)s %(screen)s [options]""") % {
             %(app_name)s.%(screen)s: %(message)s
         """
         print "%s.%s: %s" % (constants.App.NAME, self.name, text)
+
+    def _on_keyboard_interrupt(self):
+        """
+        Executes extra commands if the keyboard interrupt exception happened
+        while running a cycle. 
+        """
+        pass

@@ -179,6 +179,17 @@ class PositionHelperBase(ScreenHelperBase):
 
         return new_text
 
+    def align_text_right(self, text):
+        """
+        Returns the text argument with additional blank spaces, calculated to
+        display the text in the right.
+
+        Arguments:
+
+            * text: the text to be aligned
+        """
+        return " " * (self.geometry['x'] - len(text)) + text
+
     def randomize_text_horizontally(self, text):
         """
         Returns the text argument with additional blank spaces, calculated to
