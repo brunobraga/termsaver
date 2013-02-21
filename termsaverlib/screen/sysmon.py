@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# file:     dot.py
+# file:     sysmon.py
 #
 # Purpose:  refer to python doc for documentation details.
 #
@@ -255,12 +255,13 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         if self.adjust:
             ceiling = self.info['max_' + key]
 
+        ysize = int((self.geometry['y'] - 12)/2) # remove lines used (14)
         current_position = 0
         
         txt = self.align_text_right(title) + "\n" \
             + ('%.0f' % ceiling) + "%\n" 
         # create output (11 lines)
-        for y in range(9, -1, -1):
+        for y in range(ysize - 1, -1, -1):
             current_position = 0
             txt += " " + self.axis_v
             for x in range(self.geometry['x'] - 5): # padding
@@ -272,13 +273,13 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
                     # to keep proportions
                     ratio = 1
                     if ceiling > 0:
-                        ratio = float(self.info['db'][x][key]) / ceiling
+                        ratio = int(self.info['db'][x][key] * ysize / ceiling)
                     
                     # based on number of blocks (10)
-                    if ratio * 100 >= (y + 1) * 10: 
+                    if ratio >= y + 1: 
                         txt += self.block[-1]
-                    elif y > 0 and ratio * 100 > y * 10:
-                        txt += self.block[int(ratio * 100  - y * 10)]
+                    elif y > 0 and ratio > y:
+                        txt += self.block[ratio - y]
                     elif y > 0:
                         txt += self.block[0]
                     else:
