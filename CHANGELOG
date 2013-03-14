@@ -25,9 +25,17 @@
 #
 ###############################################################################
 
-v.0.1.2
+v.0.2
 =======
 
+    Added sysmon screen, deprecated dot screen.
+    Included auto completion support
+    -- 2013-03-15 00:58 +1000, Bruno Braga <bruno.braga@gmail.com>
+
+    Improved clock screen (support for am/pm)
+    -- 2013-01-11 00:00 +0000, Shelby Jueden <shelbyjueden@gmail.com>
+
+    Fixed #11 - Removed "x if y" syntax for python 2.5 support.
     Fixed #7 - randtxt crashed for long words
     Fixed #8 - asciiartfarts bad outpu on first/last lines
     Created plugin support.
