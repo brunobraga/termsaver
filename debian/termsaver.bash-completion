@@ -27,7 +27,7 @@
 
 have termsaver && _termsaver()
 {
-    local cur prev opts args
+    local cur prev opts plugin_opts
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     opts="matrix dot asciiartfarts rssfeed urlfetcher quotes4all jokes4all clock randtxt rfc programmer"
@@ -46,15 +46,28 @@ have termsaver && _termsaver()
     plugin_opts=$plugin_opts
     
     # Plugin Appending: END
-    
+
     # avoid repeating screens once one has been already selected
-    if [ `echo "$opts $plugin_opts" | grep $prev | wc -l` -eq 1 ]; then
+#    if [ `echo "$opts $plugin_opts" | grep -e "$prev" | wc -l` -eq 1 ]; then
+#        return 0
+#    fi
+    if [ "$prev" == "-p" -o "$prev" == "--path" ]; then
+        _filedir
+        return 0
+    fi
+
+    # do not let options reappear once is it not direct previous
+    if [ ! "${COMP_WORDS[1]}" == "$cur" -a ! "${COMP_WORDS[1]}" == "" -a `echo "$opts $plugin_opts" | grep -e "${COMP_WORDS[1]}" | wc -l` -eq 1 ]; then
         return 0
     fi
 
     COMPREPLY=( $( compgen -W "${opts}" -- "${cur}" ) )
+    if [[ ${#COMPREPLY[@]} == 1 && ${COMPREPLY[0]} != "--"*"=" ]] ; then
+        # If there's only one option, without =, then allow a space
+        compopt +o nospace
+    fi
     return 0
 } &&
-complete -F _termsaver termsaver
+complete -o nospace -F _termsaver termsaver
 
 
