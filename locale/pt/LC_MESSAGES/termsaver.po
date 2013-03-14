@@ -1,0 +1,422 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: TermSaver 0.1.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-13 23:10+1000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/rfc.py:99
+msgid "randomly displays RFC contents"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/__init__.py:304
+#, python-format
+msgid ""
+"Screen: %(screen)s\n"
+"Description: %(description)s\n"
+"\n"
+"Usage: %(app_name)s %(screen)s [options]"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/filereader.py:154
+#, python-format
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -p, --path   Sets the location to search for text-based source files.\n"
+"              this option is mandatory.\n"
+" -d, --delay  Sets the speed of the displaying characters\n"
+"              default is%(default_delay)s of a second\n"
+" -h, --help   Displays this help message\n"
+"\n"
+"Examples:\n"
+"\n"
+"    $ %(app_name)s %(screen)s -p /path/to/my/code\n"
+"    This will trigger the screensaver to read all files in the path selected\n"
+"\n"
+"    $ %(app_name)s %(screen)s -p /path/to/my/code -d 0\n"
+"    This will trigger the screensaver to read all files in the path selected\n"
+"    with no delay (too fast for a screensaver, but it's your choice that\n"
+"    matters!)\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/filereader.py:206
+msgid "Make sure the file or directory exists."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/filereader.py:209
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/rssfeed.py:229
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/rssfeed.py:335
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/urlfetcher.py:179
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/urlfetcher.py:240
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/dot.py:176
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/clock.py:164
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/matrix.py:311
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/randtxt.py:182
+msgid "Unhandled option. See --help for details."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/filereader.py:214
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/urlfetcher.py:184
+msgid "It is mandatory option"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/rssfeed.py:168
+#, python-format
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -h,  --help   Displays this help message\n"
+" -u,  --url    The URL path of the RSS feed (text) to be displayed\n"
+" -r,  --raw    Shows all text available (with HTML if any)\n"
+" -f, --format  The printing format according to values available in RSS feed:\n"
+"                   * pubDate\n"
+"                   * title\n"
+"                   * link\n"
+"                   * description\n"
+"               You must use python dictionary based formatting style\n"
+"               (see examples for details)\n"
+"\n"
+"Example:\n"
+"\n"
+"    $ %(app_name)s %(screen)s -u http://rss.cnn.com/rss/edition.rss\n"
+"    This will trigger the screensaver to fetch the contents from the CNN feed\n"
+"    and display it in default formatting: '%%(title)s (%%(pubDate)s)\\n'\n"
+"\n"
+"    $ %(app_name)s %(screen)s -u http://rss.cnn.com/rss/edition.rss \\\n"
+"        -f '%%(title)s (%%(pubDate)s)\\n%%(description)s\\n%%(link)s'\n"
+"    This will trigger the screensaver to fetch the contents from the CNN feed\n"
+"    and display all contents as specified in the formatting.\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/rssfeed.py:260
+msgid "There was an error while using your format."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/base/urlfetcher.py:122
+#, python-format
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -u, --url    Defines the URL location from where the information\n"
+"              should be fetched, then displayed.\n"
+"              This option is MANDATORY.\n"
+" -d, --delay  Sets the speed of the displaying characters\n"
+"              default is 0.003 of a second (advised to keep\n"
+"              between 0.01 and 0.001).\n"
+" -h, --help   Displays this help message\n"
+"\n"
+"Examples:\n"
+"\n"
+"    $ %(app_name)s %(screen)s -u www.google.com\n"
+"    This will trigger the screensaver to fetch the HTML contents of this web\n"
+"    site and display progressively.\n"
+"\n"
+"    $ %(app_name)s %(screen)s -u www.google.com -d 0\n"
+"    This will trigger the screensaver to fetch the HTML contents of this web\n"
+"    site with no delay (too fast for a screensaver, but it's your choice that\n"
+"    matters!)\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/rssfeed.py:74
+msgid "displays rss feed information"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/rssfeed.py:91
+#, python-format
+msgid ""
+"\n"
+"You just need to provide the URL of the RSS feed from where %(app_title)s will\n"
+"read and display on screen.\n"
+"\n"
+"If you do not have any idea which RSS to use, check out some examples here:\n"
+"\n"
+"    CNN\n"
+"        Top Stories - http://rss.cnn.com/rss/edition.rss\n"
+"        World       - http://rss.cnn.com/rss/edition_world.rss\n"
+"        Technology  - http://rss.cnn.com/rss/edition_technology.rss\n"
+"\n"
+"        See CNN's complete list of RSS syndication here:\n"
+"            http://edition.cnn.com/services/rss/\n"
+"\n"
+"    Lifehacker - http://www.lifehacker.com/index.xml\n"
+"    Note: Lifehacker uses HTML to deliver \"description\" contents in the RSS,\n"
+"          so you might need to change the format to something like:\n"
+"               --format \"%%(title)s (%%(pubDate)s)\\n\"\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/urlfetcher.py:56
+msgid "displays url contents with typing animation"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/urlfetcher.py:61
+#, python-format
+msgid ""
+"\n"
+"You just need to provide the URL from where %(app_title)s will read and\n"
+"display on screen.\n"
+"\n"
+"If you do not have any idea which URL to use, check out some examples here:\n"
+"\n"
+"    RFC\n"
+"        RFC-1034 - http://tools.ietf.org/rfc/rfc1034.txt\n"
+"\n"
+"        See a RFC list from Wikipedia:\n"
+"            http://en.wikipedia.org/wiki/List_of_RFCs\n"
+"        (remember to use the txt version)\n"
+"\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:101
+msgid "URL can not be blank"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:105
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:122
+msgid "URL does not seem valid"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:156
+#, python-format
+msgid "Connecting to %s ... (this could take a while)"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:165
+#, python-format
+msgid "Fetched URL returned error %d."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:168
+#, python-format
+msgid "Could not fetch URL, because %s"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/helper/urlfetcher.py:176
+msgid "Fetched data is binary."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/quotes4all.py:86
+msgid "displays recent quotes from quotes4all.net"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/dot.py:69
+msgid "displays a random running dot"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/dot.py:121
+#, python-format
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -c, --char   Sets the character to be showing up\n"
+"              default is X\n"
+" -d, --delay  Sets the speed of the displaying characters\n"
+"              default is 0.05 of a second (advised to keep\n"
+"              between 0.1 and 0.01).\n"
+" -h, --help   Displays this help message\n"
+"\n"
+"Example:\n"
+"\n"
+"    $ %(app_name)s %(screen)s\n"
+"    This will trigger the screensaver to display a dot on screen, with random\n"
+"    size increase.\n"
+"\n"
+"    $ %(app_name)s %(screen)s -c +\n"
+"    Overrides the default dot (.) character to be a plus sign (+)\n"
+"\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/clock.py:98
+msgid "displays a digital clock on screen"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/clock.py:138
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -h, --help   Displays this help message\n"
+"\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/matrix.py:199
+msgid "displays a matrix movie alike screensaver"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/matrix.py:236
+#, python-format
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -g, --granularity\n"
+"              an integer value to define how dirt should the screen be. \n"
+"              Default value is [%(granularity)s]. Use something like [1]\n"
+"              for clean style, or a [100] for total dirt.\n"
+" -d, --delay  Defines the speed (in seconds) of the character movement\n"
+"              Default value is [%(line_delay)s] (in seconds).\n"
+" -k, --kana-only\n"
+"              Displays only Japanese characters (excludes alpha numeric).  \n"
+" -z, --zenkaku\n"
+"              Displays full-width (fattish) Japanese characters.\n"
+"              By default it displays half-width characters.  \n"
+" -h, --help   Displays this help message\n"
+"\n"
+"Examples:\n"
+"\n"
+"    $ %(app_name)s %(screen)s -g 100\n"
+"    This will print out random characters in maximum dirt (using almost the\n"
+"    entire screen space). Try [1] for very clean results.\n"
+"\n"
+"    $ %(app_name)s %(screen)s -g 5 -d 0.001 -k\n"
+"    This will give a cleaner print than the default, much faster with only\n"
+"    Japanese characters.  \n"
+"    \n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/randtxt.py:87
+msgid "displays word in random places on screen"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/randtxt.py:126
+#, python-format
+msgid ""
+"\n"
+"Options:\n"
+"\n"
+" -w, --word   Sets the word to be displayed\n"
+"              default is the name of this application (if you need to use\n"
+"              spaces, don't forget to place the word with quotes)\n"
+" -d, --delay  Sets how long the word will be displayed before\n"
+"              randomized again. Default is %(default_delay)s second(s)\n"
+" -h, --help   Displays this help message\n"
+"\n"
+"Example:\n"
+"\n"
+"    $ %(app_name)s %(screen)s\n"
+"    This will trigger the screensaver to display the default word %(app_title)s\n"
+"    in random locations of the screen\n"
+"\n"
+"    $ %(app_name)s %(screen)s -w FooBar\n"
+"    This will trigger the screensaver to display the default word FooBar\n"
+"    in random locations of the screen\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/jokes4all.py:83
+msgid "displays recent jokes from jokes4all.net (NSFW)"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/programmer.py:69
+msgid "displays source code in typing animation"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/programmer.py:78
+#, python-format
+msgid ""
+"\n"
+"You just need to provide the path to the location from where %(app_title)s will\n"
+"read and display on screen.\n"
+"\n"
+"If you do not have any code in your local machine, just get some interesting\n"
+"project from the Internet, such as Django (http://www.djangoproject.com):\n"
+"\n"
+"    If you have access to subversion, you may download it at:\n"
+"        svn co https://code.djangoproject.com/svn/django/trunk/ django-trunk\n"
+"\n"
+"    Or, just download the zipped source and unpack it on your local machine:\n"
+"        https://www.djangoproject.com/download/\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/asciiartfarts.py:82
+msgid "displays ascii images from asciiartfarts.com (NSFW)"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaverlib/screen/starwars.py:63
+msgid "runs the asciimation Star Wars movie"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:77
+#, python-format
+msgid ""
+"Usage: %(app_name)s [screen] [options]\n"
+"\n"
+"Screens:\n"
+"\n"
+" %(screens)s\n"
+"\n"
+"Options:\n"
+"\n"
+" -h, --help     Displays this help message\n"
+" -v, --verbose  Displays python exception errors (for debugging)\n"
+"\n"
+"Refer also to each screen's help by typing: %(app_name)s [screen] -h\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:147
+#, python-format
+msgid "It seems you chose an invalid %s."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:181
+#, python-format
+msgid "Oops! Could not find path for %(path)s. %(msg)s"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:192
+#, python-format
+msgid "Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:195
+msgid " See --help for details."
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:202
+#, python-format
+msgid "Oops! Error while trying to fetch from %(url)s. %(msg)s"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:213
+#, python-format
+msgid "Oops! There were parsing issues%(suf)s. %(msg)s"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:230
+#, python-format
+msgid ""
+"Oops! Something went terribly wrong.\n"
+"Error details: %s"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:236
+#, python-format
+msgid ""
+"\n"
+"You are more than welcome to report this at:\n"
+"        %(url)s\n"
+msgstr ""
+
+#: /home/bruno/Dropbox/development/termsaver/extras/../termsaver:242
+msgid ""
+"\n"
+"Just before you do so, please run termsaver again with the\n"
+"option --verbose and copy the output when you are filling\n"
+"the bug report, that will help track faster the problem.\n"
+"Thanks!\n"
+msgstr ""

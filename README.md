@@ -66,10 +66,8 @@ then, TermSaver is the **right** application for you.
 Requirements
 ------------
 
-  * Linux, or Mac
-  * Python 2.4+ (and < 3.x)
-
-**Note**: Windows support is in the roadmap.
+  * Linux, or Mac (or Windows too, but you are on your own)
+  * Python 2.5+ (and < 3.x)
 
 
 Installation
@@ -77,11 +75,10 @@ Installation
 
 #### Apt (Advanced Packaging Tool)
 
-For Ubuntu (12.04) distro, you can use:
+For Ubuntu (12.10+) distro, you can use:
 
-        sudo add-apt-repository ppa:bruno-braga/termsaver
-        sudo apt-get update
         sudo apt-get install termsaver
+
 
 #### Pip (Pip Installs Packages, for Python Package Index)
 
@@ -105,6 +102,15 @@ For the brave (laughs), you can compile/install from the source:
         sudo python setup.py install 
 
 
+#### PPA (Personal Package Archive)
+
+If you can't wait for Debian/Ubuntu releases, you can get the latest packages from:
+
+        sudo add-apt-repository ppa:bruno-braga/termsaver
+        sudo apt-get update
+        sudo apt-get install termsaver
+
+
 Features
 --------
 
@@ -113,39 +119,36 @@ screensavers to be added to its core. Developers, please read the section below.
 
 The current published screensavers are:
 
+
 #### Ascii Art Farts
 
 This is a screensaver that displays ascii art from asciiartfarts.com 
 RSS feed in an animation format. 
 
-#### Dot
-
-A extremely simple screensaver, created more with the idea to guide developers 
-on how to use the termsaver libraries to build their own, and help grow the 
-termsaver screensaver gallery in future.
-
-This screensaver only displays a running dot that appears in random locations 
-and sizes.
 
 #### Jokes For All
 
 This is a screensaver that displays recent jokes from <http://jokes4all.net>
 website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
 
+
 #### Programmer
 
 This is a screensaver that displays source code from a specified path in
 visual animation.
+
 
 #### Quotes For All
 
 This is a screensaver that displays recent quotes from <http://quotes4all.net>
 website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
 
+
 #### Random Text
 
 This is a screensaver that displays a text (your name, or whatever) on a 
  randomized position of the screen, changing position every N seconds.
+
 
 #### Request for Change
 
@@ -156,11 +159,13 @@ screensaver randomizes documents to display, from a list of latest valid
 documents. See more information about this in 
 [Wikipedia](http://en.wikipedia.org/wiki/Request_for_Comments).
 
+
 #### RSS Feeds
 
 This is a screensaver that displays any 
 [RSS](http://en.wikipedia.org/wiki/RSS) feed you want to show in your
 terminal, with customizable settings and format.
+
 
 #### URL Fetcher
 
@@ -168,15 +173,24 @@ This is a screensaver that displays content from a specified
 [URL](http://en.wikipedia.org/wiki/Uniform_resource_locator) directly
 on screen, in visual animation.
 
+
 #### Clock
 
 This is a screensaver that displays a digital clock using ascii letters.
+
 
 #### Matrix
 
 This is a screensaver that displays falling (rising) Japanese characters
 simulating the screen from the movie The 
 [The Matrix](http://en.wikipedia.org/wiki/The_Matrix).
+
+
+#### Sysmon
+
+(For Linux systems only) Displays the CPU/Memory usage over time in a graphic
+alike screensaver.
+
 
  - - -
 
@@ -188,7 +202,7 @@ Developers
 ----------
 
 A more detailed guideline for developers willing to jump in and create 
-screensavers for termsaver will be available soon.
+screensavers for termsaver is here: <https://github.com/brunobraga/termsaver/wiki/Developers>
 
 
 Roadmap
@@ -215,13 +229,9 @@ Let us know you want to help: <support@termsaver.info>
 
 ### Screensavers (plugin)
 
-As of this moment, all screensavers are part of the termsaver library, but it
-was initially designed to predict the implementation of additional screensavers
-as plug-ins to the main application. 
+As of v0.2, full plugin support is available, find an example here:
 
-This is, however, not fully defined, so feel free to start now by forking this
-code and implementing it directly inside termsaver. Your contribution will be
-reflected in the list of authors of this application.
+https://github.com/brunobraga/termsaver-figlet
 
 
 ### Submit a bug
@@ -236,13 +246,15 @@ participate. You can:
 Uninstall
 ----------
 
-### Using Apt (Advanced Packaging Tool)
+### Using Apt (Advanced Packaging Tool) or PPA (Personal Package Archive)
 
         sudo apt-get remove termsaver
+
 
 ### Using Pip (Pip Install Packages, for Python Package Index)
 
         sudo pip uninstall termsaver
+
 
 ### Manual Uninstall
 

@@ -38,7 +38,8 @@ The screen class available here is:
 # Python mobdules
 #
 import time
-import re        
+import re
+import os
 
 #
 # Internal modules
@@ -59,7 +60,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         * clean up each cycle: False
           The screen will be cleared manually after the CPU calculation
           is completed (it requires a sleep)
-           
+
     """
 
     info = {
@@ -75,14 +76,14 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     """
     Registers the history of CPU/MEM usage, used to build the charts
     """
-    
+
     #
-    # Graphical elements 
+    # Graphical elements
     #
 
     pie_chart = ['○', '◔', '◑', '◕', '●']
     """
-    Holds the unicode symbols for pie chart representation of percentage  
+    Holds the unicode symbols for pie chart representation of percentage
     """
     block = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '█']
     """
@@ -100,13 +101,13 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     """
     Represents the unicode symbol for the vertical axis in the xy chart
     """
-    
+
     adjust = True
     """
     Defines if the graphics should hold a 0-100 count or adjust to the highest
     value available
     """
-    
+
 
     def __init__(self):
         """
@@ -133,7 +134,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
 
         # update info data
         self.update_stats()
-        
+
         #
         # Due to a time delay to calculate CPU usage
         # we need to clear the screen manually
@@ -143,7 +144,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         txt = self.get_xy_chart("CPU Monitor", 'cpu')
 
         txt += "\n\n"
-       
+
         txt += self.get_xy_chart("MEM Monitor", 'mem')
 
         txt += self.center_text_horizontally(
@@ -154,10 +155,10 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             self.info['db'][-1]['mem'],
             int(self.info['total_mem'])
         ))
-        
+
         # just print the whole text
         print txt
-        
+
         #
         # The sleep happens here in the CPU calculation instead
         #
@@ -166,10 +167,15 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     def update_stats(self):
         """
         Updates the info property with latest information on CPU and MEM usage.
-        
+
         Note: This also takes care of sleep (defined by delay property)
         """
         
+        # TODO - Implement similar features for Windows/Mac OS
+        #        maybe consider psutil package
+        if os.name != "posix":
+            raise exception.TermSaverException(help_msg="OS is not supported!")
+
         # memory info
         re_parser = re.compile(r'^(?P<key>\S*):\s*(?P<value>\d*)\s*kB')
         mem_info = {}
@@ -178,7 +184,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             if not match:
                 continue # skip lines that don't parse
             key, value = match.groups(['key', 'value'])
-            if key not in ('MemTotal', 'MemFree'): 
+            if key not in ('MemTotal', 'MemFree'):
                 continue
             mem_info[key] = int(value)
 
@@ -199,9 +205,9 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             return y
         dt = deltaTime()
         cpu = 100 - (dt[len(dt) - 1] * 100.00 / sum(dt))
-        
+
         self.info['total_mem'] = mem_info['MemTotal'] / 1024
-        
+
         # insert into history data
         self.info['db'].append( {
                 'time': time.time(),
@@ -221,26 +227,26 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
                 max_mem = item['mem']
         self.info['max_cpu'] = max_cpu
         self.info['max_mem'] = max_mem
-        
-        
+
+
     def format_time(self, epoch):
         """
-        Formats a given epoch time into a very simplistic form compared to 
-        current time (eg. 1h meaning 1 hour ago). 
+        Formats a given epoch time into a very simplistic form compared to
+        current time (eg. 1h meaning 1 hour ago).
         """
         elapsed = time.time() - epoch
         if elapsed > 3600:
             return "%.1fh" % (elapsed/3600.0)
-        elif elapsed > 60: 
+        elif elapsed > 60:
             return "%.1fm" % (elapsed/60.0)
-        elif elapsed > 1: 
+        elif elapsed > 1:
             return "%.1fs" % elapsed
         else:
             return ""
-    
+
     def get_chart(self, perc):
         """
-        returns a pie chart unicode depending on the percentage (eg. 100%) 
+        returns a pie chart unicode depending on the percentage (eg. 100%)
         given.
         """
         pos = int(perc * 5 / 100)
@@ -257,9 +263,9 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
 
         ysize = int((self.geometry['y'] - 12)/2) # remove lines used (14)
         current_position = 0
-        
+
         txt = self.align_text_right(title) + "\n" \
-            + ('%.0f' % ceiling) + "%\n" 
+            + ('%.0f' % ceiling) + "%\n"
         # create output (11 lines)
         for y in range(ysize - 1, -1, -1):
             current_position = 0
@@ -269,14 +275,14 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
                     txt += " "
                 else:
                     current_position += 1
-                    
+
                     # to keep proportions
                     ratio = 1
                     if ceiling > 0:
                         ratio = int(self.info['db'][x][key] * ysize / ceiling)
-                    
+
                     # based on number of blocks (10)
-                    if ratio >= y + 1: 
+                    if ratio >= y + 1:
                         txt += self.block[-1]
                     elif y > 0 and ratio > y:
                         txt += self.block[ratio - y]
@@ -284,14 +290,14 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
                         txt += self.block[0]
                     else:
                         txt += self.block[1]
-                    
+
             txt += "\n"
 
         txt += " " + self.axis_corner + self.axis_h * (self.geometry['x'] - 5) + "\n"
 
-        txt += "%s%s%s" % (self.format_time(self.info['db'][0]['time']), 
+        txt += "%s%s%s" % (self.format_time(self.info['db'][0]['time']),
                 " " * (current_position - 5), _("now"))
-        
+
         return txt
 
     def _usage_options_example(self):
@@ -310,8 +316,8 @@ Options:
 
  -d, --delay  Sets the speed of the displaying characters
               default is 0.5 seconds (advised to keep at least above 0.1).
- -n, --no-adjust 
-               forces the charts to displays 0 ~ 100%% values, instead of 
+ -n, --no-adjust
+               forces the charts to displays 0 ~ 100%% values, instead of
                dynamically adjusted values based on current maximum.
  -h, --help   Displays this help message
 

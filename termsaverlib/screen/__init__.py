@@ -38,7 +38,9 @@ The modules available in this package are:
 
     * `asciiartfarts`: displays ascii images from asciiartfarts.com
 
-    * `dot`: displays a random running dot
+    * `clock`: displays a digital clock
+
+    * `sysmon`: displays a graphic for CPU/Mem usage
 
     * `jokes4all`: displays recent jokes from jokes4all.net
 

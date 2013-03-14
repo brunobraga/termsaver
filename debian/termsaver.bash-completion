@@ -30,7 +30,7 @@ have termsaver && _termsaver()
     local cur prev opts plugin_opts
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="matrix dot asciiartfarts rssfeed urlfetcher quotes4all jokes4all clock randtxt rfc programmer"
+    opts="sysmon matrix asciiartfarts rssfeed urlfetcher quotes4all jokes4all clock randtxt rfc programmer"
     
     # For plugins adding new screens, you can append to the below area
     # with a line such as:
