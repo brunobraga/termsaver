@@ -63,15 +63,22 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
 
     """
 
+    path = None
+    """
+    Defines the path of the file containing a monitoring value, from 0 to 100.
+    """
+
     info = {
             'db': [
                 #
-                # store data in format: {'time': ??, 'cpu': ??, 'mem': ??}
+                # store data in format: 
+                # {'time': ??, 'cpu': ??, 'mem': ??, 'extra': ??}
                 #
             ],
             'total_mem': 0,
             'max_cpu': 0,
             'max_mem': 0,
+            'max_extra': 0, # for an external path
     }
     """
     Registers the history of CPU/MEM usage, used to build the charts
@@ -116,7 +123,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         ScreenBase.__init__(self,
             "sysmon",
             _("displays a graphical system monitor"),
-            {'opts': 'hd:n', 'long_opts': ['help', 'delay=', 'no-adjust']},
+            {'opts': 'hd:np:', 'long_opts': ['help', 'delay=', 'no-adjust', 'path=']},
         )
         self.delay = 0.5
         #
@@ -133,28 +140,53 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         self.get_terminal_size()
 
         # update info data
-        self.update_stats()
+        if self.path:
+            #
+            # run the flow for external path
+            #
+            self.update_stats_extra()
+            
+            if self.geometry['x'] > 16: # just to avoid unexpected exceptions
+                title = "%s: %s" % (_('Monitoring'), (self.path[:(self.geometry['x'] - 16)] 
+                        + (self.path[(self.geometry['x'] - 16):] and '...')))
+            else:
+                title = _("Monitoring file")
+                
+            txt = self.get_xy_chart(title, 'extra')
+            
+            txt += self.center_text_horizontally(
+                "\n  Load: %s%%   %s " % (
+                ("%02d" % self.info['db'][-1]['extra']),
+                self.get_chart(self.info['db'][-1]['extra']),
+                )
+            ) 
+            
+        else:
+            #
+            # run the flow for CPU/Mem as default
+            #
+            self.update_stats()
+
+            txt = self.get_xy_chart("CPU Monitor", 'cpu')
+    
+            txt += "\n"
+    
+            txt += self.get_xy_chart("MEM Monitor", 'mem')
+    
+            txt += self.center_text_horizontally(
+                "\n%s  CPU: %s%%   %s  MEM: %s%% (total %sMB)" % (
+                self.get_chart(self.info['db'][-1]['cpu']),
+                ('%.1f' % self.info['db'][-1]['cpu']),
+                self.get_chart(self.info['db'][-1]['mem']),
+                self.info['db'][-1]['mem'],
+                int(self.info['total_mem'])
+            ))
 
         #
         # Due to a time delay to calculate CPU usage
         # we need to clear the screen manually
         #
         self.clear_screen()
-
-        txt = self.get_xy_chart("CPU Monitor", 'cpu')
-
-        txt += "\n\n"
-
-        txt += self.get_xy_chart("MEM Monitor", 'mem')
-
-        txt += self.center_text_horizontally(
-            "\n%s  CPU: %s%%   %s  MEM: %s%% (total %sMB)" % (
-            self.get_chart(self.info['db'][-1]['cpu']),
-            ('%.1f' % self.info['db'][-1]['cpu']),
-            self.get_chart(self.info['db'][-1]['mem']),
-            self.info['db'][-1]['mem'],
-            int(self.info['total_mem'])
-        ))
 
         # just print the whole text
         print txt
@@ -164,6 +196,41 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         #
         #time.sleep(self.delay)
 
+    def update_stats_extra(self):
+        """
+        Updates the info property with latest information on an extra path, 
+        defined by --path argument option
+
+        Note: This also takes care of sleep (defined by delay property)
+        """
+        
+        f = open(self.path, 'r')
+        try:
+            val = int(f.read())
+        except:
+            raise exception.TermSaverException(
+               _('The file does not contain an integer as expected.'))
+        if val < 0 or val > 100:
+            raise exception.TermSaverException(
+                _('The file contains invalid data (must be between 0 and 100).'))
+        f.close()
+
+        # cut the data to keep only recent values
+        self.info['db'] = self.info['db'][-(self.geometry['x'] - 5):]
+
+        max_extra = 0
+        for item in self.info['db']:
+            if item['extra'] > max_extra:
+                max_extra = item['extra']
+        self.info['max_extra'] = max_extra
+        self.info['db'].append( {
+                'time': time.time(),
+                'extra': val,
+             }
+        )
+        time.sleep(self.delay)
+        
+        
     def update_stats(self):
         """
         Updates the info property with latest information on CPU and MEM usage.
@@ -295,7 +362,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
 
         txt += " " + self.axis_corner + self.axis_h * (self.geometry['x'] - 5) + "\n"
 
-        txt += "%s%s%s" % (self.format_time(self.info['db'][0]['time']),
+        txt += "%s%s%s\n" % (self.format_time(self.info['db'][0]['time']),
                 " " * (current_position - 5), _("now"))
 
         return txt
@@ -317,8 +384,11 @@ Options:
  -d, --delay  Sets the speed of the displaying characters
               default is 0.5 seconds (advised to keep at least above 0.1).
  -n, --no-adjust
-               forces the charts to displays 0 ~ 100%% values, instead of
-               dynamically adjusted values based on current maximum.
+              Forces the charts to displays 0 ~ 100%% values, instead of
+              dynamically adjusted values based on current maximum.
+ -p, --path   Sets the location of a file to be monitored. The file must only
+              contain a number from 0 to 100, or the screen will not start.
+              This option is optional.               
  -h, --help   Displays this help message
 
 Example:
@@ -354,6 +424,16 @@ Example:
                 self.screen_exit()
             elif o in ("-n", "--no-adjust"):
                 self.adjust = False
+            elif o in ("-p", "--path"):
+                # make sure argument is a valid value (existing path)
+                self.path = a
+                if not os.path.exists(self.path):
+                    raise exception.PathNotFoundException(self.path,
+                        _("Make sure the file exists."))
+                if not os.path.isfile(self.path):
+                    raise exception.InvalidOptionException("--path",
+                        _("Make sure it is a file"))
+                    
             elif o in ("-d", "--delay"):
                 try:
                     # make sure argument is a valid value (float)

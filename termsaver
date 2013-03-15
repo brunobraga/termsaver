@@ -215,6 +215,13 @@ if __name__ == '__main__':
             print _('Oops! There were parsing issues%(suf)s. %(msg)s') % \
                 {'suf': suf, 'msg': e.message}
 
+        elif isinstance(e, exception.TermSaverException):
+            #
+            # Handles other termsaver errors
+            #
+            error_number = errno.ENOEXEC
+            print _('Oops! There was an error: %(msg)s') % {'msg': e.message}
+
         if verbose:
             common.prettify_exception(e)
 
