@@ -3,7 +3,8 @@ Section: misc
 Priority: optional
 Maintainer: Bruno Braga <bruno.braga@gmail.com>
 Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.debian.org>
-Build-Depends: python  (>= 2.5), debhelper (>= 7.4.3)
+Build-Depends: debhelper (>= 7.4.3)
+Build-Depends-Indep: python, bash-completion
 X-Python-Version: >= 2.5
 Standards-Version: 3.9.3
 Vcs-Svn: svn://svn.debian.org/python-apps/packages/termsaver/trunk

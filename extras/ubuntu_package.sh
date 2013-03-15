@@ -29,8 +29,8 @@
 base_path="`pwd`/`dirname $0`/.."
 cur_dir=`pwd`
 
-# precise oneiric hardy lucid natty
-ubuntu_release=lucid
+# quantal precise oneiric hardy lucid natty
+ubuntu_release=precise
 
 function get_prop() {
     python -c "from termsaverlib import constants; print constants.App.$@"
@@ -70,7 +70,7 @@ echo "Done"
 # Fix stuff for Ubuntu
 echo "Fixing Ubuntu stuff..."
 # fix changelog
-sed -i -s "s/($package_version-1) unstable/($package_version-ubuntu1) $ubuntu_release/" debian/changelog
+sed -i -s "s/($package_version-1) unstable/($package_version-$ubuntu_release) $ubuntu_release/" debian/changelog
 
 # remove quilt
 rm -rfv debian/source/format
@@ -85,3 +85,9 @@ cd $cur_dir
 
 # Done!
 echo "Finished packaging $package_dir_name"
+
+echo "Type anything to upload to LaunchPad... (will receive a confirmation by email)"
+read -n 1
+
+
+dput -f ppa /tmp/packaging/${package_dir_name}-$ubuntu_release_source.changes
