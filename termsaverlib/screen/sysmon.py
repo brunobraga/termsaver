@@ -328,7 +328,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         if self.adjust:
             ceiling = self.info['max_' + key]
 
-        ysize = int((self.geometry['y'] - 12)/2) # remove lines used (14)
+        ysize = int((self.geometry['y'] - 13)/2) # remove lines used
         current_position = 0
 
         txt = self.align_text_right(title) + "\n" \
