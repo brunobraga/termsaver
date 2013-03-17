@@ -29,9 +29,17 @@
 base_path="`pwd`/`dirname $0`/.."
 cur_dir=`pwd`
 
-# quantal precise oneiric hardy lucid natty
-ubuntu_release=quantal
+
+# raring quantal precise oneiric natty maverick lucid karmic jaunty hardy
+# invalid (dead) releases: intrepid 
+if [ ! "$1" == "" ]; then
+    ubuntu_release=$1
+else
+    ubuntu_release=quantal
+fi
+
 ubuntu_suffix=ubuntu1
+
 
 function get_prop() {
     python -c "from termsaverlib import constants; print constants.App.$@"
@@ -39,7 +47,15 @@ function get_prop() {
 
 
 package_name=`get_prop "NAME"`
+original_package_version=`get_prop "VERSION"`
+
+# Fix version specifically for this ubuntu release
+sed -i -s "s/VERSION = \"${original_package_version}\"/VERSION = \"${original_package_version}${ubuntu_release}\"/" termsaverlib/constants.py
+
 package_version=`get_prop "VERSION"`
+
+# Fix changelog for Ubuntu release (make sure DEBFULLNAME and DEBEMAIL are set)
+dch -v ${package_version}-1$ubuntu_suffix -b -D $ubuntu_release -u low -M "Packaging for $ubuntu_release release."
 
 temp_dir=/tmp/packaging/
 package_dir_name=${package_name}_${package_version}
@@ -68,10 +84,9 @@ tar -czvf ../$package_dir_name.orig.tar.gz ../$package_dir_name
 mv ../debian .
 echo "Done"
 
+#
 # Fix stuff for Ubuntu
-echo "Fixing Ubuntu stuff..."
-# fix changelog
-sed -i -s "s/($package_version-1) unstable/($package_version-$ubuntu_suffix) $ubuntu_release/" debian/changelog
+#
 
 # remove quilt
 rm -rfv debian/source/format
@@ -87,8 +102,11 @@ cd $cur_dir
 # Done!
 echo "Finished packaging $package_dir_name"
 
+# upload to Launchpad PPA
 echo "Type anything to upload to LaunchPad... (will receive a confirmation by email)"
 read -n 1
+dput -f ppa /tmp/packaging/${package_dir_name}-1${ubuntu_suffix}_source.changes
 
-
-dput -f ppa /tmp/packaging/${package_dir_name}-${ubuntu_suffix}_source.changes
+# revert changes
+git checkout termsaverlib/constants.py
+git checkout debian/changelog
