@@ -123,8 +123,19 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         if not os.path.exists(self.path):
             raise exception.PathNotFoundException(self.path)
 
+        lineData = None
+        if constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME in os.listdir(os.getcwd()):
+            print 'found cache!'
+            with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
+                #print [line for line in f if os.path.exists(line)]
+                fileData = [line[:-1] for line in f if line != '']# and os.path.exists(line[:-1])]
+            file_list = fileData
         # get the list of available files
-        file_list = self._recurse_to_list(self.path)
+        else:
+            file_list = self._recurse_to_list(self.path)
+            fileStr   = '\n'.join(file_list)
+            with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
+                f.write(fileStr)
 
         if len(file_list) == 0:
             raise exception.PathNotFoundException(self.path)
