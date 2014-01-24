@@ -49,3 +49,5 @@ pip-log.txt
 .coverage
 .tox
 
+# Source Code Cache
+termsaver_cache.list
