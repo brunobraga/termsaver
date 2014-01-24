@@ -127,8 +127,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         if constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME in os.listdir(os.getcwd()):
             print 'found cache!'
             with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
-                #print [line for line in f if os.path.exists(line)]
-                fileData = [line[:-1] for line in f if line != '']# and os.path.exists(line[:-1])]
+                fileData = [line[:-1] for line in f if line != '']
             file_list = fileData
         # get the list of available files
         else:
