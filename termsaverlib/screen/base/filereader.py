@@ -38,6 +38,8 @@ The helper class available here is:
 # Python built-in modules
 #
 import os
+import Queue as queue
+from threading import Thread
 
 #
 # Internal modules
@@ -47,7 +49,7 @@ from termsaverlib import exception, constants
 from termsaverlib.screen.helper.typing import TypingHelperBase
 from termsaverlib.i18n import _
 
-
+        
 class FileReaderBase(ScreenBase, TypingHelperBase):
     """
     A base class used to handle file reading, more specifically, multiple files
@@ -128,27 +130,42 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
             print 'found cache!'
             with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
                 fileData = [line[:-1] for line in f if line != '']
-            file_list = fileData
+            #file_list = fileData
+            queueOfValidFiles = queue.Queue()
+            [queueOfValidFiles.put(line) for line in fileData]
         # get the list of available files
         else:
-            file_list = self._recurse_to_list(self.path)
-            fileStr   = '\n'.join(file_list)
-            with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
-                f.write(fileStr)
-
-        if len(file_list) == 0:
-            raise exception.PathNotFoundException(self.path)
+            queueOfValidFiles = queue.Queue()
+            threads = []
+            threads.append( fileScannerThread(queueOfValidFiles, self.path))
+            #file_list = self._recurse_to_list(self.path)
+            #fileStr   = '\n'.join(file_list)
+            #with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
+                #f.write(fileStr)
+            threads[-1].start()
+            
+        #if len(file_list) == 0:
+        #    raise exception.PathNotFoundException(self.path)
 
         self.clear_screen()
-        for path in file_list:
-            f = open(path, 'r')
-
-            # read the file with the typing feature
-            self.typing_print(f.read())
-            f.close()
-
+        nextFile = queueOfValidFiles.get()
+        while nextFile:
+            with open(nextFile, 'r') as f:
+                self.typing_print(f.read())
             if self.cleanup_per_file:
                 self.clear_screen()
+            queueOfValidFiles.put(nextFile)
+            nextFile = queueOfValidFiles.get()
+            
+##        for path in file_list:
+##            f = open(path, 'r')
+##
+##            # read the file with the typing feature
+##            self.typing_print(f.read())
+##            f.close()
+##
+##            if self.cleanup_per_file:
+##                self.clear_screen()
 
     def _usage_options_example(self):
         """
@@ -255,18 +272,19 @@ Examples:
             #
             return
 
-    def _recurse_to_list(self, path, filetype=''):
+    def _recurse_to_list(self, queueOfValidFiles, path, filetype=''):
         """
-        Returns a list of all files within directory in "path"
+        Returns a queue of all files within directory in "path"
 
         Arguments:
+            * queueOfValidFiles
 
             * path: the path to be recursively checked (directory)
 
             * filetype: to filter for a specific filetype
         """
         result = []
-        self._recurse_to_exec(path, result.append, filetype)
+        self._recurse_to_exec(path, queueOfValidFiles.put, filetype)
         return result
 
     def _is_path_binary(self, path):
@@ -318,3 +336,14 @@ Examples:
         purpose to display extra help information for specific errors.
         """
         return ""
+
+    class fileScannerThread(Thread):
+        '''screen-animation independent thread for path scanning'''
+        def __init__(self, queueOfValidFiles, pathToScan):
+            Thread.__init__(self)
+            #self.__queueOfValidFiles = queueOfValidFiles
+            self.__pathToScan        = pathToScan
+
+        def run(self):
+            '''thread begins executing this function on call to aThreadObject.start()'''
+            file_queue = super(FileReaderBase, self)._recurse_to_list(queueOfValidFiles, self.__pathToScan)
