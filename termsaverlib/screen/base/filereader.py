@@ -49,7 +49,7 @@ from termsaverlib import exception, constants
 from termsaverlib.screen.helper.typing import TypingHelperBase
 from termsaverlib.i18n import _
 
-        
+
 class FileReaderBase(ScreenBase, TypingHelperBase):
     """
     A base class used to handle file reading, more specifically, multiple files
