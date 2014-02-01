@@ -338,12 +338,12 @@ Examples:
         # clean up previous
         self.screen_map = []
 
-        for _ in range(0, self.geometry['x'] / self.proportion): 
+        for __ in range(0, self.geometry['x'] / self.proportion): 
 
             if random.random() > 0.5:
                 char_list = self.get_char_list()
             else:
-                char_list = [self.space for _ in \
+                char_list = [self.space for __ in \
                     range(0, random.randint(0, self.geometry['y']))]
             self.screen_map.append(char_list)
 
@@ -353,12 +353,12 @@ Examples:
         """
         result = []
         while(len(result) == 0):
-            bt = [self.space for _ in range(0, 
+            bt = [self.space for __ in range(0, 
                     min((self.geometry['y'], random.randint(0, 
                         self.geometry['y'] * 20 / (self.granularity * \
                             self.proportion)))))]
             cl = [self.digmap[random.randint(0, len(self.digmap)) - 1] \
-                  for _ in range(0, random.randint(0, 
+                  for __ in range(0, random.randint(0, 
                       self.geometry['y'] - len(bt)))]
             result = bt
             result.extend(cl)

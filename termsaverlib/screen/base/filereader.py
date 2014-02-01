@@ -111,9 +111,6 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         self.path = path
         self.cleanup_per_cycle = False
 
-
-
-            
     def _run_cycle(self):
         """
         Executes a cycle of this screen.
@@ -126,37 +123,29 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         """
         # validate path
         if not os.path.exists(self.path):
-            #os.path.exists() doc: 'Test whether a path exists.  Returns False for broken symbolic links'
             raise exception.PathNotFoundException(self.path)
 
         lineData = None
-        if True == False and constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME in os.listdir(os.getcwd()):
-##            print 'found cache!'
-##            with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
-##                fileData = [line[:-1] for line in f if line != '']
-##            #file_list = fileData
-##            queueOfValidFiles = queue.Queue()
-##            [queueOfValidFiles.put(line) for line in fileData]
-#        # get the list of available files
-            pass
+        if constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME in os.listdir(os.getcwd()):
+            print 'found cache!'
+            with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
+                fileData = [line[:-1] for line in f if line != '']
+            #file_list = fileData
+            queueOfValidFiles = queue.Queue()
+            [queueOfValidFiles.put(line) for line in fileData]
+        # get the list of available files
         else:
             queueOfValidFiles = queue.Queue()
             threads = []
             threads.append( fileScannerThread(queueOfValidFiles, self.path))
-            try:
-                threads[-1].start()
-            except RuntimeError:
-                print 'RuntimeError: this should never happen! Ever!\nMay [your deity of choice] have mercy on your soul'
-                pass                
+            #file_list = self._recurse_to_list(self.path)
+            #fileStr   = '\n'.join(file_list)
+            #with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
+                #f.write(fileStr)
+            threads[-1].start()
             
-        #if queue.Empty():
-            '''originally checked if listofvalidfiles was len 0, in new queueing architecture calls queue.empty()
-            python documentation:
-            Return True if the queue is empty, False otherwise. If empty() returns True it doesn\'t guarantee that\
-            a subsequent call to put() will not block. Similarly, if empty() returns False it doesn\'t guarantee\
-            that a subsequent call to get() will not block.
-            '''
-            #raise exception.PathNotFoundException(self.path)
+        #if len(file_list) == 0:
+        #    raise exception.PathNotFoundException(self.path)
 
         self.clear_screen()
         nextFile = queueOfValidFiles.get()
@@ -167,7 +156,17 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
                 self.clear_screen()
             queueOfValidFiles.put(nextFile)
             nextFile = queueOfValidFiles.get()
-                        
+            
+##        for path in file_list:
+##            f = open(path, 'r')
+##
+##            # read the file with the typing feature
+##            self.typing_print(f.read())
+##            f.close()
+##
+##            if self.cleanup_per_file:
+##                self.clear_screen()
+
     def _usage_options_example(self):
         """
         Describe here the options and examples of this screen.
@@ -338,13 +337,13 @@ Examples:
         """
         return ""
 
-class fileScannerThread(Thread):
-    '''screen-animation independent thread for path scanning'''
-    def __init__(self, queueOfValidFiles, pathToScan):
-        Thread.__init__(self)
-        #self.__queueOfValidFiles = queueOfValidFiles
-        self.__pathToScan        = pathToScan
+    class fileScannerThread(Thread):
+        '''screen-animation independent thread for path scanning'''
+        def __init__(self, queueOfValidFiles, pathToScan):
+            Thread.__init__(self)
+            #self.__queueOfValidFiles = queueOfValidFiles
+            self.__pathToScan        = pathToScan
 
-    def run(self):
-        '''thread begins executing this function on call to aThreadObject.start()'''
-        file_queue = super(FileReaderBase, self)._recurse_to_list(queueOfValidFiles, self.__pathToScan)
+        def run(self):
+            '''thread begins executing this function on call to aThreadObject.start()'''
+            file_queue = super(FileReaderBase, self)._recurse_to_list(queueOfValidFiles, self.__pathToScan)
