@@ -126,6 +126,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
             raise exception.PathNotFoundException(self.path)
 
         lineData = None
+        #existence of cache hid bug in threading implementation
         if constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME in os.listdir(os.getcwd()):
             print 'found cache!'
             with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
@@ -137,16 +138,17 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         else:
             queueOfValidFiles = queue.Queue()
             threads = []
-            threads.append( fileScannerThread(queueOfValidFiles, self.path))
+            threads.append( FileReaderBase.fileScannerThread(self, queueOfValidFiles, self.path))
+            
             #file_list = self._recurse_to_list(self.path)
             #fileStr   = '\n'.join(file_list)
             #with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
                 #f.write(fileStr)
             threads[-1].start()
-            
+            #raw_input('ass')
         #if len(file_list) == 0:
         #    raise exception.PathNotFoundException(self.path)
-
+        #self.clear_screen hides any error message produced before it!
         self.clear_screen()
         nextFile = queueOfValidFiles.get()
         while nextFile:
@@ -257,7 +259,7 @@ Examples:
             if os.path.isdir(path):
                 for item in os.listdir(path):
                     f = os.path.join(path, item)
-                    self.log("checking %s..." % f)
+                    #self.log("checking %s..." % f)
                     if os.path.isdir(f):
                         if not item.startswith('.'):
                             self._recurse_to_exec(f, func, filetype)
@@ -271,7 +273,7 @@ Examples:
             # as the file should be ignored for screen saver operations.
             #
             return
-
+    @staticmethod
     def _recurse_to_list(self, queueOfValidFiles, path, filetype=''):
         """
         Returns a queue of all files within directory in "path"
@@ -339,11 +341,11 @@ Examples:
 
     class fileScannerThread(Thread):
         '''screen-animation independent thread for path scanning'''
-        def __init__(self, queueOfValidFiles, pathToScan):
+        def __init__(self, fileReaderInstance, queueOfValidFiles, pathToScan):
             Thread.__init__(self)
-            #self.__queueOfValidFiles = queueOfValidFiles
+            self.__queueOfValidFiles = queueOfValidFiles
             self.__pathToScan        = pathToScan
-
+            self.__fileReaderInstance= fileReaderInstance
         def run(self):
             '''thread begins executing this function on call to aThreadObject.start()'''
-            file_queue = super(FileReaderBase, self)._recurse_to_list(queueOfValidFiles, self.__pathToScan)
+            file_queue = FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
