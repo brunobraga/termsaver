@@ -145,9 +145,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
             #with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
                 #f.write(fileStr)
             threads[-1].start()
-            #raw_input('ass')
-        #if len(file_list) == 0:
-        #    raise exception.PathNotFoundException(self.path)
+            
         #self.clear_screen hides any error message produced before it!
         self.clear_screen()
         nextFile = queueOfValidFiles.get()
@@ -159,16 +157,6 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
             queueOfValidFiles.put(nextFile)
             nextFile = queueOfValidFiles.get()
             
-##        for path in file_list:
-##            f = open(path, 'r')
-##
-##            # read the file with the typing feature
-##            self.typing_print(f.read())
-##            f.close()
-##
-##            if self.cleanup_per_file:
-##                self.clear_screen()
-
     def _usage_options_example(self):
         """
         Describe here the options and examples of this screen.
