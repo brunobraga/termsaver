@@ -8,7 +8,7 @@ X-Python-Version: >= 2.5
 Standards-Version: 3.9.3
 Vcs-Svn: svn://svn.debian.org/python-apps/packages/termsaver/trunk
 Vcs-Browser: http://svn.debian.org/viewsvn/python-apps/packages/termsaver
-Homepage: http://termsaver.info
+Homepage: http://termsaver.brunobraga.net
 
 Package: termsaver
 Architecture: all
