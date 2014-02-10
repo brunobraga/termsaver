@@ -101,7 +101,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
               for files
         """
         ScreenBase.__init__(self, name, description, cli_opts)
-        # define default cli options, if none is (are?) informed
+        # define default cli options, if none are informed
         if not cli_opts:
             self.cli_opts = {
                              'opts': 'hd:p:',
@@ -250,22 +250,25 @@ Examples:
         """
         try:
             if os.path.isdir(path):
+
                 for item in os.listdir(path):
                     f = os.path.join(path, item)
-                    #self.log("checking %s..." % f)
+
                     if os.path.isdir(f):
                         if not item.startswith('.'):
                             self._recurse_to_exec(f, func, filetype)
+                            
                     elif f.endswith(filetype) and not self._is_path_binary(f):
                         func(f)
+                        
             elif path.endswith(filetype) and not self._is_path_binary(path):
                 func(path)
+                
         except:
-            #
-            # In case of IOErrors, assume this is true for simplicity reasons
-            # as the file should be ignored for screen saver operations.
-            #
+            # If IOError, don't put on queue, as the path might throw
+            # another IOError during screen saver operations.
             return
+        
     @staticmethod
     def recursivelyPopulateQueue(self, queueOfValidFiles, path, filetype=''):
         """
@@ -280,13 +283,11 @@ Examples:
 
             * filetype: to filter for a specific filetype
         """
-        #result = []
         self._recurse_to_exec(path, queueOfValidFiles.put, filetype)
-        #return result
 
     def _is_path_binary(self, path):
         """
-        Returns True if the given path corresponds to a binary, or, if by an
+        Returns True if the given path corresponds to a binary, or, if for any
         reason, the file can not be accessed or opened.
 
         For the merit of being a binary file (i.e., termsaver will not be able
@@ -296,7 +297,7 @@ Examples:
 
         Arguments:
 
-            path: the file location
+            * path: the file location
         """
         CHUNKSIZE = 1024
 
@@ -304,10 +305,10 @@ Examples:
         try:
             f = open(path, 'rb')
         except:
-            #
-            # In case of IOErrors, assume this is true for simplicity reasons
-            # as the file should be ignored for screen saver operations.
-            #
+            # If IOError, don't even bother, as the path might throw
+            # another IOError during screen saver operations.
+            f.close()
+            # this is why we (should) use the `with` statement
             return True
         try:
             while True:
@@ -317,10 +318,8 @@ Examples:
                 if len(chunk) < CHUNKSIZE:
                     break  # done
         except:
-            #
-            # In case of IOErrors, assume this is true for simplicity reasons
-            # as the file should be ignored for screen saver operations.
-            #
+            # If IOError, don't even bother, as the path might throw
+            # another IOError during screen saver operations.
             return True
         finally:
             if f:
@@ -345,5 +344,4 @@ Examples:
             self.__fileReaderInstance = fileReaderInstance
         def run(self):
             """thread begins executing this function on call to aThreadObject.start()"""
-            #file_queue = FileReaderBase.recursivelyPopulateQueue(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
             FileReaderBase.recursivelyPopulateQueue(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
