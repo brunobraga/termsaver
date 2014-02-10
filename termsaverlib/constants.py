@@ -107,5 +107,3 @@ class Settings(PropertyClass):
     Defines the interval between each fetching of data over the Internet.
     Default value is 1 hour.
     """
-
-    TERMSAVER_DEFAULT_CACHE_FILENAME = 'termsaver_cache.list'

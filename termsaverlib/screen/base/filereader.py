@@ -59,12 +59,12 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
     The instantiation of this class takes two additional arguments, compared
     with its base class:
 
-        * `delay`: defines the speed of the typing writer. See more details
+        * `delay`: Defines the speed of the typing writer. See more details
           of this in `TypingHelperBase` class documentation. Its value is
           defined by `TypingHelperBase`'s default, if none is informed.
 
-        * `path`: defines the path from where this screen should scan
-          for files
+        * `path`: Defines the path to be recursively checked for text
+                  files to be displayed on terminal screen.
 
     When inheriting from this screen, you can also take advantage of the
     following properties and functionalities:
@@ -76,18 +76,10 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
     """
 
     path = ''
-    """
-    Defines the path to be recursively checked for text files to be displayed
-    on terminal screen.
-    """
 
     cleanup_per_file = False
-    """
-    Defines if termsaver should clean the screen for each file being read
-    """
 
-    def __init__(self, name, description, path=None,
-                 delay=None, cli_opts=None):
+    def __init__(self, name, description, path=None, delay=None, cli_opts=None):
         """
         Creates a new instance of this class.
 
@@ -116,52 +108,55 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         Executes a \"cycle\" of this screen.
             * The concept of \"cycle\" is no longer accurate, and is misleading.
               this function will not return.
-              
         New threaded implementation:
-
             * Checks if self.path is a valid path, using `os.path.exists`
-            * Assigns a new Queue to `queueOfValidFiles`
-            * Appends a new `fileScannerThread` object to a list of threads
-            * `start()`s the `fileScannerThread`
-                * `fileScannerThread` will put paths in the queue as valid file paths are found
+            * Assigns a new Queue to `queue_of_valid_files`
+            * Appends a new `FileScannerThread` object to a list of threads
+            * `start()`s the `FileScannerThread`
+                * `FileScannerThread` will put paths in the queue as valid
+                   file paths are found
             * `clear_screen()`s
-            * Gets a file from (the) `queueOfValidFiles`, removing said item from queue
-            * While (in python's strange test-condition logic) nextFile
-                * As long as there is something in the queue - that is, as long as `queue.queue.get()`
-                  is able to get an object from (the) `queueOfValidFiles`, this test evaluates True.
-                * I imagine that this behaves unpredictably given a computer with __REALLY__ slow I/O
-            * Opens `nextFile` with handle-auto-closing `with` statement and `typing_print()`s it
+            * Gets a file from `queue_of_valid_files`, removing item from queue
+            * While nextFile (empty sequences are false)
+                * As long as there is something in the queue - that is, as long
+                  as `queue.queue.get()` is able to get an object from (the)
+                  `queue_of_valid_files`, this test evaluates True.
+                * I imagine that this behaves unpredictably given a computer
+                  with __REALLY__ slow I/O
+            * Opens `nextFile` with handle-auto-closing `with` statement and
+              `typing_print()`s it
             * Clears screen if `self.cleanup_per_file`
             * Puts `nextFile` ON the queue
-                * Because `queueOfValidFiles.get()` REMOVES a file path from the queue, `_run_cycle()` will never
-                  reach that path again, and eventually will exhaust the queue (failing silently, with a blank screen)
+                * Because `queue_of_valid_files.get()` REMOVES a file path
+                  from the queue, `_run_cycle()` will never reach that path
+                  again, and eventually will exhaust the queue
+                  (failing silently, with a blank screen)
                     * A static blank screen is the antithesis of a screensaver
-                * Therefore, `queueOfValidFiles.put(nextFile)` puts the file path at the last spot in the queue
-            * Finally, another call to `queueOfValidFiles.get()` sets up the next iteration in the while loop.
-            
+                * Therefore, `queue_of_valid_files.put(nextFile)` puts the file
+                  path at the last spot in the queue
+            * Finally, another call to `queue_of_valid_files.get()` sets up
+              the next iteration in the while loop.
         """
         # validate path
         if not os.path.exists(self.path):
             raise exception.PathNotFoundException(self.path)
 
-        queueOfValidFiles = queue.Queue()
+        queue_of_valid_files = queue.Queue()
 
-        threads = [ FileReaderBase.fileScannerThread(self, queueOfValidFiles, self.path)]
+        threads = [FileReaderBase.FileScannerThread(self, queue_of_valid_files, self.path)]
+        threads[-1].daemon = True
         threads[-1].start()
-            
-        #self.clear_screen hides any error message produced before it!
+        #self.clear_screen() hides any error message produced before it!
         self.clear_screen()
-        nextFile = queueOfValidFiles.get()
+        nextFile = queue_of_valid_files.get()
         while nextFile:
             with open(nextFile, 'r') as f:
-                self.typing_print(f.read())
-
+                file_data = f.read()
+                self.typing_print(file_data)
             if self.cleanup_per_file:
                 self.clear_screen()
-
-            queueOfValidFiles.put(nextFile)
-            nextFile = queueOfValidFiles.get()
-            
+            queue_of_valid_files.put(nextFile)
+            nextFile = queue_of_valid_files.get()
     def _usage_options_example(self):
         """
         Describe here the options and examples of this screen.
@@ -250,40 +245,36 @@ Examples:
         """
         try:
             if os.path.isdir(path):
-
                 for item in os.listdir(path):
                     f = os.path.join(path, item)
-
                     if os.path.isdir(f):
                         if not item.startswith('.'):
                             self._recurse_to_exec(f, func, filetype)
-                            
                     elif f.endswith(filetype) and not self._is_path_binary(f):
                         func(f)
-                        
             elif path.endswith(filetype) and not self._is_path_binary(path):
                 func(path)
-                
         except:
             # If IOError, don't put on queue, as the path might throw
             # another IOError during screen saver operations.
             return
-        
+
     @staticmethod
-    def recursivelyPopulateQueue(self, queueOfValidFiles, path, filetype=''):
+    def recursively_populate_queue(self, queue_of_valid_files, path, filetype=''):
         """
-        Populates an (empty) queue of all files within directory in "path", with the paths to said files
+        Populates an (empty) queue of all files within directory
+        in "path", with the paths to said files.
 
         MUST be a staticmethod for threaded implementation to function.
 
         Arguments:
-            * queueOfValidFiles
+            * queue_of_valid_files
 
             * path: the path to be recursively checked (directory)
 
             * filetype: to filter for a specific filetype
         """
-        self._recurse_to_exec(path, queueOfValidFiles.put, filetype)
+        self._recurse_to_exec(path, queue_of_valid_files.put, filetype)
 
     def _is_path_binary(self, path):
         """
@@ -307,8 +298,6 @@ Examples:
         except:
             # If IOError, don't even bother, as the path might throw
             # another IOError during screen saver operations.
-            # f.close() <- this is why we (should) use the `with` statement,
-            # `try`, `except`, `finally` makes file IO code more complex/confusing.
             return True
         try:
             while True:
@@ -333,15 +322,17 @@ Examples:
         """
         return ""
 
-    class fileScannerThread(Thread):
+    class FileScannerThread(Thread):
         """Screen-animation independent thread for path scanning.
            Allows animation to begin prior to completion of path scanning.
         """
-        def __init__(self, fileReaderInstance, queueOfValidFiles, pathToScan):
+        def __init__(self, fileReaderInstance, queue_of_valid_files, path_to_scan):
             Thread.__init__(self)
-            self.__queueOfValidFiles  = queueOfValidFiles
-            self.__pathToScan         = pathToScan
-            self.__fileReaderInstance = fileReaderInstance
+            self.__queue_of_valid_files = queue_of_valid_files
+            self.__path_to_scan         = path_to_scan
+            self.__file_reader_instance = fileReaderInstance
         def run(self):
-            """thread begins executing this function on call to aThreadObject.start()"""
-            FileReaderBase.recursivelyPopulateQueue(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
+            """Thread begins executing this function on
+               call to `aThreadObject.start()`.
+            """
+            FileReaderBase.recursively_populate_queue(self.__file_reader_instance, self.__queue_of_valid_files, self.__path_to_scan)
