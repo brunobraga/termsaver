@@ -269,7 +269,7 @@ Examples:
     @staticmethod
     def _recurse_to_list(self, queueOfValidFiles, path, filetype=''):
         """
-        Returns a queue of all files within directory in "path"
+        Populates an (empty) queue of all files within directory in "path", with the paths to said files
 
         MUST be a staticmethod for threaded implementation to function.
 
@@ -280,9 +280,9 @@ Examples:
 
             * filetype: to filter for a specific filetype
         """
-        result = []
+        #result = []
         self._recurse_to_exec(path, queueOfValidFiles.put, filetype)
-        return result
+        #return result
 
     def _is_path_binary(self, path):
         """
@@ -345,4 +345,5 @@ Examples:
             self.__fileReaderInstance = fileReaderInstance
         def run(self):
             """thread begins executing this function on call to aThreadObject.start()"""
-            file_queue = FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
+            #file_queue = FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
+            FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
