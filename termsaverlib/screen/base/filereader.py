@@ -101,7 +101,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
               for files
         """
         ScreenBase.__init__(self, name, description, cli_opts)
-        # define default cli options, if none is informed
+        # define default cli options, if none is (are?) informed
         if not cli_opts:
             self.cli_opts = {
                              'opts': 'hd:p:',
@@ -113,38 +113,41 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
 
     def _run_cycle(self):
         """
-        Executes a cycle of this screen.
+        Executes a \"cycle\" of this screen.
+            * The concept of \"cycle\" is no longer accurate, and is misleading.
+              this function will not return.
+              
+        New threaded implementation:
 
-        The actions taken here, for each cycle, are as follows:
-
-            * loop all files retrieved from `path`
-            * open each file, read its contents
-            * print using `typing_print`
+            * Checks if self.path is a valid path, using `os.path.exists`
+            * Assigns a new Queue to `queueOfValidFiles`
+            * Appends a new `fileScannerThread` object to a list of threads
+            * `start()`s the `fileScannerThread`
+                * `fileScannerThread` will put paths in the queue as valid file paths are found
+            * `clear_screen()`s
+            * Gets a file from (the) `queueOfValidFiles`, removing said item from queue
+            * While (in python's strange test-condition logic) nextFile
+                * As long as there is something in the queue - that is, as long as `queue.queue.get()`
+                  is able to get an object from (the) `queueOfValidFiles`, this test evaluates True.
+                * I imagine that this behaves unpredictably given a computer with __REALLY__ slow I/O
+            * Opens `nextFile` with handle-auto-closing `with` statement and `typing_print()`s it
+            * Clears screen if `self.cleanup_per_file`
+            * Puts `nextFile` ON the queue
+                * Because `queueOfValidFiles.get()` REMOVES a file path from the queue, `_run_cycle()` will never
+                  reach that path again, and eventually will exhaust the queue (failing silently, with a blank screen)
+                    * A static blank screen is the antithesis of a screensaver
+                * Therefore, `queueOfValidFiles.put(nextFile)` puts the file path at the last spot in the queue
+            * Finally, another call to `queueOfValidFiles.get()` sets up the next iteration in the while loop.
+            
         """
         # validate path
         if not os.path.exists(self.path):
             raise exception.PathNotFoundException(self.path)
 
-        lineData = None
-        #existence of cache hid bug in threading implementation
-        if constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME in os.listdir(os.getcwd()):
-            print 'found cache!'
-            with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME) as f:
-                fileData = [line[:-1] for line in f if line != '']
-            #file_list = fileData
-            queueOfValidFiles = queue.Queue()
-            [queueOfValidFiles.put(line) for line in fileData]
-        # get the list of available files
-        else:
-            queueOfValidFiles = queue.Queue()
-            threads = []
-            threads.append( FileReaderBase.fileScannerThread(self, queueOfValidFiles, self.path))
-            
-            #file_list = self._recurse_to_list(self.path)
-            #fileStr   = '\n'.join(file_list)
-            #with open(constants.Settings.TERMSAVER_DEFAULT_CACHE_FILENAME, 'w') as f:
-                #f.write(fileStr)
-            threads[-1].start()
+        queueOfValidFiles = queue.Queue()
+
+        threads = [ FileReaderBase.fileScannerThread(self, queueOfValidFiles, self.path)]
+        threads[-1].start()
             
         #self.clear_screen hides any error message produced before it!
         self.clear_screen()
@@ -152,8 +155,10 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         while nextFile:
             with open(nextFile, 'r') as f:
                 self.typing_print(f.read())
+
             if self.cleanup_per_file:
                 self.clear_screen()
+
             queueOfValidFiles.put(nextFile)
             nextFile = queueOfValidFiles.get()
             
@@ -266,6 +271,8 @@ Examples:
         """
         Returns a queue of all files within directory in "path"
 
+        MUST be a staticmethod for threaded implementation to function.
+
         Arguments:
             * queueOfValidFiles
 
@@ -328,12 +335,14 @@ Examples:
         return ""
 
     class fileScannerThread(Thread):
-        '''screen-animation independent thread for path scanning'''
+        """Screen-animation independent thread for path scanning.
+           Allows animation to begin prior to completion of path scanning.
+        """
         def __init__(self, fileReaderInstance, queueOfValidFiles, pathToScan):
             Thread.__init__(self)
-            self.__queueOfValidFiles = queueOfValidFiles
-            self.__pathToScan        = pathToScan
-            self.__fileReaderInstance= fileReaderInstance
+            self.__queueOfValidFiles  = queueOfValidFiles
+            self.__pathToScan         = pathToScan
+            self.__fileReaderInstance = fileReaderInstance
         def run(self):
-            '''thread begins executing this function on call to aThreadObject.start()'''
+            """thread begins executing this function on call to aThreadObject.start()"""
             file_queue = FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
