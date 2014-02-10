@@ -307,8 +307,8 @@ Examples:
         except:
             # If IOError, don't even bother, as the path might throw
             # another IOError during screen saver operations.
-            f.close()
-            # this is why we (should) use the `with` statement
+            # f.close() <- this is why we (should) use the `with` statement,
+            # `try`, `except`, `finally` makes file IO code more complex/confusing.
             return True
         try:
             while True:
