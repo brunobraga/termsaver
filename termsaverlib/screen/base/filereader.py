@@ -267,7 +267,7 @@ Examples:
             #
             return
     @staticmethod
-    def _recurse_to_list(self, queueOfValidFiles, path, filetype=''):
+    def recursivelyPopulateQueue(self, queueOfValidFiles, path, filetype=''):
         """
         Populates an (empty) queue of all files within directory in "path", with the paths to said files
 
@@ -345,5 +345,5 @@ Examples:
             self.__fileReaderInstance = fileReaderInstance
         def run(self):
             """thread begins executing this function on call to aThreadObject.start()"""
-            #file_queue = FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
-            FileReaderBase._recurse_to_list(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
+            #file_queue = FileReaderBase.recursivelyPopulateQueue(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
+            FileReaderBase.recursivelyPopulateQueue(self.__fileReaderInstance, self.__queueOfValidFiles, self.__pathToScan)
