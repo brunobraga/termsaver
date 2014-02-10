@@ -38,6 +38,8 @@ The helper class available here is:
 # Python built-in modules
 #
 import os
+import Queue as queue
+from threading import Thread
 
 #
 # Internal modules
@@ -57,12 +59,12 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
     The instantiation of this class takes two additional arguments, compared
     with its base class:
 
-        * `delay`: defines the speed of the typing writer. See more details
+        * `delay`: Defines the speed of the typing writer. See more details
           of this in `TypingHelperBase` class documentation. Its value is
           defined by `TypingHelperBase`'s default, if none is informed.
 
-        * `path`: defines the path from where this screen should scan
-          for files
+        * `path`: Defines the path to be recursively checked for text
+                  files to be displayed on terminal screen.
 
     When inheriting from this screen, you can also take advantage of the
     following properties and functionalities:
@@ -74,18 +76,10 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
     """
 
     path = ''
-    """
-    Defines the path to be recursively checked for text files to be displayed
-    on terminal screen.
-    """
 
     cleanup_per_file = False
-    """
-    Defines if termsaver should clean the screen for each file being read
-    """
 
-    def __init__(self, name, description, path=None,
-                 delay=None, cli_opts=None):
+    def __init__(self, name, description, path=None, delay=None, cli_opts=None):
         """
         Creates a new instance of this class.
 
@@ -99,7 +93,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
               for files
         """
         ScreenBase.__init__(self, name, description, cli_opts)
-        # define default cli options, if none is informed
+        # define default cli options, if none are informed
         if not cli_opts:
             self.cli_opts = {
                              'opts': 'hd:p:',
@@ -111,35 +105,58 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
 
     def _run_cycle(self):
         """
-        Executes a cycle of this screen.
-
-        The actions taken here, for each cycle, are as follows:
-
-            * loop all files retrieved from `path`
-            * open each file, read its contents
-            * print using `typing_print`
+        Executes a \"cycle\" of this screen.
+            * The concept of \"cycle\" is no longer accurate, and is misleading.
+              this function will not return.
+        New threaded implementation:
+            * Checks if self.path is a valid path, using `os.path.exists`
+            * Assigns a new Queue to `queue_of_valid_files`
+            * Appends a new `FileScannerThread` object to a list of threads
+            * `start()`s the `FileScannerThread`
+                * `FileScannerThread` will put paths in the queue as valid
+                   file paths are found
+            * `clear_screen()`s
+            * Gets a file from `queue_of_valid_files`, removing item from queue
+            * While nextFile (empty sequences are false)
+                * As long as there is something in the queue - that is, as long
+                  as `queue.queue.get()` is able to get an object from (the)
+                  `queue_of_valid_files`, this test evaluates True.
+                * I imagine that this behaves unpredictably given a computer
+                  with __REALLY__ slow I/O
+            * Opens `nextFile` with handle-auto-closing `with` statement and
+              `typing_print()`s it
+            * Clears screen if `self.cleanup_per_file`
+            * Puts `nextFile` ON the queue
+                * Because `queue_of_valid_files.get()` REMOVES a file path
+                  from the queue, `_run_cycle()` will never reach that path
+                  again, and eventually will exhaust the queue
+                  (failing silently, with a blank screen)
+                    * A static blank screen is the antithesis of a screensaver
+                * Therefore, `queue_of_valid_files.put(nextFile)` puts the file
+                  path at the last spot in the queue
+            * Finally, another call to `queue_of_valid_files.get()` sets up
+              the next iteration in the while loop.
         """
         # validate path
         if not os.path.exists(self.path):
             raise exception.PathNotFoundException(self.path)
 
-        # get the list of available files
-        file_list = self._recurse_to_list(self.path)
+        queue_of_valid_files = queue.Queue()
 
-        if len(file_list) == 0:
-            raise exception.PathNotFoundException(self.path)
-
+        threads = [FileReaderBase.FileScannerThread(self, queue_of_valid_files, self.path)]
+        threads[-1].daemon = True
+        threads[-1].start()
+        #self.clear_screen() hides any error message produced before it!
         self.clear_screen()
-        for path in file_list:
-            f = open(path, 'r')
-
-            # read the file with the typing feature
-            self.typing_print(f.read())
-            f.close()
-
+        nextFile = queue_of_valid_files.get()
+        while nextFile:
+            with open(nextFile, 'r') as f:
+                file_data = f.read()
+                self.typing_print(file_data)
             if self.cleanup_per_file:
                 self.clear_screen()
-
+            queue_of_valid_files.put(nextFile)
+            nextFile = queue_of_valid_files.get()
     def _usage_options_example(self):
         """
         Describe here the options and examples of this screen.
@@ -230,7 +247,6 @@ Examples:
             if os.path.isdir(path):
                 for item in os.listdir(path):
                     f = os.path.join(path, item)
-                    self.log("checking %s..." % f)
                     if os.path.isdir(f):
                         if not item.startswith('.'):
                             self._recurse_to_exec(f, func, filetype)
@@ -239,29 +255,30 @@ Examples:
             elif path.endswith(filetype) and not self._is_path_binary(path):
                 func(path)
         except:
-            #
-            # In case of IOErrors, assume this is true for simplicity reasons
-            # as the file should be ignored for screen saver operations.
-            #
+            # If IOError, don't put on queue, as the path might throw
+            # another IOError during screen saver operations.
             return
 
-    def _recurse_to_list(self, path, filetype=''):
+    @staticmethod
+    def recursively_populate_queue(self, queue_of_valid_files, path, filetype=''):
         """
-        Returns a list of all files within directory in "path"
+        Populates an (empty) queue of all files within directory
+        in "path", with the paths to said files.
+
+        MUST be a staticmethod for threaded implementation to function.
 
         Arguments:
+            * queue_of_valid_files
 
             * path: the path to be recursively checked (directory)
 
             * filetype: to filter for a specific filetype
         """
-        result = []
-        self._recurse_to_exec(path, result.append, filetype)
-        return result
+        self._recurse_to_exec(path, queue_of_valid_files.put, filetype)
 
     def _is_path_binary(self, path):
         """
-        Returns True if the given path corresponds to a binary, or, if by an
+        Returns True if the given path corresponds to a binary, or, if for any
         reason, the file can not be accessed or opened.
 
         For the merit of being a binary file (i.e., termsaver will not be able
@@ -271,7 +288,7 @@ Examples:
 
         Arguments:
 
-            path: the file location
+            * path: the file location
         """
         CHUNKSIZE = 1024
 
@@ -279,10 +296,8 @@ Examples:
         try:
             f = open(path, 'rb')
         except:
-            #
-            # In case of IOErrors, assume this is true for simplicity reasons
-            # as the file should be ignored for screen saver operations.
-            #
+            # If IOError, don't even bother, as the path might throw
+            # another IOError during screen saver operations.
             return True
         try:
             while True:
@@ -292,10 +307,8 @@ Examples:
                 if len(chunk) < CHUNKSIZE:
                     break  # done
         except:
-            #
-            # In case of IOErrors, assume this is true for simplicity reasons
-            # as the file should be ignored for screen saver operations.
-            #
+            # If IOError, don't even bother, as the path might throw
+            # another IOError during screen saver operations.
             return True
         finally:
             if f:
@@ -308,3 +321,18 @@ Examples:
         purpose to display extra help information for specific errors.
         """
         return ""
+
+    class FileScannerThread(Thread):
+        """Screen-animation independent thread for path scanning.
+           Allows animation to begin prior to completion of path scanning.
+        """
+        def __init__(self, fileReaderInstance, queue_of_valid_files, path_to_scan):
+            Thread.__init__(self)
+            self.__queue_of_valid_files = queue_of_valid_files
+            self.__path_to_scan         = path_to_scan
+            self.__file_reader_instance = fileReaderInstance
+        def run(self):
+            """Thread begins executing this function on
+               call to `aThreadObject.start()`.
+            """
+            FileReaderBase.recursively_populate_queue(self.__file_reader_instance, self.__queue_of_valid_files, self.__path_to_scan)
