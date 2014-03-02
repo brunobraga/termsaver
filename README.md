@@ -1,7 +1,7 @@
 <!-- 
 ###############################################################################
 #
-# file:     README
+# file:     README.md
 #
 # Purpose:  holds basic information about termsaver application, 
 #           in markdown format for GitHub.
@@ -35,7 +35,7 @@ TermSaver
 
 You may also want to visit our website: 
 
-**<http://termsaver.info>**
+**<http://termsaver.brunobraga.net>**
 
 ![termsaver](https://github.com/brunobraga/termsaver/raw/master/extras/termsaver-main_medium.jpeg)
 
@@ -223,8 +223,6 @@ applications out there, by using *gettext* and MO/PO files.
 
 The translation is still being finished up, and when it is ready for 
 contributor calls, we will post detailed information about the procedure.
-
-Let us know you want to help: <support@termsaver.info>
 
 
 ### Screensavers (plugin)
