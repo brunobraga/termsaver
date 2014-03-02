@@ -5,6 +5,12 @@ termsaver (0.3-1) unstable; urgency=low
 
  -- Bruno Braga <bruno.braga@gmail.com>  Tue, 02 Mar 2014 19:42:01 +1000
 
+termsaver (0.2-2) UNRELEASED; urgency=low
+
+  * Use canonical URIs for Vcs-* fields.
+
+ -- Jakub Wilk <jwilk@debian.org>  Sun, 05 May 2013 18:05:52 +0200
+
 termsaver (0.2-1) unstable; urgency=low
 
   * Fixed syntax for python 2.5 support.

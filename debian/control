@@ -6,8 +6,8 @@ Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.deb
 Build-Depends: debhelper (>= 7.4.3), python, bash-completion
 X-Python-Version: >= 2.5
 Standards-Version: 3.9.3
-Vcs-Svn: svn://svn.debian.org/python-apps/packages/termsaver/trunk
-Vcs-Browser: http://svn.debian.org/viewsvn/python-apps/packages/termsaver
+Vcs-Svn: svn://anonscm.debian.org/python-apps/packages/termsaver/trunk/
+Vcs-Browser: http://anonscm.debian.org/viewvc/python-apps/packages/termsaver/trunk/
 Homepage: http://termsaver.brunobraga.net
 
 Package: termsaver

@@ -26,16 +26,20 @@
 #
 ###############################################################################
 
+#
+# Important: dput settings must be defined as termsaver
+#
+
 base_path="`pwd`/`dirname $0`/.."
 cur_dir=`pwd`
 
 
-# raring quantal precise oneiric natty maverick lucid karmic jaunty hardy
-# invalid (dead) releases: intrepid 
+# saucy quantal precise oneiric natty maverick lucid karmic jaunty hardy
+# invalid (dead) releases: raring intrepid 
 if [ ! "$1" == "" ]; then
     ubuntu_release=$1
 else
-    ubuntu_release=quantal
+    ubuntu_release=saucy
 fi
 
 ubuntu_suffix=ubuntu1
@@ -105,7 +109,7 @@ echo "Finished packaging $package_dir_name"
 # upload to Launchpad PPA
 echo "Type anything to upload to LaunchPad... (will receive a confirmation by email)"
 read -n 1
-dput -f ppa /tmp/packaging/${package_dir_name}-1${ubuntu_suffix}_source.changes
+dput -f termsaver /tmp/packaging/${package_dir_name}-1${ubuntu_suffix}_source.changes
 
 # revert changes
 git checkout termsaverlib/constants.py
