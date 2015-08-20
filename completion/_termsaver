@@ -1,0 +1,63 @@
+#compdef termsaver
+
+_termsaver () {
+  local -a _1st_arguments
+  _1st_arguments=(
+    "asciiartfarts:displays ascii images from asciiartfarts.com (NSFW)"
+    "clock:displays a digital clock on screen"
+    "jokes4all:displays recent jokes from jokes4all.net (NSFW)"
+    "matrix:displays a matrix movie alike screensaver"
+    "programmer:displays source code in typing animation"
+    "quotes4all:displays recent quotes from quotes4all.net"
+    "randtxt:displays word in random places on screen"
+    "rfc:randomly displays RFC contents"
+    "rssfeed:displays rss feed information"
+    "starwars:runs the asciimation Star Wars movie"
+    "sysmon:displays a graphical system monitor"
+    "urlfetcher:displays url contents with typing animation"
+  )
+
+  _arguments \
+    '(--verbose)--verbose[displays python exception errors (for debugging)]' \
+    '(--help)--help[displays this help message]' \
+    '*:: :->subcmds' && return 0
+
+  if (( CURRENT == 1 )); then
+    _describe -t commands "termsaver commands" _1st_arguments && return 0
+  fi
+
+  case "$words[1]" in
+    clock)
+      _arguments \
+        '(-m --ampm)--ampm[Shows the clock in am/pm 12-hour format, without seconds]' && return 0 ;;
+    matrix)
+      _arguments \
+        '(-g --granularity)--granularity[An integer value to define how dirt should the screen be]' \
+        '(-d --delay)--delay[Defines the speed (in seconds) of the character movement]' \
+        '(-k --kana-only)--kana-only[Displays only Japanese characters (excludes alpha numeric)]' \
+        '(-z --zenkaku)--zenkaku[Displays full-width (fattish) Japanese characters]' && return 0 ;;
+    programmer)
+      _arguments \
+        '(-p --path)--path[Sets the location to search for text-based source files]' \
+        '(-d --delay)--delay[Sets the speed of the displaying characters]' && return 0 ;;
+    randtxt)
+      _arguments \
+        '(-w --word)--word[Sets the word to be displayed]' \
+        '(-d --delay)--delay[Sets how long the word will be displayed before randomized again]' && return 0 ;;
+    rssfeed)
+      _arguments \
+        '(-u  --url)--url[The URL path of the RSS feed (text) to be displayed]' \
+        '(-r  --raw)--rawShows all text available (with HTML if any)' \
+        '(-f --format)--formatThe printing format according to values available in RSS feed' && return 0 ;;
+    sysmon)
+      _arguments \
+        '(-d --delay)--delay[Sets the speed of the displaying characters]' \
+        '(-n --no-adjust)--no-adjust[Forces the charts to displays 0 ~ 100% values]' \
+        '(-p --path)--path[Sets the location of a file to be monitored]' && return 0 ;;
+    urlfetcher)
+      _arguments \
+        '(-u --url)--url[Defines the URL location from where the information should be fetched, then displayed]' \
+        '(-d --delay)--delay[Sets the speed of the displaying characters]' && return 0 ;;
+    *) ;;
+  esac
+}

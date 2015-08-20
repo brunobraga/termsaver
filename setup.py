@@ -55,6 +55,7 @@ data_files = [(os.path.join('share', 'locale', lang, 'LC_MESSAGES'),
                 [os.path.join('locale', lang, 'LC_MESSAGES',
                 'termsaver.mo')]) for lang in os.listdir('locale')]
 data_files.append((os.path.join(man_dir, 'man1'), ['doc/termsaver.1']))
+data_files.append(('share/zsh/site-functions', ['completion/_termsaver']))
 
 setup(name='termsaver',
       version=constants.App.VERSION,
