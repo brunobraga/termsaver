@@ -135,7 +135,7 @@ website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
 #### Programmer
 
 This is a screensaver that displays source code from a specified path in
-visual animation.
+visual animation. Syntax highlighting is enabled using [pygments](http://pygments.org/).
 
 
 #### Quotes For All
