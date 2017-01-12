@@ -48,7 +48,7 @@ from termsaverlib.screen.base import ScreenBase
 from termsaverlib import exception, constants
 from termsaverlib.screen.helper.typing import TypingHelperBase
 from termsaverlib.i18n import _
-
+from pygments import cmdline
 
 class FileReaderBase(ScreenBase, TypingHelperBase):
     """
@@ -102,6 +102,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         self.delay = delay
         self.path = path
         self.cleanup_per_cycle = False
+        self.colorize = False
 
     def _run_cycle(self):
         """
@@ -150,7 +151,12 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         self.clear_screen()
         nextFile = queue_of_valid_files.get()
         while nextFile:
-            with open(nextFile, 'r') as f:
+            if(self.colorize == True):
+                tmpFile = "/tmp/pygged"
+                cmdline.main(['pygmentize', '-f', 'terminal', '-o', tmpFile, nextFile])
+            else:
+                tmpFile = nextFile
+            with open(tmpFile, 'r') as f:
                 file_data = f.read()
                 self.typing_print(file_data)
             if self.cleanup_per_file:
