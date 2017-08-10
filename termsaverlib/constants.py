@@ -48,7 +48,7 @@ class App(PropertyClass):
     Refer to each of the available properties for detailed documentation.
     """
 
-    VERSION = "0.3"
+    VERSION = "0.4"
     """
     Defines the version of termsaver application. This is accessed during
     install process, and to any help and usage messages informed by it.
@@ -72,7 +72,7 @@ class App(PropertyClass):
     Defines the main description of the termsaver application.
     """
 
-    URL = 'http://termsaver.info'
+    URL = 'http://termsaver.brunobraga.net'
     """
     Defines the termsaver official website address.
     """

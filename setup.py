@@ -78,7 +78,7 @@ setup(name='termsaver',
             'Topic :: Terminals',
             'Topic :: Utilities',
       ],
-      url='http://termsaver.info',
+      url='http://termsaver.brunobraga.net',
       keywords=['command-line', 'terminal', 'screensaver'],
       packages=[
             'termsaverlib',
