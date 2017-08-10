@@ -82,8 +82,8 @@ read and display on screen.
 If you do not have any code in your local machine, just get some interesting
 project from the Internet, such as Django (http://www.djangoproject.com):
 
-    If you have access to subversion, you may download it at:
-        svn co https://code.djangoproject.com/svn/django/trunk/ django-trunk
+    If you have access to git, you may download it at:
+        git clone https://github.com/django/django.git
 
     Or, just download the zipped source and unpack it on your local machine:
         https://www.djangoproject.com/download/
