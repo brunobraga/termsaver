@@ -150,7 +150,7 @@ This is a screensaver that displays a text (your name, or whatever) on a
  randomized position of the screen, changing position every N seconds.
 
 
-#### Request for Change
+#### Request for Comments
 
 This is a screensaver that fetches documents from RFC (Request for Comments)
 in visual animation, which are documents elaborated by the  Internet 
@@ -182,7 +182,7 @@ This is a screensaver that displays a digital clock using ascii letters.
 #### Matrix
 
 This is a screensaver that displays falling (rising) Japanese characters
-simulating the screen from the movie The 
+simulating the screen from the movie 
 [The Matrix](http://en.wikipedia.org/wiki/The_Matrix).
 
 
