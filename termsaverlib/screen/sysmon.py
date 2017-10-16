@@ -46,7 +46,7 @@ import os
 #
 from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.helper.position import PositionHelperBase
-from termsaverlib import constants, exception
+from termsaverlib import constants, exception, common
 from termsaverlib.i18n import _
 
 
@@ -83,6 +83,13 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     """
     Registers the history of CPU/MEM usage, used to build the charts
     """
+
+    delay = None
+    """
+    Defines the printing delay, to give a cool visual of a
+    moving screen. This value is measured in seconds, and default is 0.5.
+    """
+
 
     #
     # Graphical elements
@@ -125,17 +132,21 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             _("displays a graphical system monitor"),
             {'opts': 'hd:np:', 'long_opts': ['help', 'delay=', 'no-adjust', 'path=']},
         )
-        self.delay = 0.5
+        if self.delay is None:
+            self.delay = 0.5
+
         #
         # Due to a time delay to calculate CPU usage
         # we need to clear the screen manually
         #
         self.cleanup_per_cycle = False
 
+
     def _run_cycle(self):
         """
         Executes a cycle of this screen.
         """
+
         # calculate random position based on screen size
         self.get_terminal_size()
 
@@ -244,42 +255,18 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             raise exception.TermSaverException(help_msg="OS is not supported!")
 
         # memory info
-        re_parser = re.compile(r'^(?P<key>\S*):\s*(?P<value>\d*)\s*kB')
-        mem_info = {}
-        for line in open('/proc/meminfo'):
-            match = re_parser.match(line)
-            if not match:
-                continue # skip lines that don't parse
-            key, value = match.groups(['key', 'value'])
-            if key not in ('MemTotal', 'MemFree'):
-                continue
-            mem_info[key] = int(value)
-
+        mem_info = common.get_mem_usage()
+        
         # cpu info
-        def getTimeList():
-            statFile = file("/proc/stat", "r")
-            timeList = statFile.readline().split(" ")[2:6]
-            statFile.close()
-            for i in range(len(timeList))  :
-                timeList[i] = int(timeList[i])
-            return timeList
-        def deltaTime()  :
-            x = getTimeList()
-            time.sleep(self.delay)
-            y = getTimeList()
-            for i in range(len(x))  :
-                y[i] -= x[i]
-            return y
-        dt = deltaTime()
-        cpu = 100 - (dt[len(dt) - 1] * 100.00 / sum(dt))
+        cpu = common.get_cpu_usage(self.delay)
 
-        self.info['total_mem'] = mem_info['MemTotal'] / 1024
+        self.info['total_mem'] = mem_info[1]
 
         # insert into history data
         self.info['db'].append( {
                 'time': time.time(),
                 'cpu': cpu,
-                'mem': (mem_info['MemTotal'] - mem_info['MemFree']) * 100 / mem_info['MemTotal']
+                'mem': mem_info[0]
              }
         )
         # cut the data to keep only recent values

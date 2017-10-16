@@ -37,6 +37,7 @@ import traceback
 import HTMLParser
 import subprocess
 import re
+import time
 
 
 def is_windows():
@@ -44,6 +45,13 @@ def is_windows():
     Returns True if the environment is Microsoft Windows.
     """
     return sys.platform == "win32"
+
+
+def is_macos():
+    """
+    Returns True if the environment is Microsoft Windows.
+    """
+    return sys.platform == "darwin"
 
 
 def prettify_exception(ex):
@@ -169,3 +177,100 @@ def strip_html(text):
     there isn't much sense to have them printed anyway).
     """
     return re.sub('<[^<]+?>', '', text)
+
+
+def get_cpu_usage(sleep_delay, ignore_errors=False):
+    """
+    """
+    try:    
+        if is_windows():
+            raise Exception(_("Functionality not available for Windows. See --help for details."))
+            
+        elif is_macos():
+            ps = subprocess.Popen(['ps', '-A', '-o %cpu'], stdout=subprocess.PIPE)
+            cpu = subprocess.check_output(('awk', '{s+=$1} END {print s "%"}'), stdin=ps.stdout)
+            ps.wait()
+            time.sleep(sleep_delay) # required to simulate same in linux
+            return float(cpu.strip()[:-1])
+
+        else:
+            # linux
+            def getTimeList():
+                statFile = file("/proc/stat", "r")
+                timeList = statFile.readline().split(" ")[2:6]
+                statFile.close()
+                for i in range(len(timeList))  :
+                    timeList[i] = int(timeList[i])
+                return timeList
+            def deltaTime()  :
+                x = getTimeList()
+                time.sleep(sleep_delay)
+                y = getTimeList()
+                for i in range(len(x))  :
+                    y[i] -= x[i]
+                return y
+            dt = deltaTime()
+            if sum(dt) > 0:
+                cpu = 100 - (dt[len(dt) - 1] * 100.00 / sum(dt))
+            else:
+                cpu = 0
+
+            return cpu
+
+    except Exception, e:
+        if not ignore_errors:
+            raise e
+        else:
+            return 0
+
+
+def get_mem_usage(ignore_errors=False):
+    """
+    """
+    try:    
+        if is_windows():
+            raise Exception(_("Functionality not available for Windows. See --help for details."))
+            
+        elif is_macos():
+
+            vm = subprocess.Popen(['vm_stat'], stdout=subprocess.PIPE).communicate()[0].decode()
+            vmLines = vm.split('\n')
+            sep = re.compile(':[\s]+')
+            vmStats = {}
+            for row in range(1,len(vmLines)-2):
+                rowText = vmLines[row].strip()
+                rowElements = sep.split(rowText)
+                vmStats[(rowElements[0])] = int(rowElements[1].strip('\.')) * 4096
+
+            total_mem = (vmStats["Pages wired down"]+vmStats["Pages active"]+vmStats["Pages inactive"]+vmStats["Pages free"])/1024/1024
+            curr_mem = (vmStats["Pages inactive"]+vmStats["Pages free"]) * 100 / (vmStats["Pages wired down"]+vmStats["Pages active"]+vmStats["Pages inactive"]+vmStats["Pages free"])
+
+            return (curr_mem, total_mem)
+
+        else:
+            # linux
+            re_parser = re.compile(r'^(?P<key>\S*):\s*(?P<value>\d*)\s*kB')
+            mem_info = {}
+            for line in open('/proc/meminfo'):
+                match = re_parser.match(line)
+                if not match:
+                    continue # skip lines that don't parse
+                key, value = match.groups(['key', 'value'])
+                if key not in ('MemTotal', 'MemFree'):
+                    continue
+                mem_info[key] = int(value)
+
+            total_mem = mem_info['MemTotal'] / 1024
+            curr_mem = (mem_info['MemTotal'] - mem_info['MemFree']) * 100 / mem_info['MemTotal']
+
+            return (curr_mem, total_mem)
+
+    except Exception, e:
+        if not ignore_errors:
+            raise e
+        else:
+            return (0,0)
+
+
+
+
