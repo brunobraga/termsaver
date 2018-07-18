@@ -1,3 +1,11 @@
+termsaver (0.4-1) unstable; urgency=low
+
+  * Added zsh completion (wkentaro).
+  * Implemented sysmon for MacOS.
+
+
+ -- Bruno Braga <bruno.braga@gmail.com>  Wed, 18 Jul 2018 14:11:00 +1000
+
 termsaver (0.3-1) unstable; urgency=low
 
   * Improved programmer screen by placing file search in background.

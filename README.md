@@ -188,7 +188,7 @@ simulating the screen from the movie
 
 #### Sysmon
 
-(For Linux systems only) Displays the CPU/Memory usage over time in a graphic
+(For Linux/Mac systems only) Displays the CPU/Memory usage over time in a graphic
 alike screensaver.
 
 

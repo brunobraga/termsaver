@@ -26,6 +26,10 @@
 #
 ###############################################################################
 
+
+# dependencies as of Ubuntu 18.04 LTS: python build-essential debhelper devscripts
+
+
 base_path="`pwd`/`dirname $0`/.."
 cur_dir=`pwd`
 
