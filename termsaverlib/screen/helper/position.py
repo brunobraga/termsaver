@@ -133,13 +133,15 @@ class PositionHelperBase(ScreenHelperBase):
             return text
 
         temp = text.split("\n")
-        longest_line = max([len(x) for x in temp])
+        longest_line = max([len(x.decode('utf-8')) for x in temp])
         new_text = []
         for l in temp:
-            t = "\n".join(textwrap.wrap(l, width=self.geometry['x']))
+            # if utf string thwn width must be bigger
+            overlen = len(l)-len(l.decode('utf-8)'))
+            t = "\n".join(textwrap.wrap(l, width=self.geometry['x']+overlen))
             
             # fill in trailing blanks
-            t += " " * (min(longest_line, self.geometry['x']) - min(len(t), self.geometry['x']))
+            t += " " * (min(longest_line, self.geometry['x']) - min(len(t.decode('utf-8')), self.geometry['x']))
             new_text.append(t)
         return "\n".join(new_text)
     
@@ -172,7 +174,7 @@ class PositionHelperBase(ScreenHelperBase):
         new_text = ""
         for t in temp:
             self.position['x'] = int(math.ceil(
-                    (self.geometry['x'] - len(t)) / 2))
+                    (self.geometry['x'] - len(t.decode('utf-8'))) / 2))
             new_text += " " * self.position['x'] + t
             if len(temp) > 1:
                 new_text += "\n"

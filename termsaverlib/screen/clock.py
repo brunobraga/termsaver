@@ -1,3 +1,4 @@
+﻿# -*- coding: utf-8 -*-
 ###############################################################################
 #
 # file:     clock.py
@@ -68,6 +69,11 @@ class ClockScreen(ScreenBase, PositionHelperBase):
     Defines the format of the datetime to be displayed.
     """
 
+    big = False
+    """
+    Defines the format of the datetime to be displayed.
+    """
+
     cseparator = ":"
     """
     Do not change this (if you do, change also its ASCII representation)
@@ -77,6 +83,8 @@ class ClockScreen(ScreenBase, PositionHelperBase):
     """
     Defines if the clock separator should be displayed
     """
+
+    lineindigimap = 6
 
     digmap = {
         '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n       \n',
@@ -107,6 +115,23 @@ class ClockScreen(ScreenBase, PositionHelperBase):
 
     Extracted from standard font of Figlet (http://www.figlet.org/)
     """
+    digimapbig = {
+        '1' : '   ███     \n   ███     \n   ███     \n██████     \n██████     \n██████     \n   ███     \n   ███     \n   ███     \n   ███     \n   ███     \n   ███     \n█████████  \n█████████  \n█████████  \n',
+        '2' : '█████████  \n█████████  \n█████████  \n      ███  \n      ███  \n      ███  \n█████████  \n█████████  \n█████████  \n███        \n███        \n███        \n█████████  \n█████████  \n█████████  \n',
+        '3' : '█████████  \n█████████  \n█████████  \n      ███  \n      ███  \n      ███  \n   ██████  \n   ██████  \n   ██████  \n      ███  \n      ███  \n      ███  \n█████████  \n█████████  \n█████████  \n',
+        '4' : '███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n█████████  \n█████████  \n█████████  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n',
+        '5' : '█████████  \n█████████  \n█████████  \n███        \n███        \n███        \n█████████  \n█████████  \n█████████  \n      ███  \n      ███  \n      ███  \n█████████  \n█████████  \n█████████  \n',
+        '6' : '█████████  \n█████████  \n█████████  \n███        \n███        \n███        \n█████████  \n█████████  \n█████████  \n███   ███  \n███   ███  \n███   ███  \n█████████  \n█████████  \n█████████  \n',
+        '7' : '█████████  \n█████████  \n█████████  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n      ███  \n',
+        '8' : '█████████  \n█████████  \n█████████  \n███   ███  \n███   ███  \n███   ███  \n█████████  \n█████████  \n█████████  \n███   ███  \n███   ███  \n███   ███  \n█████████  \n█████████  \n█████████  \n',
+        '9' : '█████████  \n█████████  \n█████████  \n███   ███  \n███   ███  \n███   ███  \n█████████  \n█████████  \n█████████  \n      ███  \n      ███  \n      ███  \n█████████  \n█████████  \n█████████  \n',
+        '0' : '█████████  \n█████████  \n█████████  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n███   ███  \n█████████  \n█████████  \n█████████  \n',
+        ':' : '     \n     \n     \n███  \n███  \n███  \n     \n     \n     \n███  \n███  \n███  \n     \n     \n     \n',
+        'a' : '      \n      \n      \n      \n      \n      \n      \n      \n      \n      \n ██   \n█ █   \n█ █   \n ███  \n           \n',
+        'm' : '       \n       \n       \n       \n       \n       \n       \n       \n       \n       \n       \n█████  \n█ █ █  \n█ █ █  \n       \n',
+        'p' : '     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n███  \n█ █  \n███  \n█    \n',
+        ' ' : '     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n',
+    }
 
     def __init__(self):
         """
@@ -115,7 +140,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         ScreenBase.__init__(self,
             "clock",
             _("displays a digital clock on screen"),
-            {'opts': 'hm', 'long_opts': ['help', 'ampm']},
+            {'opts': 'hmb', 'long_opts': ['help', 'ampm', "big"]},
         )
         self.cleanup_per_cycle = True
 
@@ -166,6 +191,8 @@ Options:
  -h, --help   Displays this help message
 
  -m, --ampm   Shows the clock in am/pm 12-hour format, without seconds.
+ 
+ -b, --big   Shows the clock big number format, without seconds.
 
 
 """)
@@ -189,6 +216,10 @@ Options:
                 self.screen_exit()
             elif o in ("-m", "--ampm"):
                 self.ampm = True
+            elif o in ("-b", "--big"):
+                self.big = True
+                self.lineindigimap = 15
+                self.digmap = self.digimapbig
             else:
                 # this should never happen!
                 raise Exception(_("Unhandled option. See --help for details."))
@@ -197,6 +228,16 @@ Options:
         """
         Returns the ASCII representation of a date.
         """
+
+        # shows/hides separator for a blinking effect
+        # Moved here so as not to duplicate in big number. Default used self.cseparator
+        separator = ""
+        if self.show_separator:
+            separator = self.cseparator
+            self.show_separator = False
+        else:
+            separator = " "
+            self.show_separator = True
 
         # define clock string based on options (12/24)
         if self.ampm:
@@ -211,17 +252,9 @@ Options:
             # fix the zero hour value
             if hour == 0:
                 hour = 12
-
-            # shows/hides separator for a blinking effect
-            separator = ""
-            if self.show_separator:
-                separator = self.cseparator
-                self.show_separator = False
-            else:
-                separator = " "
-                self.show_separator = True
-
             clock = "%s%s%s%s" % (hour, separator, date_time.strftime('%M'), suffix)
+        elif self.big:
+            clock = date_time.strftime('%H' + separator + '%M')
         else:
             # 24hs format includes seconds
             clock = date_time.strftime('%H' + self.cseparator + '%M' + self.cseparator + '%S')
@@ -230,7 +263,7 @@ Options:
         for c in clock:
             items.append(self.digmap[c])
         output = ''
-        for i in range(6):  # loop lines of chars - Increased to six for extra font line
+        for i in range(self.lineindigimap):  # loop lines of chars - Increased to six for extra font line
             temp = ''
             for item in items:
                 temp += item.split('\n')[i]
