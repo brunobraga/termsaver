@@ -123,7 +123,7 @@ class RandTxtScreen(ScreenBase,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print ("""
 Options:
 
  -w, --word   Sets the word to be displayed

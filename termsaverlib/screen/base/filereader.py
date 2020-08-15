@@ -38,7 +38,7 @@ The helper class available here is:
 # Python built-in modules
 #
 import os
-import Queue as queue
+import queue # as queue
 from threading import Thread
 
 #
@@ -168,7 +168,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print ("""
 Options:
 
  -p, --path   Sets the location to search for text-based source files.

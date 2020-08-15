@@ -105,7 +105,7 @@ class TypingHelperBase(ScreenHelperBase):
 
         if self.line_delay is None:
             self.line_delay = 10 * self.delay
-        splitText = text.split('\n')
+        splitText = text.split("\n")
         for line in splitText:
             for char in line:
                 sys.stdout.write(char)

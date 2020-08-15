@@ -74,7 +74,7 @@ def usage():
     # Print the main termsaver header
     ScreenBase.usage_header()
 
-    print _("""Usage: %(app_name)s [screen] [options]
+    print ("""Usage: %(app_name)s [screen] [options]
 
 Screens:
 
@@ -86,10 +86,10 @@ Options:
  -v, --verbose  Displays python exception errors (for debugging)
 
 Refer also to each screen's help by typing: %(app_name)s [screen] -h
-""") % {
+""" % {
         'app_name': constants.App.NAME,
         'screens': build_screen_usage_list()
-       }
+       })
 
     # Print the main termsaver footer
     ScreenBase.usage_footer()
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     try:
         # parse arguments and execute them accordingly
         parse_args(sys.argv[1:])
-    except KeyboardInterrupt, e:
+    except KeyboardInterrupt as e:
         #
         # Handles keyboard interrupt to exit this application
         # by cleaning up the screen for "left-overs"
@@ -171,7 +171,7 @@ if __name__ == '__main__':
         # Just finish gracefully
         sys.exit(0)
 
-    except exception.TermSaverException, e:
+    except exception.TermSaverException as e:
 
         error_number = errno.EPERM  # 1
 
@@ -180,75 +180,109 @@ if __name__ == '__main__':
             # Handles issues with file or directory reading errors
             #
             error_number = errno.ENOENT
-            print _('Oops! Could not find path for %(path)s. %(msg)s') % \
-                {'path': e.path, 'msg': e.message}
+            error_message = ""
+            if hasattr(e, 'message'):
+                error_message = e.message
+            else:
+                error_message = e
+            print ('Oops! Could not find path for %(path)s. %(msg)s') % \
+                {'path': e.path, 'msg': error_message}
 
         elif isinstance(e, exception.InvalidOptionException):
             #
             # Handles issues with invalid options
             #
             error_number = errno.EINVAL
+            error_message = ""
+            if hasattr(e, 'message'):
+                error_message = e.message
+            else:
+                error_message = e
             suf = ''
+
             if e.option_name not in (None, ''):
                 suf = " '%s'" % e.option_name
-            print _('Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s') % \
+            print ('Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s' % \
                 {'suf': suf,
-                 'msg': e.message,
-                 'help': _(' See --help for details.')}
+                 'msg': error_message,
+                 'help': (' See --help for details.')})
 
         elif isinstance(e, exception.UrlException):
             #
             # Handles issues with invalid URLs
             #
             error_number = errno.ENETUNREACH
-            print _('Oops! Error while trying to fetch from %(url)s. %(msg)s')\
-                 % {'url': e.url, 'msg': e.message}
+            error_message = ""
+            if hasattr(e, 'message'):
+                error_message = e.message
+            else:
+                error_message = e
+
+            print ('Oops! Error while trying to fetch from %(url)s. %(msg)s'\
+                 % {'url': e.url, 'msg': error_message})
 
         elif isinstance(e, exception.XmlException):
             #
             # Handles issues with invalid URLs
             #
             error_number = errno.ENOEXEC
+            error_message = ""
+            if hasattr(e, 'message'):
+                error_message = e.message
+            else:
+                error_message = e
+
             suf = ''
             if e.name not in (None, ''):
                 suf = " with '%s'" % e.name
-            print _('Oops! There were parsing issues%(suf)s. %(msg)s') % \
-                {'suf': suf, 'msg': e.message}
+            print ('Oops! There were parsing issues%(suf)s. %(msg)s') % \
+                {'suf': suf, 'msg': error_message}
 
         elif isinstance(e, exception.TermSaverException):
             #
             # Handles other termsaver errors
             #
             error_number = errno.ENOEXEC
-            print _('Oops! There was an error: %(msg)s') % {'msg': e.message}
+            error_message = ""
+            if hasattr(e, 'message'):
+                error_message = e.message
+            else:
+                error_message = e
+
+            print ('Oops! There was an error: %(msg)s') % {'msg': error_message}
 
         if verbose:
             common.prettify_exception(e)
 
         if e.help_msg not in (None, ''):
-            print e.help_msg
+            print(e.help_msg)
 
         sys.exit(error_number)
 
-    except Exception, e:
+    except Exception as e:
         #
         # Handles keyboard interrupt to exit this application
         # by cleaning up the screen for "left-overs"
         #
+        error_message = ""
+        if hasattr(e, 'message'):
+            error_message = e.message
+        else:
+            error_message = e
 
-        print _("""Oops! Something went terribly wrong.
-Error details: %s""" % e.message)
+        print ("""Oops! Something went terribly wrong.
+Error details: %s""" % error_message)
 
         if verbose:
             common.prettify_exception(e)
 
-        print _("""
+        print ("""
 You are more than welcome to report this at:
         %(url)s
-""") % {'url': constants.App.SOURCE_URL}
+""" % {'url': constants.App.SOURCE_URL})
 
         if not verbose:
-            print _("""
+            print ("""
 Just before you do so, please run termsaver again with the
 option --verbose and copy the output when you are filling
 the bug report, that will help track faster the problem.

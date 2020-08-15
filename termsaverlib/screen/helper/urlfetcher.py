@@ -37,8 +37,10 @@ The helper class available here is:
 #
 # Python built-in modules
 #
-from urllib2 import Request, urlopen, URLError, HTTPError
-import urlparse
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
+from urllib.parse import urlparse, urlsplit, urlunsplit
+
 import time
 
 #
@@ -100,7 +102,7 @@ class URLFetcherHelperBase(ScreenHelperBase):
         if not text:
             raise exception.UrlException(text, _("URL can not be blank"))
         try:
-            url_fields = list(urlparse.urlsplit(text))
+            url_fields = list(urlsplit(text))
         except ValueError:
             raise exception.UrlException(text, _("URL does not seem valid"))
 
@@ -115,8 +117,8 @@ class URLFetcherHelperBase(ScreenHelperBase):
             # Rebuild the url_fields list, since the domain segment may now
             # contain the path too.
             try:
-                url_fields = list(urlparse.urlsplit(
-                    urlparse.urlunsplit(url_fields)))
+                url_fields = list(urlsplit(
+                    urlunsplit(url_fields)))
             except ValueError:
                 raise exception.UrlException(text,
                     _("URL does not seem valid"))
@@ -124,7 +126,7 @@ class URLFetcherHelperBase(ScreenHelperBase):
         if not url_fields[2]:
             # the path portion may need to be added before query params
             url_fields[2] = '/'
-        return urlparse.urlunsplit(url_fields)
+        return urlunsplit(url_fields)
 
     def fetch(self, uri):
         """
@@ -160,10 +162,10 @@ class URLFetcherHelperBase(ScreenHelperBase):
         resp = None
         try:
             resp = urlopen(req)
-        except HTTPError, e:
+        except HTTPError as e:
             raise exception.UrlException(uri,
                 _("Fetched URL returned error %d.") % e.code)
-        except URLError, e:
+        except URLError as e:
             raise exception.UrlException(uri,
                 _("Could not fetch URL, because %s") % e.reason)
         else:
@@ -193,4 +195,4 @@ class URLFetcherHelperBase(ScreenHelperBase):
 
             raw: the response data that must be tested for binary values
         """
-        return raw.find("\0") > -1
+        return raw.find(b'\0') > -1

@@ -219,7 +219,7 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
             # build it for the first time or whenever the geometry changes
             self.__build_screen_map()
 
-        print self.print_line()
+        print(self.print_line())
         time.sleep(self.line_delay)
 
     def _usage_options_example(self):
@@ -233,7 +233,7 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print ("""
 Options:
 
  -g, --granularity
@@ -338,7 +338,7 @@ Examples:
         # clean up previous
         self.screen_map = []
 
-        for __ in range(0, self.geometry['x'] / self.proportion): 
+        for __ in range(0, self.geometry['x'] // self.proportion): 
 
             if random.random() > 0.5:
                 char_list = self.get_char_list()

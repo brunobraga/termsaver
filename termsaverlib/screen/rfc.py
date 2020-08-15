@@ -110,4 +110,4 @@ class RFCScreen(SimpleUrlFetcherBase):
 
         data = self.fetch(self.url)
         self.clear_screen()
-        self.typing_print(data)
+        self.typing_print(data.decode("utf-8"))

@@ -99,7 +99,7 @@ class UrlFetcherBase(ScreenBase,
         """
         data = self.fetch(self.url)
         self.clear_screen()
-        self.typing_print(data)
+        self.typing_print(data.decode("utf-8"))
 
     def _message_no_url(self):
         """
@@ -119,7 +119,7 @@ class UrlFetcherBase(ScreenBase,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print ("""
 Options:
 
  -u, --url    Defines the URL location from where the information
@@ -172,8 +172,13 @@ Examples:
                 try:
                     # try to fix the url formatting
                     self.url = self.fix_uri(a)
-                except Exception, e:
-                    raise exception.InvalidOptionException("url", e.message)
+                except Exception as e:
+                    error_message = ""
+                    if hasattr(e, 'message'):
+                        error_message = e.message
+                    else:
+                        error_message = e
+                    raise exception.InvalidOptionException("url", error_message)
             else:
                 # this should never happen!
                 raise Exception(_("Unhandled option. See --help for details."))
@@ -212,11 +217,11 @@ class SimpleUrlFetcherBase(UrlFetcherBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print """
+        print ("""
 Options:
 
  -h, --help   Displays this help message
-"""
+""")
 
     def _parse_args(self, prepared_args):
         """

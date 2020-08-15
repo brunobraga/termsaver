@@ -200,7 +200,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         self.clear_screen()
 
         # just print the whole text
-        print txt
+        print(txt)
 
         #
         # The sleep happens here in the CPU calculation instead
@@ -365,7 +365,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print ("""
 Options:
 
  -d, --delay  Sets the speed of the displaying characters
