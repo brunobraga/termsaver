@@ -1,7 +1,7 @@
 Source: termsaver
 Section: misc
 Priority: optional
-Maintainer: Bruno Braga <bruno.braga@gmail.com>
+Maintainer: Bruno Braga <bruno@brunobraga.net>
 Uploaders: Python Applications Packaging Team <python-apps-team@lists.alioth.debian.org>
 Build-Depends: debhelper (>= 7.4.3), python, bash-completion
 X-Python-Version: >= 2.5
