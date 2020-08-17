@@ -110,11 +110,6 @@ def get_available_screens():
 
     return screens
 
-def absoluteFilePaths(directory):
-   for dirpath,_,filenames in os.walk(directory):
-       for f in filenames:
-           yield os.path.abspath(os.path.join(dirpath, f))
-
 def build_screen_usage_list():
     """
     Builds a simple string with a list of all available screens,

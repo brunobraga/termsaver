@@ -205,7 +205,7 @@ if __name__ == '__main__':
             print ('Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s' % \
                 {'suf': suf,
                  'msg': error_message,
-                 'help': (' See --help for details.')})
+                 'help': _(' See --help for details.')})
 
         elif isinstance(e, exception.UrlException):
             #
