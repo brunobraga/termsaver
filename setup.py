@@ -63,7 +63,7 @@ setup(name='termsaver',
       version=constants.App.VERSION,
       description='Simple text-based terminal screensaver.',
       author='Bruno Braga',
-      author_email='bruno.braga@gmail.com',
+      author_email='bruno@brunobraga.net',
       classifiers=[
             'Development Status :: 5 - Production/Stable',
             'Environment :: Console',
