@@ -67,7 +67,7 @@ Requirements
 ------------
 
   * Linux, or Mac (or Windows too, but you are on your own)
-  * Python 2.5+ (and < 3.x)
+  * Python 3.x (Python 2.x was deprecated since 08-2020)
 
 
 Installation
@@ -259,8 +259,11 @@ Uninstall
 Just remove manually the following files:
 
         # For Linux boxes
-        rm -rvf /usr/local/bin/termsaver 
-        rm -rvf /usr/local/lib/python2.7/dist-packages/termsaver* 
+        rm -rvf /usr/local/bin/termsaver
+        
+        # change your python version/location here
+        rm -rvf /usr/local/lib/python3.x/dist-packages/termsaver* 
+        
         rm -rvf /usr/local/share/man/man1/termsaver.1 
         find /usr/local/share/locale/ -name "termsaver.mo" -exec rm -rfv {} \; 
 
