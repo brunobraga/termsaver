@@ -119,7 +119,7 @@ class UrlFetcherBase(ScreenBase,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print ("""
+        print (_("""
 Options:
 
  -u, --url    Defines the URL location from where the information
@@ -143,7 +143,7 @@ Examples:
 """) % {
         'screen': self.name,
         'app_name': constants.App.NAME,
-    }
+    })
 
     def _parse_args(self, prepared_args):
         """

@@ -185,7 +185,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print ("""
+        print (_("""
 Options:
 
  -h, --help   Displays this help message
@@ -195,7 +195,7 @@ Options:
  -b, --big   Shows the clock big number format, without seconds.
 
 
-""")
+"""))
 
     def _parse_args(self, prepared_args):
         """

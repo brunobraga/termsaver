@@ -233,7 +233,7 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print ("""
+        print (_("""
 Options:
 
  -g, --granularity
@@ -264,7 +264,7 @@ Examples:
         'app_name': constants.App.NAME,
         'granularity': self.granularity,
         'line_delay': self.line_delay,
-    }
+    })
 
     def _parse_args(self, prepared_args):
         """

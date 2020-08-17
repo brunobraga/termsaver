@@ -165,7 +165,7 @@ class RSSFeedScreenBase(UrlFetcherBase,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print ("""
+        print (_("""
 Options:
 
  -h,  --help   Displays this help message
@@ -193,7 +193,7 @@ Example:
         'app_name': constants.App.NAME,
         'screen': self.name,
         'description': self.description,
-       }
+       })
 
     def _parse_args(self, prepared_args):
         """

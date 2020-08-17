@@ -74,7 +74,7 @@ def usage():
     # Print the main termsaver header
     ScreenBase.usage_header()
 
-    print ("""Usage: %(app_name)s [screen] [options]
+    print (_("""Usage: %(app_name)s [screen] [options]
 
 Screens:
 
@@ -86,7 +86,7 @@ Options:
  -v, --verbose  Displays python exception errors (for debugging)
 
 Refer also to each screen's help by typing: %(app_name)s [screen] -h
-""" % {
+""") % {
         'app_name': constants.App.NAME,
         'screens': build_screen_usage_list()
        })
@@ -185,7 +185,7 @@ if __name__ == '__main__':
                 error_message = e.message
             else:
                 error_message = e
-            print ('Oops! Could not find path for %(path)s. %(msg)s') % \
+            print (_('Oops! Could not find path for %(path)s. %(msg)s')) % \
                 {'path': e.path, 'msg': error_message}
 
         elif isinstance(e, exception.InvalidOptionException):
@@ -202,7 +202,7 @@ if __name__ == '__main__':
 
             if e.option_name not in (None, ''):
                 suf = " '%s'" % e.option_name
-            print ('Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s' % \
+            print (_('Oops! Invalid use of option%(suf)s. %(msg)s.%(help)s') % \
                 {'suf': suf,
                  'msg': error_message,
                  'help': _(' See --help for details.')})
@@ -218,7 +218,7 @@ if __name__ == '__main__':
             else:
                 error_message = e
 
-            print ('Oops! Error while trying to fetch from %(url)s. %(msg)s'\
+            print (_('Oops! Error while trying to fetch from %(url)s. %(msg)s')\
                  % {'url': e.url, 'msg': error_message})
 
         elif isinstance(e, exception.XmlException):
@@ -235,8 +235,8 @@ if __name__ == '__main__':
             suf = ''
             if e.name not in (None, ''):
                 suf = " with '%s'" % e.name
-            print ('Oops! There were parsing issues%(suf)s. %(msg)s') % \
-                {'suf': suf, 'msg': error_message}
+            print (_('Oops! There were parsing issues%(suf)s. %(msg)s') % \
+                {'suf': suf, 'msg': error_message})
 
         elif isinstance(e, exception.TermSaverException):
             #
@@ -249,7 +249,7 @@ if __name__ == '__main__':
             else:
                 error_message = e
 
-            print ('Oops! There was an error: %(msg)s') % {'msg': error_message}
+            print (_('Oops! There was an error: %(msg)s') % {'msg': error_message})
 
         if verbose:
             common.prettify_exception(e)
@@ -270,23 +270,23 @@ if __name__ == '__main__':
         else:
             error_message = e
 
-        print ("""Oops! Something went terribly wrong.
-Error details: %s""" % error_message)
+        print (_("""Oops! Something went terribly wrong.
+Error details: %s""") % error_message)
 
         if verbose:
             common.prettify_exception(e)
 
-        print ("""
+        print (_("""
 You are more than welcome to report this at:
         %(url)s
-""" % {'url': constants.App.SOURCE_URL})
+""") % {'url': constants.App.SOURCE_URL})
 
         if not verbose:
-            print ("""
+            print (_("""
 Just before you do so, please run termsaver again with the
 option --verbose and copy the output when you are filling
 the bug report, that will help track faster the problem.
 Thanks!
-""")
+"""))
 
         sys.exit(errno.EPERM)

@@ -168,7 +168,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print ("""
+        print (_("""
 Options:
 
  -p, --path   Sets the location to search for text-based source files.
@@ -190,7 +190,7 @@ Examples:
         'screen': self.name,
         'app_name': constants.App.NAME,
         'default_delay': constants.Settings.CHAR_DELAY_SECONDS,
-    }
+    })
 
     def _parse_args(self, prepared_args):
         """

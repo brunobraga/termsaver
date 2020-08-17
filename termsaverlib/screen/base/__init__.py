@@ -308,10 +308,10 @@ Report bugs to authors at:
         # header
         self.usage_header()
 
-        print ("""Screen: %(screen)s
+        print (_("""Screen: %(screen)s
 Description: %(description)s
 
-Usage: %(app_name)s %(screen)s [options]""" % {
+Usage: %(app_name)s %(screen)s [options]""") % {
                'app_name': constants.App.NAME,
                'screen': self.name,
                'description': self.description,
