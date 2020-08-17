@@ -72,6 +72,7 @@ This also contains the following sub-packages:
 #
 import os
 import inspect
+import sys
 
 #
 # Internal modules
@@ -86,9 +87,14 @@ def get_available_screens():
     """
     ignore_list = ['__init__.py']
     screens = []
+    
+    # for module in absoluteFilePaths(os.path.join(os.path.dirname(__file__))): 
+    sys.path.insert(1, os.path.join(os.path.dirname(__file__)))
+
     for module in os.listdir(os.path.join(os.path.dirname(__file__))):
         if module in ignore_list or module[-3:] != '.py':
             continue
+
         module_name = module[:-3]
         m = __import__(module_name, globals(), locals())
 
@@ -103,7 +109,6 @@ def get_available_screens():
     screens.extend(get_available_plugin_screens())
 
     return screens
-
 
 def build_screen_usage_list():
     """

@@ -34,7 +34,7 @@ Holds common functionality used by termsaver screens.
 import os
 import sys
 import traceback
-import HTMLParser
+from html.parser import HTMLParser
 import subprocess
 import re
 import time
@@ -58,12 +58,12 @@ def prettify_exception(ex):
     """
     Outputs the exception with its stack trace within separator lines.
     """
-    print """
+    print ("""
 ===================================
 Exception: (%s) %s
 %s
 ===================================
-""" % (ex.__class__.__name__, ex.message, traceback.format_exc())
+""" % (ex.__class__.__name__, ex.message, traceback.format_exc()))
 
 
 def get_app_dir():
@@ -128,7 +128,7 @@ def unescape_string(escaped_text):
         unescaped = unescaped.replace('<br>', '\n')
         unescaped = unescaped.replace('<br/>', '\n')
         unescaped = unescaped.replace('<br />', '\n')
-        unescaped = unescaped.decode('string_escape')
+        # unescaped = unescaped.decode('string_escape')
     except:
         #
         # If there were errors here, just ignore them and try to give back
@@ -165,7 +165,7 @@ def execute_shell(cmd, ignore_errors=False):
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE, close_fds=True)
         out, __ = p.communicate()
-    except Exception, e:
+    except Exception as e:
         if not ignore_errors:
             raise e
     return out.rstrip()
@@ -196,7 +196,7 @@ def get_cpu_usage(sleep_delay, ignore_errors=False):
         else:
             # linux
             def getTimeList():
-                statFile = file("/proc/stat", "r")
+                statFile = open("/proc/stat", "r")
                 timeList = statFile.readline().split(" ")[2:6]
                 statFile.close()
                 for i in range(len(timeList))  :
@@ -217,7 +217,7 @@ def get_cpu_usage(sleep_delay, ignore_errors=False):
 
             return cpu
 
-    except Exception, e:
+    except Exception as e:
         if not ignore_errors:
             raise e
         else:
@@ -233,7 +233,7 @@ def get_mem_usage(ignore_errors=False):
             
         elif is_macos():
 
-            vm = subprocess.Popen(['vm_stat'], stdout=subprocess.PIPE).communicate()[0].decode()
+            vm = subprocess.Popen(['vm_stat'], stdout=subprocess.PIPE).communicate()[0] #.decode()
             vmLines = vm.split('\n')
             sep = re.compile(':[\s]+')
             vmStats = {}
@@ -265,7 +265,7 @@ def get_mem_usage(ignore_errors=False):
 
             return (curr_mem, total_mem)
 
-    except Exception, e:
+    except Exception as e:
         if not ignore_errors:
             raise e
         else:

@@ -123,7 +123,7 @@ class RandTxtScreen(ScreenBase,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print (_("""
 Options:
 
  -w, --word   Sets the word to be displayed
@@ -147,7 +147,7 @@ Example:
         'app_title': constants.App.TITLE,
         'screen': self.name,
         'default_delay': self.FREEZE_WORD_DELAY,
-       }
+       })
 
     def _parse_args(self, prepared_args):
         """

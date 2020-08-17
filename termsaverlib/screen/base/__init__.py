@@ -227,7 +227,7 @@ class ScreenBase(ScreenHelperBase):
         try:
             self._parse_args(getopt.getopt(args, self.cli_opts['opts'],
                                      self.cli_opts['long_opts']))
-        except getopt.GetoptError, e:
+        except getopt.GetoptError as e:
             raise exception.InvalidOptionException("", str(e))
 
         # execute the cycle
@@ -236,7 +236,7 @@ class ScreenBase(ScreenHelperBase):
         while(loop):
             try:
                 self._run_cycle()
-            except KeyboardInterrupt, e:
+            except KeyboardInterrupt as e:
                 #
                 # do some cleanup if applicable
                 #
@@ -263,12 +263,12 @@ class ScreenBase(ScreenHelperBase):
 
         See also `usage` method for details.
         """
-        print """%(app_title)s v.%(app_version)s - %(app_description)s.
+        print ("""%(app_title)s v.%(app_version)s - %(app_description)s.
 """ % {
                'app_title': constants.App.TITLE,
                'app_version': constants.App.VERSION,
                'app_description': constants.App.DESCRIPTION,
-        }
+        })
 
     @staticmethod
     def usage_footer():
@@ -277,7 +277,7 @@ class ScreenBase(ScreenHelperBase):
 
         See also `usage` method for details.
         """
-        print """--
+        print ("""--
 See more information about this project at:
 %(url)s
 
@@ -286,7 +286,7 @@ Report bugs to authors at:
 """ % {
         'url': constants.App.URL,
         'source_url': constants.App.SOURCE_URL,
-       }
+       })
 
     def _usage_options_example(self):
         """
@@ -308,14 +308,14 @@ Report bugs to authors at:
         # header
         self.usage_header()
 
-        print _("""Screen: %(screen)s
+        print (_("""Screen: %(screen)s
 Description: %(description)s
 
 Usage: %(app_name)s %(screen)s [options]""") % {
                'app_name': constants.App.NAME,
                'screen': self.name,
                'description': self.description,
-        }
+        })
         # any additional info in between (see other classes for reference)
         self._usage_options_example()
 
@@ -341,7 +341,7 @@ Usage: %(app_name)s %(screen)s [options]""") % {
         Prints a log message on screen in the format:
             %(app_name)s.%(screen)s: %(message)s
         """
-        print "%s.%s: %s" % (constants.App.NAME, self.name, text)
+        print ("%s.%s: %s" % (constants.App.NAME, self.name, text))
 
     def _on_keyboard_interrupt(self):
         """

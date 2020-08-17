@@ -165,7 +165,7 @@ class RSSFeedScreenBase(UrlFetcherBase,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print _("""
+        print (_("""
 Options:
 
  -h,  --help   Displays this help message
@@ -193,7 +193,7 @@ Example:
         'app_name': constants.App.NAME,
         'screen': self.name,
         'description': self.description,
-       }
+       })
 
     def _parse_args(self, prepared_args):
         """
@@ -222,8 +222,13 @@ Example:
                 try:
                     # try to fix the url formatting
                     self.url = self.fix_uri(a)
-                except Exception, e:
-                    raise exception.InvalidOptionException("url", e.message)
+                except Exception as e:
+                    error_message = ""
+                    if hasattr(e, 'message'):
+                        error_message = e.message
+                    else:
+                        error_message = e
+                    raise exception.InvalidOptionException("url", error_message)
             else:
                 # this should never happen!
                 raise Exception(_("Unhandled option. See --help for details."))
@@ -307,11 +312,11 @@ class SimpleRSSFeedScreenBase(RSSFeedScreenBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print """
+        print ("""
 Options:
 
  -h,  --help   Displays this help message
-"""
+""")
 
     def _parse_args(self, prepared_args):
         """

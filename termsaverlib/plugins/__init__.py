@@ -100,6 +100,9 @@ def get_available_plugin_screens():
     ignore_list = ['__init__.py']
     screens = []
     for plugin in os.listdir(os.path.join(os.path.dirname(__file__))):
+        
+        if ("__pycache__" in plugin): continue
+
         if (os.path.isdir(os.path.join(os.path.dirname(__file__), plugin))):
             # we are inside the plugin directory, get screens available in
             # screens directory

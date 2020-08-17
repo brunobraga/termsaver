@@ -98,6 +98,6 @@ if __name__ == '__main__':
     # The entry point of this application, as this should not be accessible as
     # a python module to be imported by another application.
     #
-    print """
+    print("""
 Thank you for trying termsaver.
-"""
+""")
