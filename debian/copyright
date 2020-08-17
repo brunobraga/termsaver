@@ -1,14 +1,15 @@
-This package was debianized by Bruno Braga <bruno.braga@gmail.com> on
+This package was debianized by Bruno Braga <bruno@brunobraga.net> on
 Fri, 13 Apr 2012 15:12:10 +0000
 
-Upstream Author: Bruno Braga <bruno.braga@gmail.com>
+Upstream Author: Bruno Braga <bruno@brunobraga.net>
 
 Contributor(s):
     Shelby Jueden <shelbyjueden@gmail.com>
     Alexander Riccio <alexander@riccio.com>
+    Eddie Dover <EddieDover@gmail.com>
 
 Copyright:
-    <Copyright (c) 2012-2014, Bruno Braga>
+    <Copyright (c) 2011-2020, Bruno Braga>
 
 
 License:
@@ -17,5 +18,5 @@ License:
     GNU/Linux systems you can find the complete text of the Apache-2.0
     license in `/usr/share/common-licenses/Apache-2.0'.
 
-The Debian package is (C) 2012-2014, Bruno Braga <bruno.braga@gmail.com>
+The Debian package is (C) 2011-2020, Bruno Braga <bruno@brunobraga.net>
 and is licensed under the Apache License 2.0, see above.
