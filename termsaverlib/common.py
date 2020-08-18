@@ -58,12 +58,17 @@ def prettify_exception(ex):
     """
     Outputs the exception with its stack trace within separator lines.
     """
+    error_message = ""
+    if hasattr(ex, 'message'):
+        error_message = ex.message
+    else:
+        error_message = ex
     print ("""
 ===================================
 Exception: (%s) %s
 %s
 ===================================
-""" % (ex.__class__.__name__, ex.message, traceback.format_exc()))
+""" % (ex.__class__.__name__, error_message, traceback.format_exc()))
 
 
 def get_app_dir():
