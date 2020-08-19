@@ -192,6 +192,11 @@ simulating the screen from the movie
 alike screensaver.
 
 
+#### Star Wars Asciimation
+
+This is a screensaver that displays the Star Wars Asciimation from
+<http://asciimation.co.nz>.
+
  - - -
 
 **Disclaimer Note**: termsaver holds no responsibility for the contents offered 
