@@ -67,10 +67,7 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
         ScreenBase.__init__(self,
             "starwars",
             _("displays the star wars asciimation on screen"),
-            'http://asciimation.co.nz',
-            ["description"],
-            "%(description)s",
-        )
+            {'opts': 'h', 'long_opts': ['help']})
         self.cleanup_per_cycle = True
         self.is_initalized = False
 
@@ -93,6 +90,48 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
                 self.is_initalized = True
 
         frame_time = float(self.star_wars[self.current_frame][0]) / self.time_per_frame
-        print ("\r\n" + "".join(self.star_wars[self.current_frame][1:14]))
+        print("\r\n" + "".join(self.star_wars[self.current_frame][1:14]))
         time.sleep(frame_time)
         self.current_frame += 1
+
+    def _usage_options_example(self):
+            """
+            Describe here the options and examples of this screen.
+
+            The method `_parse_args` will be handling the parsing of the options
+            documented here.
+
+            Additionally, this is dependent on the values exposed in `cli_opts`,
+            passed to this class during its instantiation. Only values properly
+            configured there will be accepted here.
+            """
+            print (_("""
+
+    The Star Wars Asciimation is copyright Simon Jansen (jansens@asciimation.co.nz)
+    and viewable standalone on the web at http://asciimation.co.nz.
+
+    Options:
+    -h, --help   Displays this help message
+        
+    """))
+
+    def _parse_args(self, prepared_args):
+        """
+        Handles the special command-line arguments available for this screen.
+        Although this is a base screen, having these options prepared here
+        can save coding for screens that will not change the default options.
+
+        See `_usage_options_example` method for documentation on each of the
+        options being parsed here.
+
+        Additionally, this is dependent on the values exposed in `cli_opts`,
+        passed to this class during its instantiation. Only values properly
+        configured there will be accepted here.
+        """
+        for o, a in prepared_args[0]:  # optlist, args
+            if o in ("-h", "--help"):
+                self.usage()
+                self.screen_exit()
+            else:
+                # this should never happen!
+                raise Exception(_("Unhandled option. See --help for details."))
