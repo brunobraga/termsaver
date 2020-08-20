@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# file:     SamplePluginScreen.py
+# file:     ExamplePluginScreen.py
 #
 # Purpose:  An attempt at the starwars asciimation
 #

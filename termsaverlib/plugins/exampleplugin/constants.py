@@ -49,12 +49,12 @@ class Plugin(PropertyClass):
     Refer to CHANGELOG file for a complete history about this project.
     """
 
-    NAME = 'termsaver-sampleplugin'
+    NAME = 'termsaver-exampleplugin'
     """
     Defines the termsaver-exampleplugin plugin, usually the plugin package name.
     """
 
-    TITLE = 'TermSaver Sample Plugin'
+    TITLE = 'TermSaver Example Plugin'
     """
     Defines the termsaver-exampleplugin plugin's official name as it should appear
     in documentation.
@@ -62,7 +62,7 @@ class Plugin(PropertyClass):
 
     DESCRIPTION = 'A set of screens for showing an example termsaver plugin.'
     """
-    Defines the main description of the termsaver-sampleplugin plugin.
+    Defines the main description of the termsaver-exampleplugin plugin.
     """
 
     URL = 'http://www.termsaver.info/plugins'
