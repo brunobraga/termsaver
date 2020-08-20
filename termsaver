@@ -185,8 +185,9 @@ if __name__ == '__main__':
                 error_message = e.message
             else:
                 error_message = e
-            print (_('Oops! Could not find path for %(path)s. %(msg)s')) % \
-                {'path': e.path, 'msg': error_message}
+            
+            print (_('Oops! Could not find path for %(path)s. %(msg)s') % \
+                {'path': e.path, 'msg': error_message})
 
         elif isinstance(e, exception.InvalidOptionException):
             #
