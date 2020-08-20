@@ -76,7 +76,7 @@ Additional rules before you begin:
     application to find the screen, and handle input/output accordingly.
 
 
-This sctructure is designed to immitate termsaver's main structure, so once you
+This structure is designed to immitate termsaver's main structure, so once you
 get familiar with it, it should be piece of cake to manage your own "space".
 
 """
@@ -86,6 +86,7 @@ get familiar with it, it should be piece of cake to manage your own "space".
 #
 import os
 import inspect
+import sys
 
 #
 # Internal modules
@@ -106,11 +107,17 @@ def get_available_plugin_screens():
         if (os.path.isdir(os.path.join(os.path.dirname(__file__), plugin))):
             # we are inside the plugin directory, get screens available in
             # screens directory
+
             for module in os.listdir(os.path.join(os.path.dirname(__file__),
                     plugin, "screen")):
+
                 if module in ignore_list or module[-3:] != '.py':
                     continue
+
                 module_name = plugin + ".screen." + module[:-3]
+
+                if os.path.join(os.path.dirname(__file__)) not in sys.path:
+                    sys.path.append(os.path.join(os.path.dirname(__file__)))
 
                 m = __import__(module_name, globals(), locals(),
                         [module_name.rsplit(".", 1)[-1]])
