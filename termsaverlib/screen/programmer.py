@@ -69,6 +69,8 @@ class ProgrammerScreen(FileReaderBase):
             _("displays source code in typing animation"))
         self.cleanup_per_cycle = True
         self.cleanup_per_file = True
+        self.colorize = True
+        self.ignore_binary = True
 
     def _message_no_path(self):
         """
