@@ -31,15 +31,11 @@ class ImageConverter:
         image = self.get_image()
         image_type = self.image_type()
 
-        # rs > ri ? (wi * hs/hi, hs) : (ws, hi * ws/wi)
-
-        # ("Term Width %(width)s Term Height %(height)s" % {'width':twidth,'height':theight})
         width = image.size[0]
         height = image.size[1]
 
         twidth -= 1
         theight -= 1
-        # print("Img Width %(width)s Img Height %(height)s" % {'width':width, 'height':height})
 
         ri = width / height
         rs = twidth / theight
@@ -54,15 +50,12 @@ class ImageConverter:
         width = int(width)
         height = int(height)
 
-        # print("Fin Width %(width)s Fin Height %(height)s" % {'width':width, 'height':height})
-
         return image.resize((width, height), Image.LANCZOS)
     
     def convert_image(self, source_path, height, width, options = []):
         self.source_path = source_path
         self.options = options
         image = self.process_image(height, width)
-        #print(image)
         #specter = ' .:;+=xX$&'
         specter = ' ░▒▓█'
         wide = 2 # self.options['wide']
@@ -78,7 +71,7 @@ class ImageConverter:
         #     specter = specter[::-1]
         
         # per img/frame
-        image = image.convert('RGB')
+        image = image.convert('RGBA')
         string = ''
         width,height = image.size
         last_row = 0
