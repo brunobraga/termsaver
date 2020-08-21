@@ -39,6 +39,7 @@ The helper class available here is:
 #
 import os
 import queue # as queue
+import time
 from threading import Thread
 
 #
@@ -81,7 +82,7 @@ class ImageReaderBase(ScreenBase, TypingHelperBase, PositionHelperBase):
 
     cleanup_per_file = False
 
-    def __init__(self, name, description, path=None, delay=None, cli_opts=None):
+    def __init__(self, name, description, path=None, delay=5, cli_opts=None):
         """
         Creates a new instance of this class.
 
@@ -101,9 +102,10 @@ class ImageReaderBase(ScreenBase, TypingHelperBase, PositionHelperBase):
                              'opts': 'hd:p:',
                              'long_opts': ['help', 'delay=', 'path='],
             }
-        self.delay = delay
+        self.image_delay = delay
         self.path = path
         self.cleanup_per_cycle = False
+        self.options = {'wide':2}
 
     def _run_cycle(self):
         """
@@ -157,8 +159,9 @@ class ImageReaderBase(ScreenBase, TypingHelperBase, PositionHelperBase):
                 # file_data = f.read()
                 # self.typing_print(file_data)
             imgconv = ImageConverter()
-            file_data = imgconv.convert_image(nextFile, self.geometry['x'], self.geometry['y'])
+            file_data = imgconv.convert_image(nextFile, self.geometry['x'], self.geometry['y'], self.options)
             self.typing_print(file_data)
+            time.sleep(self.image_delay)
             if self.cleanup_per_file:
                 self.clear_screen()
             queue_of_valid_files.put(nextFile)
@@ -218,7 +221,7 @@ Examples:
             elif o in ("-d", "--delay"):
                 try:
                     # make sure argument is a valid value (float)
-                    self.delay = float(a)
+                    self.image_delay = float(a)
                 except:
                     raise exception.InvalidOptionException("delay")
             elif o in ("-p", "--path"):

@@ -52,26 +52,28 @@ class ImageConverter:
 
         return image.resize((width, height), Image.LANCZOS)
     
-    def convert_image(self, source_path, height, width, options = []):
+    def convert_image(self, source_path, height, width, options):
         self.source_path = source_path
         self.options = options
         image = self.process_image(height, width)
-        #specter = ' .:;+=xX$&'
-        specter = ' ░▒▓█'
-        wide = 2 # self.options['wide']
-        chars = False # self.options['chars']
+        specter = ' .:;+=xX$&'
 
-        if chars != False:
-            specter = chars
+        if 'wide' in self.options:
+            wide = self.options['wide']
+        else: 
+            wide = 2
         
-        # if self.options['contrast'] == True:
-        #     specter = ' ░▒▓█'
+        if 'contrast' in self.options:
+            specter = ' ░▒▓█'
 
-        # if self.options['reverse'] == True:
-        #     specter = specter[::-1]
+        if 'customcharset' in self.options:
+            specter = self.options['customcharset']
+
+        if 'invert' in self.options:
+            specter = specter[::-1]
         
         # per img/frame
-        image = image.convert('RGBA')
+        image = image.convert('RGB')
         string = ''
         width,height = image.size
         last_row = 0
