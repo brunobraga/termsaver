@@ -150,14 +150,11 @@ class ImageReaderBase(ScreenBase, TypingHelperBase, PositionHelperBase):
         threads = [ImageReaderBase.FileScannerThread(self, queue_of_valid_files, self.path)]
         threads[-1].daemon = True
         threads[-1].start()
-        #self.clear_screen() hides any error message produced before it!
+        
         self.clear_screen()
         nextFile = queue_of_valid_files.get()
         while nextFile:
             self.get_terminal_size()
-            # with open(nextFile, 'r') as f:
-                # file_data = f.read()
-                # self.typing_print(file_data)
             imgconv = ImageConverter()
             file_data = imgconv.convert_image(nextFile, self.geometry['x'], self.geometry['y'], self.options)
             self.typing_print(file_data)
