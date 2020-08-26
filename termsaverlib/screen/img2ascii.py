@@ -33,7 +33,7 @@ The helper class available here is:
     * `Img2Ascii`
 """
 from termsaverlib.screen.base.imagereader import ImageReaderBase
-from termsaverlib import constants
+from termsaverlib import constants, exception
 from termsaverlib.i18n import _
 
 import os
