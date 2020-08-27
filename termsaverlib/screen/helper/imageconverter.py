@@ -28,6 +28,7 @@
 from PIL import Image
 import os
 import io
+import requests
 
 class ImageConverter:
     source_path = False
@@ -46,14 +47,14 @@ class ImageConverter:
     
     def get_image(self):
         if self.is_link():
-            r = requests
+            r = requests.get(self.source_path, stream=True)
             image = Image.open(io.BytesIO(r.content))
         else:
             image = Image.open(self.source_path)
         
         return image
     
-    def process_image(self, twidth, theight):
+    def process_image(self, twidth, theight, scale = 1):
         
         image = self.get_image()
         image_type = self.image_type()
@@ -77,19 +78,25 @@ class ImageConverter:
         width = int(width)
         height = int(height)
 
-        return image.resize((width, height), Image.LANCZOS)
+        return image.resize((width * scale, height * scale), Image.LANCZOS)
     
     def convert_image(self, source_path, height, width, options):
         self.source_path = source_path
         self.options = options
-        image = self.process_image(height, width)
+
+        if 'scale' in self.options:
+            scale = self.options['scale']
+        else:
+            scale = 1
+
+        image = self.process_image(height, width, scale)
         specter = ' .:;+=xX$&'
 
         if 'wide' in self.options:
             wide = self.options['wide']
         else: 
             wide = 2
-        
+       
         if 'contrast' in self.options:
             specter = ' ░▒▓█'
 
@@ -124,14 +131,5 @@ class ImageConverter:
                     levels.append(abs(pixel_value - level))
                 character = specter[levels.index(min(levels))] * wide
                 string += character
-            
-        # if self.options['rotate'] != False:
-        #     orientation = 1 if self.options['rotate'] == left else -1
-        #     rotated = zip(*string.split('\n')[::orientation])
-        #     string = []
-        #     for row in rotated:
-        #         string.append(''.join(list(row)))
-            
-        #     string = '\n'.join(string)
         
         return string
