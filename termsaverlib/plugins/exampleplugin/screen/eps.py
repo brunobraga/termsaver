@@ -54,14 +54,15 @@ class ExamplePluginScreen(ExamplePluginScreenBase):
     An Example Plugin Screen
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class.
         """
         ScreenBase.__init__(self,
             "exampleplugin",
             _("the example plugin"),
-            {'opts': 'h', 'long_opts': ['help']})
+            parser
+        )
         self.cleanup_per_cycle = True
 
     def _run_cycle(self):
@@ -72,43 +73,19 @@ class ExamplePluginScreen(ExamplePluginScreenBase):
         print(self.example_echo("Hello World"))
         time.sleep(1)
 
-    def _usage_options_example(self):
-            """
-            Describe here the options and examples of this screen.
-
-            The method `_parse_args` will be handling the parsing of the options
-            documented here.
-
-            Additionally, this is dependent on the values exposed in `cli_opts`,
-            passed to this class during its instantiation. Only values properly
-            configured there will be accepted here.
-            """
-            print (_("""
-
-            This is the example plugin. There are no options!
-
-            Options:
-            -h, --help   Displays this help message
-        
-    """))
-
-    def _parse_args(self, prepared_args):
+    def _parse_args(self):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
         can save coding for screens that will not change the default options.
 
-        See `_usage_options_example` method for documentation on each of the
-        options being parsed here.
-
         Additionally, this is dependent on the values exposed in `cli_opts`,
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+
+        # This will parse out all known and unknown arguments.
+        # See the documentation on the argparse library.
+        args, unknown_args = self.parser.parse_known_args()
+        
+        self.autorun()

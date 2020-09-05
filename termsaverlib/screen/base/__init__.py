@@ -92,6 +92,8 @@ import sys
 from termsaverlib import common, constants, exception
 from termsaverlib.screen.helper import ScreenHelperBase
 from termsaverlib.i18n import _
+from termsaverlib.helper.smartformatter import SmartFormatter
+import argparse
 
 
 class ScreenBase(ScreenHelperBase):
@@ -141,20 +143,14 @@ class ScreenBase(ScreenHelperBase):
     Defines the name of the screen.
     """
 
+    parser = None
+    """
+    The argument parser for the screen
+    """
+
     description = ''
     """
     Defines the description (short) of the screen.
-    """
-
-    cli_opts = {}
-    """
-    Defines the getopt format command-line options of the screen. It should be
-    an object in the following structure:
-
-    cli_opts = {
-                 'opts': 'h',
-                 'long_opts': ['help',],
-    }
     """
 
     cleanup_per_cycle = False
@@ -163,7 +159,7 @@ class ScreenBase(ScreenHelperBase):
     (new file).
     """
 
-    def __init__(self, name, description, cli_opts):
+    def __init__(self, name, description, parser=None):
         """
         The basic constructor of this class. You need to inform basic
         information about your screen:
@@ -174,15 +170,15 @@ class ScreenBase(ScreenHelperBase):
            * `description`: a brief (very brief) description of what the screen
                             does (if you need to write more documentation about
                             it, you can rely on man docs for that)
-
-           * `cli_opts`: the command line options that will be available for
-                         your screen (use getopt formatting)
         """
+        self.parser = parser
+        if self.parser:
+            self.parser.prog = "termsaver " + name
+
         self.name = name
         self.description = description
-        self.cli_opts = cli_opts
 
-    def autorun(self, args, loop=True):
+    def autorun(self, loop=True):
         """
         The accessible method for dynamically running a screen.
         This method will basically parse the arguments, prepare them with
@@ -203,33 +199,6 @@ class ScreenBase(ScreenHelperBase):
                     (Ctrl+C) is pressed), or not. This is up to the screen
                     action (or end-user through configuable setting) to decide.
         """
-
-        # prepare values and validate
-        if not args:
-            args = ''
-        if not self.cli_opts \
-            or 'opts' not in self.cli_opts.keys() \
-                or not self.cli_opts['opts']:
-            self.cli_opts['opts'] = ''
-        if not self.cli_opts['long_opts']:
-            self.cli_opts['long_opts'] = []
-        else:
-            if not type(self.cli_opts['long_opts']) is list or \
-                [type(i) == str for i in self.cli_opts['long_opts']] \
-                    != [True for __ in range(len(self.cli_opts['long_opts']))]:
-                #
-                # Don't worry too much about errors here. This is supposed to
-                # help developers while programming screens for this app.
-                #
-                raise Exception("Value of 'long_opts' in cli_opts dict MUST "\
-                                "be a list of strings.")
-
-        try:
-            self._parse_args(getopt.getopt(args, self.cli_opts['opts'],
-                                     self.cli_opts['long_opts']))
-        except getopt.GetoptError as e:
-            raise exception.InvalidOptionException("", str(e))
-
         # execute the cycle
         self.clear_screen()
 
@@ -290,7 +259,7 @@ Report bugs to authors at:
 
     def _usage_options_example(self):
         """
-        Describe here the options and examples of your screen.
+        Describe here the examples of your screen.
         See some examples of already implemented base screens so you can
         write similar stuff on your own, and keep consistency.
         """
@@ -309,20 +278,24 @@ Report bugs to authors at:
         self.usage_header()
 
         print (_("""Screen: %(screen)s
-Description: %(description)s
-
-Usage: %(app_name)s %(screen)s [options]""") % {
+Description: %(description)s""") % {
                'app_name': constants.App.NAME,
                'screen': self.name,
                'description': self.description,
         })
         # any additional info in between (see other classes for reference)
-        self._usage_options_example()
+        if self.parser:
+            self.parser.print_help()
+
+        usage = self._usage_options_example()
+        if usage != None and usage != '':
+            print(_("\r\nExamples:"))
+            print(usage)
 
         #footer
         self.usage_footer()
 
-    def _parse_args(self, prepared_args):
+    def _parse_args(self):
         """
         (protected) MUST be overriden in inheriting classes, to deal with
         special arguments that will customize values for them.

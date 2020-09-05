@@ -79,7 +79,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
 
     cleanup_per_file = False
 
-    def __init__(self, name, description, path=None, delay=None, cli_opts=None):
+    def __init__(self, name, description, parser, path=None, delay=None):
         """
         Creates a new instance of this class.
 
@@ -92,13 +92,15 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
             * path: defines the path from where this screen should scan
               for files
         """
-        ScreenBase.__init__(self, name, description, cli_opts)
-        # define default cli options, if none are informed
-        if not cli_opts:
-            self.cli_opts = {
-                             'opts': 'hd:p:',
-                             'long_opts': ['help', 'delay=', 'path='],
-            }
+        ScreenBase.__init__(self, name, description, parser)
+
+        if self.parser != None:
+            self.parser.add_argument("-p","--path", action="store", type=str, help="""Sets the location to search for text-based source files.
+                this option is mandatory.""")
+            
+            self.parser.add_argument("-d","--delay", action="store", type=int, help="""Sets the speed of the displaying characters
+                default is%(default_delay)s of a second""" % {'default_delay': constants.Settings.CHAR_DELAY_SECONDS})
+
         self.delay = delay
         self.path = path
         self.cleanup_per_cycle = False
@@ -169,14 +171,6 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         configured there will be accepted here.
         """
         print (_("""
-Options:
-
- -p, --path   Sets the location to search for text-based source files.
-              this option is mandatory.
- -d, --delay  Sets the speed of the displaying characters
-              default is%(default_delay)s of a second
- -h, --help   Displays this help message
-
 Examples:
 
     $ %(app_name)s %(screen)s -p /path/to/my/code
@@ -191,44 +185,6 @@ Examples:
         'app_name': constants.App.NAME,
         'default_delay': constants.Settings.CHAR_DELAY_SECONDS,
     })
-
-    def _parse_args(self, prepared_args):
-        """
-        Handles the special command-line arguments available for this screen.
-        Although this is a base screen, having these options prepared here
-        can save coding for screens that will not change the default options.
-
-        See `_usage_options_example` method for documentation on each of the
-        options being parsed here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-d", "--delay"):
-                try:
-                    # make sure argument is a valid value (float)
-                    self.delay = float(a)
-                except:
-                    raise exception.InvalidOptionException("delay")
-            elif o in ("-p", "--path"):
-                # make sure argument is a valid value (existing path)
-                self.path = a
-                if not os.path.exists(self.path):
-                    raise exception.PathNotFoundException(self.path,
-                        _("Make sure the file or directory exists."))
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
-
-        # last validations
-        if self.path in (None, ''):
-            raise exception.InvalidOptionException("path",
-                _("It is mandatory option"), help=self._message_no_path())
 
     def _recurse_to_exec(self, path, func, filetype=''):
         """
@@ -250,9 +206,9 @@ Examples:
                     if os.path.isdir(f):
                         if not item.startswith('.'):
                             self._recurse_to_exec(f, func, filetype)
-                    elif f.endswith(filetype) and not self._is_path_binary(f):
+                    elif f.endswith(filetype): # and not self._is_path_binary(f):
                         func(f)
-            elif path.endswith(filetype) and not self._is_path_binary(path):
+            elif path.endswith(filetype):# and not self._is_path_binary(path):
                 func(path)
         except:
             # If IOError, don't put on queue, as the path might throw

@@ -1,8 +1,8 @@
 ###############################################################################
 #
-# file:     .gitignore
+# file:     __init__.py
 #
-# Purpose:  Forces GIT to ignore certain files when commiting changes.
+# Purpose:  refer to package documentation for details
 #
 # Note:     This file is part of Termsaver application, and should not be used
 #           or executed separately.
@@ -24,31 +24,8 @@
 # under the License.
 #
 ###############################################################################
-
-# compiled files
-*.py[co]
-#*.mo
-
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-
-# Installer logs
-pip-log.txt
-
-# Unit test / coverage reports
-.coverage
-.tox
-
-# Source Code Cache
-termsaver_cache.list
-.wakatime-project
+"""
+This package holds all helper classes used by termsaverlib, to add
+reusable functionality to them, and help maintain consistency throughout all
+of them.
+"""

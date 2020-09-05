@@ -123,24 +123,35 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     """
 
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class.
         """
         ScreenBase.__init__(self,
             "sysmon",
             _("displays a graphical system monitor"),
-            {'opts': 'hd:np:', 'long_opts': ['help', 'delay=', 'no-adjust', 'path=']},
+            parser
         )
         if self.delay is None:
             self.delay = 0.5
+
+        if self.parser:
+            self.parser.add_argument("-d","--delay", help="""
+            Sets the speed of the displaying characters
+            Default is 0.5 seconds (advised to keep at least above 0.1).""", default=0.5)
+            self.parser.add_argument("-n","--no-adjust", dest="adjust", action="store_true", help="""
+            Forces the charts to displays 0 ~ 100%% values, instead of dynamically adjusted values based on current maximum.
+            """, default=True)
+            self.parser.add_argument("-p","--path", help="""
+            Sets the location of a file to be monitored. The file must only contain a number from 0 to 100, or the screen will not start.
+            This option is optional.
+            """)
 
         #
         # Due to a time delay to calculate CPU usage
         # we need to clear the screen manually
         #
         self.cleanup_per_cycle = False
-
 
     def _run_cycle(self):
         """
@@ -365,21 +376,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        print (_("""
-Options:
-
- -d, --delay  Sets the speed of the displaying characters
-              default is 0.5 seconds (advised to keep at least above 0.1).
- -n, --no-adjust
-              Forces the charts to displays 0 ~ 100%% values, instead of
-              dynamically adjusted values based on current maximum.
- -p, --path   Sets the location of a file to be monitored. The file must only
-              contain a number from 0 to 100, or the screen will not start.
-              This option is optional.               
- -h, --help   Displays this help message
-
-Example:
-
+        return (_("""
     $ %(app_name)s %(screen)s
     This will trigger the screensaver to display a dot on screen, with random
     size increase.
@@ -392,7 +389,7 @@ Example:
         'screen': self.name,
        })
 
-    def _parse_args(self, prepared_args):
+    def _parse_args(self):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -405,28 +402,22 @@ Example:
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-n", "--no-adjust"):
-                self.adjust = False
-            elif o in ("-p", "--path"):
-                # make sure argument is a valid value (existing path)
-                self.path = a
-                if not os.path.exists(self.path):
-                    raise exception.PathNotFoundException(self.path,
-                        _("Make sure the file exists."))
-                if not os.path.isfile(self.path):
-                    raise exception.InvalidOptionException("--path",
-                        _("Make sure it is a file"))
-                    
-            elif o in ("-d", "--delay"):
-                try:
-                    # make sure argument is a valid value (float)
-                    self.delay = float(a)
-                except:
-                    raise exception.InvalidOptionException("delay")
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+        args,unknown = self.parser.parse_known_args()
+        if args.adjust:
+            self.adjust = False
+        if args.path:
+            self.path = args.path
+            if not os.path.exists(self.path):
+                raise exception.PathNotFoundException(self.path,
+                    _("Make sure the file exists."))
+            if not os.path.isfile(self.path):
+                raise exception.InvalidOptionException("--path",
+                    _("Make sure it is a file"))
+        if args.delay:
+            try:
+                # make sure argument is a valid value (float)
+                self.delay = float(args.delay)
+            except:
+                raise exception.InvalidOptionException("delay")
+
+        self.autorun()

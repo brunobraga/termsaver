@@ -78,15 +78,18 @@ class RandTxtScreen(ScreenBase,
     next randomization (cycle). Its value is set to 3 seconds.
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class.
         """
         ScreenBase.__init__(self,
             "randtxt",
             _("displays word in random places on screen"),
-            {'opts': 'hw:d:', 'long_opts': ['help', 'word=', 'delay=']},
+            parser
         )
+        if self.parser:
+            self.parser.add_argument("-w", "--word", type=str, required=True, help="The words to randomly display on screen.")
+            self.parser.add_argument("-d", "--delay", type=int, required=False, default=self.freeze_delay, help="The delay between changing words.")
         self.word = constants.App.TITLE
         self.delay = 0.01
         self.line_delay = 0
@@ -124,15 +127,6 @@ class RandTxtScreen(ScreenBase,
         configured there will be accepted here.
         """
         print (_("""
-Options:
-
- -w, --word   Sets the word to be displayed
-              default is the name of this application (if you need to use
-              spaces, don't forget to place the word with quotes)
- -d, --delay  Sets how long the word will be displayed before
-              randomized again. Default is %(default_delay)s second(s)
- -h, --help   Displays this help message
-
 Example:
 
     $ %(app_name)s %(screen)s
@@ -149,7 +143,7 @@ Example:
         'default_delay': self.FREEZE_WORD_DELAY,
        })
 
-    def _parse_args(self, prepared_args):
+    def _parse_args(self):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -162,21 +156,16 @@ Example:
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-d", "--delay"):
-                try:
-                    # make sure argument is a valid value (float)
-                    self.freeze_delay = float(a)
-                except:
-                    raise exception.InvalidOptionException("delay")
-            elif o in ("-w", "--word"):
-                # make sure argument is a valid value
-                if a in (None, ''):
-                    raise exception.InvalidOptionException("word")
-                self.word = a
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+        args,unknown = self.parser.parse_known_args()
+        if args.delay:
+            try:
+                # make sure argument is a valid value (float)
+                self.freeze_delay = float(args.delay)
+            except:
+                raise exception.InvalidOptionException("delay")
+        if args.word:
+            if args.word in (None, ''):
+                raise exception.InvalidOptionException("word")
+            self.word = args.word
+
+        self.autorun()

@@ -51,6 +51,7 @@ from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.helper.position import PositionHelperBase
 from termsaverlib import exception, constants
 from termsaverlib.i18n import _
+import argparse
 
 
 class MatrixScreen(ScreenBase, PositionHelperBase):
@@ -190,16 +191,34 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     of half-width size.
     """
     
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class.
         """
         ScreenBase.__init__(self,
             "matrix",
             _("displays a matrix movie alike screensaver"),
-            {'opts': 'hkzd:g:', 'long_opts': ['kana', 'zenkaku', 'help', 
-                                              'granularity=', 'delay=']},
+            parser
         )
+
+        if self.parser:
+            self.parser.add_argument("-k", "--kana",
+                help="An integer value to define how dirt should the screen be. 1 - clean, 100 total dirt.",
+                default=False
+            )
+            self.parser.add_argument("-z", "--zenkaku",
+                help="Displays only Japanese characters (excludes alpha numeric)",
+                action="store_true",
+                default=self.use_zenkaku
+            )
+            self.parser.add_argument("-d", "--delay",
+                help="Defines the speed (in seconds) of the character movement",
+                default=30 * constants.Settings.CHAR_DELAY_SECONDS
+            )
+            self.parser.add_argument("-g", "--granularity",
+                help="Displays full-width (fattish) Japanese characters.",
+                default=self.proportion
+            )
         self.cleanup_per_cycle = False
 
         # set defaults
@@ -222,93 +241,36 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         print(self.print_line())
         time.sleep(self.line_delay)
 
-    def _usage_options_example(self):
-        """
-        Describe here the options and examples of this screen.
-
-        The method `_parse_args` will be handling the parsing of the options
-        documented here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        print (_("""
-Options:
-
- -g, --granularity
-              an integer value to define how dirt should the screen be. 
-              Default value is [%(granularity)s]. Use something like [1]
-              for clean style, or a [100] for total dirt.
- -d, --delay  Defines the speed (in seconds) of the character movement
-              Default value is [%(line_delay)s] (in seconds).
- -k, --kana-only
-              Displays only Japanese characters (excludes alpha numeric).  
- -z, --zenkaku
-              Displays full-width (fattish) Japanese characters.
-              By default it displays half-width characters.  
- -h, --help   Displays this help message
-
-Examples:
-
-    $ %(app_name)s %(screen)s -g 100
-    This will print out random characters in maximum dirt (using almost the
-    entire screen space). Try [1] for very clean results.
-
-    $ %(app_name)s %(screen)s -g 5 -d 0.001 -k
-    This will give a cleaner print than the default, much faster with only
-    Japanese characters.  
-    
-""") % {
-        'screen': self.name,
-        'app_name': constants.App.NAME,
-        'granularity': self.granularity,
-        'line_delay': self.line_delay,
-    })
-
-    def _parse_args(self, prepared_args):
+    def _parse_args(self):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
         can save coding for screens that will not change the default options.
-
-        See `_usage_options_example` method for documentation on each of the
-        options being parsed here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
         """
         use_kana_only = False
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-k", "--kana"):
-                use_kana_only = True
-            elif o in ("-z", "--zenkaku"):
-                self.use_zenkaku = True
-            elif o in ("-g", "--granularity"):
-                try:
-                    # make sure argument is a valid value (int)
-                    self.granularity = int(a)
-                except:
-                    raise exception.InvalidOptionException("granularity")
-                if self.granularity <= 0:
-                    raise exception.InvalidOptionException("granularity",
-                        "Must be higher than zero")
-            elif o in ("-d", "--delay"):
-                try:
-                    # make sure argument is a valid value (float)
-                    self.line_delay = float(a)
-                except:
-                    raise exception.InvalidOptionException("delay")
-                if self.line_delay <= 0:
-                    raise exception.InvalidOptionException("delay",
-                        "Must be higher than zero")
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+        args, unknown = self.parser.parse_known_args()
+        if args.kana:
+            use_kana_only = True
+        if args.zenkaku:
+            self.use_zenkaku = True
+        if args.granularity:
+            try:
+                # make sure argument is a valid value (int)
+                self.granularity = int(args.granularity)
+            except:
+                raise exception.InvalidOptionException("granularity")
+            if self.granularity <= 0:
+                raise exception.InvalidOptionException("granularity",
+                    "Must be higher than zero")
+        if args.delay:
+            try:
+                # make sure argument is a valid value (float)
+                self.line_delay = float(args.delay)
+            except:
+                raise exception.InvalidOptionException("delay")
+            if self.line_delay <= 0:
+                raise exception.InvalidOptionException("delay",
+                    "Must be higher than zero")
 
         # fill in other important properties
         if self.use_zenkaku:
@@ -325,6 +287,8 @@ Examples:
         self.digmap.extend(digmap_kana)
         if not use_kana_only:
             self.digmap.extend(digmap_alpha_num)
+        
+        self.autorun()
 
 
     def __build_screen_map(self):

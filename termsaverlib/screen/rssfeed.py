@@ -40,9 +40,12 @@ The screen class available here is:
 from termsaverlib.screen.base.rssfeed import RSSFeedScreenBase
 from termsaverlib import constants
 from termsaverlib.i18n import _
+from termsaverlib.screen.base import ScreenBase
+
+import sys
 
 
-class RSSFeedScreen(RSSFeedScreenBase):
+class RSSFeedScreen(ScreenBase, RSSFeedScreenBase):
     """
     Simple screensaver that displays data from a RSS feed.
 
@@ -65,13 +68,33 @@ class RSSFeedScreen(RSSFeedScreenBase):
           '%(title)s (%(pubDate)s)\n%(description)s\n%(link)s\n.\n'
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class.
         """
-        RSSFeedScreenBase.__init__(self,
+
+        ScreenBase.__init__(self,
             "rssfeed",
             _("displays rss feed information"),
+            parser
+        )
+        
+        if self.parser != None:
+            self.parser.add_argument("-u", "--url", help="The rss feed url", type=str)
+            self.parser.add_argument("-r", "--raw", help="Shows all text available (with HTML if any)", action="store_true")
+            
+            #if not hasFormat:
+            self.parser.add_argument("-f", "--format",type=str, action="store", help="""|R
+            The printing format according to values available in RSS feed:
+                    * pubDate
+                    * title
+                    * link
+                    * description
+            You must use python dictionary based formatting style
+            (see examples for details)""")
+
+        RSSFeedScreenBase.__init__(self,
+            parser,
             None,
             ["pubDate", "title", "link", "description"],
             '%(title)s (%(pubDate)s)\n%(description)s\n%(link)s\n.\n',
@@ -109,3 +132,15 @@ If you do not have any idea which RSS to use, check out some examples here:
 """) % {
        'app_title': constants.App.TITLE,
     }
+
+    def _parse_args(self):
+        args,unknown = self.parser.parse_known_args()
+        if args.url == None:
+            print(self._message_no_url())
+            sys.exit(0)
+        else:
+            self.url = args.url
+        self.autorun()
+
+    def _run_cycle(self):
+        RSSFeedScreenBase._run_cycle(self)

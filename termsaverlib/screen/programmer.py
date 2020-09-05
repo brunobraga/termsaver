@@ -33,8 +33,9 @@ The helper class available here is:
     * `ProgrammerScreen`
 """
 from termsaverlib.screen.base.filereader import FileReaderBase
-from termsaverlib import constants
+from termsaverlib import constants, exception
 from termsaverlib.i18n import _
+from argparse import ArgumentParser
 
 
 class ProgrammerScreen(FileReaderBase):
@@ -49,7 +50,7 @@ class ProgrammerScreen(FileReaderBase):
         * `FileReaderBase.cleanup_per_file` as True
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class (used by termsaver script)
 
@@ -66,9 +67,38 @@ class ProgrammerScreen(FileReaderBase):
         """
         FileReaderBase.__init__(self,
             "programmer",
-            _("displays source code in typing animation"))
+            _("displays source code in typing animation"),
+            parser
+        )
+
         self.cleanup_per_cycle = True
         self.cleanup_per_file = True
+
+    def _parse_args(self):
+        """
+        Handles the special command-line arguments available for this screen.
+        Although this is a base screen, having these options prepared here
+        can save coding for screens that will not change the default options.
+
+        Additionally, this is dependent on the values exposed in `cli_opts`,
+        passed to this class during its instantiation. Only values properly
+        configured there will be accepted here.
+        """
+        args, unknown = self.parser.parse_known_args()
+        
+        # last validations
+        if args.path in (None, ''):
+            raise exception.InvalidOptionException("path",
+                _("It is mandatory option"), help=self._message_no_path())
+        else:
+            self.path = args.path
+        
+        if args.delay:
+            self.delay = args.delay
+        else:
+            self.delay = constants.Settings.CHAR_DELAY_SECONDS
+        
+        self.autorun()
 
     def _message_no_path(self):
         """
