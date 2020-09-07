@@ -154,7 +154,8 @@ Programmer
 ----------
 
 This is a screensaver that displays source code from a specified path in
-visual animation.
+visual animation. If pygments is installed then it will also color code
+the files based on their type.
 
 Quotes For All
 --------------
