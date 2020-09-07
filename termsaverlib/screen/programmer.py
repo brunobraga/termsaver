@@ -66,9 +66,11 @@ class ProgrammerScreen(FileReaderBase):
         """
         FileReaderBase.__init__(self,
             "programmer",
-            _("displays source code in typing animation"))
+            _("displays source code in typing animation (with pygments support)"))
         self.cleanup_per_cycle = True
         self.cleanup_per_file = True
+        self.colorize = True
+        self.ignore_binary = True
 
     def _message_no_path(self):
         """

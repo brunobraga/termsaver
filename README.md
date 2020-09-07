@@ -152,8 +152,8 @@ simulating the screen from the movie
 #### Programmer
 
 This is a screensaver that displays source code from a specified path in
-visual animation.
-
+visual animation. If the [pygments](https://pygments.org/) package is installed, this screensaver
+will apply syntax highlighting based on the file type.
 
 #### Quotes For All
 
