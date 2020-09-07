@@ -136,7 +136,7 @@ website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
 
 This is a screensaver that displays source code from a specified path in
 visual animation. If the [pygments](https://pygments.org/) package is installed, this screensaver
-will use it to color the displayed files based on their type.
+will apply syntax highlighting based on the file type.
 
 #### Quotes For All
 
