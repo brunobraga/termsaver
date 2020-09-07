@@ -141,6 +141,11 @@ Ascii Art Farts
 This is a screensaver that displays ascii art from asciiartfarts.com 
 RSS feed in an animation format. 
 
+Image 2 Ascii
+-------------
+
+This is a screensaver that converts images or folders of images into
+ascii art.
 
 Jokes For All
 -------------
@@ -154,7 +159,8 @@ Programmer
 ----------
 
 This is a screensaver that displays source code from a specified path in
-visual animation.
+visual animation. If pygments is installed then it will apply syntax
+highlighting based on the file type.
 
 Quotes For All
 --------------
@@ -212,13 +218,16 @@ simulating the screen from the movie The_Matrix_
 
 .. _The_Matrix : http://en.wikipedia.org/wiki/The_Matrix
 
-
 Sysmon
 ------
 
 (For Linux/Mac systems only) Displays the CPU/Memory usage over time in a graphic
 alike screensaver.
 
+Starwars
+------
+
+Displays the Star Wars Asciimation from http://asciimation.co.nz.
 
 ------
 

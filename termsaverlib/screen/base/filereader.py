@@ -48,7 +48,7 @@ from termsaverlib.screen.base import ScreenBase
 from termsaverlib import exception, constants
 from termsaverlib.screen.helper.typing import TypingHelperBase
 from termsaverlib.i18n import _
-
+import importlib
 
 class FileReaderBase(ScreenBase, TypingHelperBase):
     """
@@ -103,9 +103,23 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
 
         self.delay = delay
         self.path = path
+        self.ignore_binary = False
         self.cleanup_per_cycle = False
+        self.colorize = False
+        self.pygments_installed = False
+        self.is_initalized = False
 
     def _run_cycle(self):
+        if self.is_initalized is False:
+            #if 'pygments' in sys.modules:
+            pygments_spec = importlib.util.find_spec('pygments')
+            found = pygments_spec is not None
+            if found is True:
+                from pygments import highlight
+                from pygments.lexers import guess_lexer
+                from pygments.formatters import TerminalFormatter
+                self.pygments_installed = True
+            self.is_initalized = True
         """
         Executes a \"cycle\" of this screen.
             * The concept of \"cycle\" is no longer accurate, and is misleading.
@@ -148,12 +162,24 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         threads = [FileReaderBase.FileScannerThread(self, queue_of_valid_files, self.path)]
         threads[-1].daemon = True
         threads[-1].start()
+        
+        print(_("""
+Scanning path for supported files.
+If this message does not disappear then there are no supported file types in the given path."""))
+
+        nextFile = queue_of_valid_files.get()
+    
         #self.clear_screen() hides any error message produced before it!
         self.clear_screen()
-        nextFile = queue_of_valid_files.get()
+
         while nextFile:
             with open(nextFile, 'r') as f:
                 file_data = f.read()
+                if self.pygments_installed is True:
+                    if self.colorize is True:
+                        lexer = guess_lexer(file_data)
+                        formatter = TerminalFormatter
+                        file_data = highlight(file_data,lexer,formatter())
                 self.typing_print(file_data)
             if self.cleanup_per_file:
                 self.clear_screen()
@@ -206,9 +232,12 @@ Examples:
                     if os.path.isdir(f):
                         if not item.startswith('.'):
                             self._recurse_to_exec(f, func, filetype)
-                    elif f.endswith(filetype): # and not self._is_path_binary(f):
-                        func(f)
-            elif path.endswith(filetype):# and not self._is_path_binary(path):
+                    elif f.endswith(filetype):
+                        if self.ignore_binary is False and not self._is_path_binary(f):
+                            func(f)
+                        elif self.ignore_binary is True and self._is_path_binary(f):
+                            func(f)
+            elif path.endswith(filetype) and not self._is_path_binary(path):
                 func(path)
         except:
             # If IOError, don't put on queue, as the path might throw
