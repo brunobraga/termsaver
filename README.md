@@ -126,10 +126,27 @@ This is a screensaver that displays ascii art from asciiartfarts.com
 RSS feed in an animation format. 
 
 
+#### Clock
+
+This is a screensaver that displays a digital clock using ascii letters.
+
+
+#### Img2Ascii
+
+This is a screensaver that displays images using ascii letters.
+
+
 #### Jokes For All
 
 This is a screensaver that displays recent jokes from <http://jokes4all.net>
 website, from its hourly updated [RSS](http://en.wikipedia.org/wiki/RSS) feed.
+
+
+#### Matrix
+
+This is a screensaver that displays falling (rising) Japanese characters
+simulating the screen from the movie 
+[The Matrix](http://en.wikipedia.org/wiki/The_Matrix).
 
 
 #### Programmer
@@ -174,16 +191,10 @@ This is a screensaver that displays content from a specified
 on screen, in visual animation.
 
 
-#### Clock
+#### Star Wars Asciimation
 
-This is a screensaver that displays a digital clock using ascii letters.
-
-
-#### Matrix
-
-This is a screensaver that displays falling (rising) Japanese characters
-simulating the screen from the movie 
-[The Matrix](http://en.wikipedia.org/wiki/The_Matrix).
+This is a screensaver that displays the Star Wars Asciimation from
+<http://asciimation.co.nz>.
 
 
 #### Sysmon
@@ -191,11 +202,6 @@ simulating the screen from the movie
 (For Linux/Mac systems only) Displays the CPU/Memory usage over time in a graphic
 alike screensaver.
 
-
-#### Star Wars Asciimation
-
-This is a screensaver that displays the Star Wars Asciimation from
-<http://asciimation.co.nz>.
 
  - - -
 

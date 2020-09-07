@@ -6,7 +6,7 @@ _termsaver () {
   if [[ ${cur} == -* ]]; then
     opts="--help --verbose"
   else
-    opts="asciiartfarts clock jokes4all matrix programmer quotes4all randtxt rfc rssfeed starwars sysmon urlfetcher"
+    opts="asciiartfarts clock img2ascii jokes4all matrix programmer quotes4all randtxt rfc rssfeed urlfetcher starwars sysmon"
   fi
   COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) ) && return 0
 }
