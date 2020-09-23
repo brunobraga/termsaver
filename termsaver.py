@@ -100,11 +100,15 @@ Refer also to each screen's help by typing: %(app_name)s [screen] -h
 def skip(arg = None):
     pass
 
-if __name__ == '__main__':
-    #
-    # The entry point of this application, as this should not be accessible as
-    # a python module to be imported by another application.
-    #
+            
+def entryPoint():
+    tscreen = getScreen()
+    if tscreen:
+        (screen, parser) = tscreen
+        screen(parser=parser)._parse_args()
+        
+
+def getScreen():
     verbose = False
     try:
         # parse arguments and execute them accordingly
@@ -112,7 +116,7 @@ if __name__ == '__main__':
         # Set help parser with a custom formatter class (So we can use the line breaks and build_screen_usage_list())
         # Also, add_help removes the built-in help functionality from -h. 
         # We have to add it ourself, but it's customisable this way.
-        parser = argparse.ArgumentParser(formatter_class=SmartFormatter,add_help=False)
+        parser = argparse.ArgumentParser(formatter_class=SmartFormatter,add_help=False, conflict_handler='resolve')
         # Adding parser arguments
         parser.add_argument("screen", type=str, action="store", default=None)
         parser.add_argument("-v", "--verbose",
@@ -141,7 +145,7 @@ if __name__ == '__main__':
         screen = None
         for s in get_available_screens():
             # Create the parsers for each screen.
-            parsers[s.__name__.lower()] = screenparsers.add_parser(s.__name__.lower(), formatter_class=SmartFormatter)
+            parsers[s.__name__.lower()] = screenparsers.add_parser(s.__name__.lower(), formatter_class=SmartFormatter, conflict_handler='resolve')
             if s().name.lower() == args.screen:
                 screen = s
 
@@ -158,7 +162,7 @@ if __name__ == '__main__':
             screen(parser=parser).usage()
         else:
             #Go forth and parse args!
-            screen(parser=parser)._parse_args()
+            return screen,parser
     except KeyboardInterrupt as e:
         #
         # Handles keyboard interrupt to exit this application
@@ -291,3 +295,9 @@ Thanks!
 """))
 
         sys.exit(errno.EPERM)
+if __name__ == '__main__':
+    #
+    # The entry point of this application, as this should not be accessible as
+    # a python module to be imported by another application.
+    #
+    entryPoint()

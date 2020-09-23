@@ -295,7 +295,7 @@ Description: %(description)s""") % {
         #footer
         self.usage_footer()
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         (protected) MUST be overriden in inheriting classes, to deal with
         special arguments that will customize values for them.

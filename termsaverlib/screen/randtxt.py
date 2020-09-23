@@ -88,8 +88,8 @@ class RandTxtScreen(ScreenBase,
             parser
         )
         if self.parser:
-            self.parser.add_argument("-w", "--word", type=str, required=True, help="The words to randomly display on screen.")
-            self.parser.add_argument("-d", "--delay", type=int, required=False, default=self.freeze_delay, help="The delay between changing words.")
+            self.parser.add_argument("-w", "--word", type=str, required=False, help="The words to randomly display on screen.")
+            self.parser.add_argument("-d", "--delay", type=float, required=False, default=self.freeze_delay, help="The delay between changing words.")
         self.word = constants.App.TITLE
         self.delay = 0.01
         self.line_delay = 0
@@ -143,7 +143,7 @@ Example:
         'default_delay': self.FREEZE_WORD_DELAY,
        })
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -168,4 +168,7 @@ Example:
                 raise exception.InvalidOptionException("word")
             self.word = args.word
 
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self

@@ -97,7 +97,10 @@ class AsciiArtFartsScreen(SimpleRSSFeedScreenBase):
         self.clean_dirt = ['<pre>', '</pre>']
         self.cleanup_per_item = True
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
       args, unknown = self.parser.parse_known_args()
       self.sleep_between_items = args.delay
-      self.autorun()
+      if launchScreenImmediately:
+        self.autorun()
+      else:
+        return self

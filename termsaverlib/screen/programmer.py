@@ -32,6 +32,7 @@ The helper class available here is:
 
     * `ProgrammerScreen`
 """
+import os
 from termsaverlib.screen.base.filereader import FileReaderBase
 from termsaverlib import constants, exception
 from termsaverlib.i18n import _
@@ -67,7 +68,7 @@ class ProgrammerScreen(FileReaderBase):
         """
         FileReaderBase.__init__(self,
             "programmer",
-            _("displays source code in typing animation (with pygments support)"))
+            _("displays source code in typing animation (with pygments support)"),
             parser
         )
 
@@ -76,7 +77,7 @@ class ProgrammerScreen(FileReaderBase):
         self.colorize = True
         self.ignore_binary = True
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -88,19 +89,21 @@ class ProgrammerScreen(FileReaderBase):
         """
         args, unknown = self.parser.parse_known_args()
         
-        # last validations
-        if args.path in (None, ''):
-            raise exception.InvalidOptionException("path",
-                _("It is mandatory option"), help=self._message_no_path())
-        else:
+        if args.path:
+            # make sure argument is a valid value (existing path)
             self.path = args.path
+            if not os.path.exists(self.path) and self.path[0:4].lower() != 'http':
+                raise exception.PathNotFoundException(path=args.path)
         
         if args.delay:
             self.delay = args.delay
         else:
             self.delay = constants.Settings.CHAR_DELAY_SECONDS
         
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
     def _message_no_path(self):
         """

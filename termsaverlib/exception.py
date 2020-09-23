@@ -111,10 +111,11 @@ class PathNotFoundException(TermSaverException):
         name of the screen not found by termsaver. This value is accessible by
         """
         TermSaverException.__init__(self, *args, **kwargs)
-        self.path = path
+        if 'path' not in self.readonly:
+            self.path = path
 
-        # mark this property as read-only
-        self.readonly.append('path')
+            # mark this property as read-only
+            self.readonly.append('path')
 
 
 class UrlException(TermSaverException):
@@ -134,10 +135,11 @@ class UrlException(TermSaverException):
         name of the screen not found by termsaver. This value is accessible by
         """
         TermSaverException.__init__(self, *args, **kwargs)
-        self.url = url
+        if 'url' not in self.readonly:
+            self.url = url
 
-        # mark this property as read-only
-        self.readonly.append('url')
+            # mark this property as read-only
+            self.readonly.append('url')
 
 
 class InvalidOptionException(TermSaverException):
@@ -157,10 +159,11 @@ class InvalidOptionException(TermSaverException):
         name of the screen not found by termsaver. This value is accessible by
         """
         TermSaverException.__init__(self, *args, **kwargs)
-        self.option_name = option_name
+        if 'option_name' not in self.readonly:
+            self.option_name = option_name
 
-        # mark this property as read-only
-        self.readonly.append('option_name')
+            # mark this property as read-only
+            self.readonly.append('option_name')
 
 
 class XmlException(TermSaverException):

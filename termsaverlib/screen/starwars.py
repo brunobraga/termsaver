@@ -116,7 +116,7 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
         
     """))
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -130,4 +130,7 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
         configured there will be accepted here.
         """
 
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self

@@ -95,7 +95,7 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         ScreenBase.__init__(self, name, description, parser)
 
         if self.parser != None:
-            self.parser.add_argument("-p","--path", action="store", type=str, help="""Sets the location to search for text-based source files.
+            self.parser.add_argument("-p","--path",required=True, action="store", type=str, help="""Sets the location to search for text-based source files.
                 this option is mandatory.""")
             
             self.parser.add_argument("-d","--delay", action="store", type=int, help="""Sets the speed of the displaying characters

@@ -115,5 +115,8 @@ class RFCScreen(SimpleUrlFetcherBase):
         self.clear_screen()
         self.typing_print(data.decode("utf-8"))
 
-    def _parse_args(self):
-      self.autorun()
+    def _parse_args(self, launchScreenImmediately=True):
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self

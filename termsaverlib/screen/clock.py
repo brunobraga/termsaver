@@ -90,20 +90,20 @@ class ClockScreen(ScreenBase, PositionHelperBase):
     lineindigimap = 6
 
     digmap = {
-        '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n       \n',
+        '0': '  ___  \n / _ \\ \n| | | |\n| |_| |\n \\___/ \n       \n',
         '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n       \n',
-        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n       \n',
-        '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n       \n',
+        '2': ' ____  \n|___ \\ \n  __) |\n / __/ \n|_____|\n       \n',
+        '3': ' _____ \n|___ / \n  |_ \\ \n ___) |\n|____/ \n       \n',
         '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n       \n',
-        '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n       \n',
-        '6': '  __   \n / /_  \n| \'_ \ \n| (_) |\n \___/ \n       \n',
+        '5': ' ____  \n| ___| \n|___ \\ \n ___) |\n|____/ \n       \n',
+        '6': '  __   \n / /_  \n| \'_ \\ \n| (_) |\n \\___/ \n       \n',
         '7': ' _____ \n|___  |\n   / / \n  / /  \n /_/   \n       \n',
-        '8': '  ___  \n ( _ ) \n / _ \ \n| (_) |\n \___/ \n       \n',
-        '9': '  ___  \n / _ \ \n| (_) |\n \__, |\n   /_/ \n       \n',
+        '8': '  ___  \n ( _ ) \n / _ \\ \n| (_) |\n \\___/ \n       \n',
+        '9': '  ___  \n / _ \\ \n| (_) |\n \\__, |\n   /_/ \n       \n',
         ':': '       \n   _   \n  (_)  \n   _   \n  (_)  \n       \n',
         'm': '       \n _ _ _ \n|     |\n| | | |\n|_|_|_|\n       \n',
-        'p': '       \n _ __  \n| `_ \ \n| |_) |\n| .__/ \n|_|    \n',
-        'a': '       \n  __ _ \n / _` |\n| (_| |\n \__,_|\n       \n',
+        'p': '       \n _ __  \n| `_ \\ \n| |_) |\n| .__/ \n|_|    \n',
+        'a': '       \n  __ _ \n / _` |\n| (_| |\n \\__,_|\n       \n',
         ' ': '       \n       \n       \n       \n       \n       \n',
     }
     """
@@ -186,17 +186,21 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         termsaver clock -mb         Shows the clock in 12 hour and big mode.
         termsaver clock --big       Shows the clock in big mode."""))
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         
         args, unknown = self.parser.parse_known_args()
 
         self.ampm = args.ampm
         self.big = args.big
+        
         if (self.big):
             self.lineindigimap = 15
             self.digmap = self.digimapbig
 
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
             
 
     def get_ascii_time(self, date_time):

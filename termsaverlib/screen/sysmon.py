@@ -141,7 +141,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             Default is 0.5 seconds (advised to keep at least above 0.1).""", default=0.5)
             self.parser.add_argument("-n","--no-adjust", dest="adjust", action="store_true", help="""
             Forces the charts to displays 0 ~ 100%% values, instead of dynamically adjusted values based on current maximum.
-            """, default=True)
+            """)
             self.parser.add_argument("-p","--path", help="""
             Sets the location of a file to be monitored. The file must only contain a number from 0 to 100, or the screen will not start.
             This option is optional.
@@ -389,7 +389,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         'screen': self.name,
        })
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -403,8 +403,10 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         configured there will be accepted here.
         """
         args,unknown = self.parser.parse_known_args()
+
         if args.adjust:
             self.adjust = False
+
         if args.path:
             self.path = args.path
             if not os.path.exists(self.path):
@@ -420,4 +422,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             except:
                 raise exception.InvalidOptionException("delay")
 
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self

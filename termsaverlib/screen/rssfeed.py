@@ -79,20 +79,6 @@ class RSSFeedScreen(ScreenBase, RSSFeedScreenBase):
             parser
         )
         
-        if self.parser != None:
-            self.parser.add_argument("-u", "--url", help="The rss feed url", type=str)
-            self.parser.add_argument("-r", "--raw", help="Shows all text available (with HTML if any)", action="store_true")
-            
-            #if not hasFormat:
-            self.parser.add_argument("-f", "--format",type=str, action="store", help="""|R
-            The printing format according to values available in RSS feed:
-                    * pubDate
-                    * title
-                    * link
-                    * description
-            You must use python dictionary based formatting style
-            (see examples for details)""")
-
         RSSFeedScreenBase.__init__(self,
             parser,
             None,
@@ -133,14 +119,8 @@ If you do not have any idea which RSS to use, check out some examples here:
        'app_title': constants.App.TITLE,
     }
 
-    def _parse_args(self):
-        args,unknown = self.parser.parse_known_args()
-        if args.url == None:
-            print(self._message_no_url())
-            sys.exit(0)
-        else:
-            self.url = args.url
-        self.autorun()
+    def _parse_args(self, launchScreenImmediately=True):
+        return RSSFeedScreenBase._parse_args(self, launchScreenImmediately)
 
     def _run_cycle(self):
         RSSFeedScreenBase._run_cycle(self)

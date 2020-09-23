@@ -103,7 +103,12 @@ class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         self.center_horizontally = True
         self.clean_dirt = ["\n", "  "]
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
       args, unknown = self.parser.parse_known_args()
-      self.sleep_between_items = args.delay
-      self.autorun()
+      if args.delay:
+        self.sleep_between_items = args.delay
+
+      if launchScreenImmediately:
+        self.autorun()
+      else:
+        return self

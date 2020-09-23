@@ -104,7 +104,7 @@ class UrlFetcherBase(TypingHelperBase,
         """
         return ""
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -123,6 +123,7 @@ class UrlFetcherBase(TypingHelperBase,
                 self.delay = float(args.delay)
             except:
                 raise exception.InvalidOptionException("delay")
+
         if args.url:
             try:
                 self.url = self.fix_uri(args.url)
@@ -139,7 +140,10 @@ class UrlFetcherBase(TypingHelperBase,
             raise exception.InvalidOptionException("url",
                 _("It is mandatory option"), help=self._message_no_url())
         
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
 
 class SimpleUrlFetcherBase(ScreenBase, UrlFetcherBase):

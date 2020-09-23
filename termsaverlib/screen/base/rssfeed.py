@@ -137,14 +137,29 @@ class RSSFeedScreenBase(UrlFetcherBase,
               the tags available (use python string format with dictionary. eg.
               '%(title)s (%(pubDate)s)\n\n')
         """
+
         UrlFetcherBase.__init__(self, parser, url, delay)
         XMLReaderHelperBase.__init__(self, "item", tags)
+        
+        if self.parser != None:
+            self.parser.add_argument("-u", "--url", help="The rss feed url", type=str)
+            self.parser.add_argument("-r", "--raw", help="Shows all text available (with HTML if any)", action="store_true")
+            
+            #if not hasFormat:
+            self.parser.add_argument("-f", "--format",type=str, action="store", help="""|R
+            The printing format according to values available in RSS feed:
+                    * pubDate
+                    * title
+                    * link
+                    * description
+            You must use python dictionary based formatting style
+            (see examples for details)""")
+        
         self.print_format = print_format
-
         if not print_format:
             self.print_format = '%(title)s (%(pubDate)s)\n\n'
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -158,11 +173,13 @@ class RSSFeedScreenBase(UrlFetcherBase,
         configured there will be accepted here.
         """
         args, unknown = self.parser.parse_known_args()
-
+        
         if args.raw:
             self.clean_html = False
+
         if args.format:
             self.print_format = common.unescape_string(args.format)
+
         if args.url:
             try:
                 # try to fix the url formatting
@@ -174,12 +191,13 @@ class RSSFeedScreenBase(UrlFetcherBase,
                 else:
                     error_message = e
                 raise exception.InvalidOptionException("url", error_message)
-
-        # last validations
-        if self.url in (None, ''):
-            raise exception.InvalidOptionException("url",
-                "It is mandatory option", help=self._message_no_url())
-        self.autorun()
+        else:
+            raise exception.InvalidOptionException("url", "URL is required")
+        
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
     def _run_cycle(self):
         """

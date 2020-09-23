@@ -191,6 +191,8 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
     of half-width size.
     """
     
+    use_kana_only = False
+    
     def __init__(self, parser = None):
         """
         The constructor of this class.
@@ -202,22 +204,24 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         )
 
         if self.parser:
-            self.parser.add_argument("-k", "--kana",
+            self.parser.add_argument("-g", "--granularity",
                 help="An integer value to define how dirt should the screen be. 1 - clean, 100 total dirt.",
-                default=False
+                action="store",
+                default=self.granularity
             )
-            self.parser.add_argument("-z", "--zenkaku",
+            self.parser.add_argument("-k", "--kana",
                 help="Displays only Japanese characters (excludes alpha numeric)",
                 action="store_true",
-                default=self.use_zenkaku
+                default=self.use_kana_only
             )
             self.parser.add_argument("-d", "--delay",
                 help="Defines the speed (in seconds) of the character movement",
                 default=30 * constants.Settings.CHAR_DELAY_SECONDS
             )
-            self.parser.add_argument("-g", "--granularity",
+            self.parser.add_argument("-z", "--zenkaku",
                 help="Displays full-width (fattish) Japanese characters.",
-                default=self.proportion
+                action="store_true",
+                default=self.use_zenkaku
             )
         self.cleanup_per_cycle = False
 
@@ -241,16 +245,16 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         print(self.print_line())
         time.sleep(self.line_delay)
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
         can save coding for screens that will not change the default options.
         """
-        use_kana_only = False
+        
         args, unknown = self.parser.parse_known_args()
         if args.kana:
-            use_kana_only = True
+            self.use_kana_only = True
         if args.zenkaku:
             self.use_zenkaku = True
         if args.granularity:
@@ -285,10 +289,13 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
             self.proportion = 1
 
         self.digmap.extend(digmap_kana)
-        if not use_kana_only:
+        if not self.use_kana_only:
             self.digmap.extend(digmap_alpha_num)
         
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
 
     def __build_screen_map(self):

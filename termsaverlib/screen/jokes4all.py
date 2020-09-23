@@ -89,17 +89,23 @@ class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
             0.015
         )
 
-        if self.parser:
-          self.parser.add_argument("-d", "--delay", help="Delay in seconds between jokes", type=int, default=5)
-
         # set defaults for this screen
         self.sleep_between_items = 30
         self.line_delay = 0
         self.cleanup_per_item = True
         self.cleanup_per_cycle = True
         self.center_vertically = True
+        
+        if self.parser:
+          self.parser.add_argument("-d", "--delay", help="Delay in seconds between jokes", type=int, default=self.sleep_between_items)
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
       args, unknown = self.parser.parse_known_args()
-      self.sleep_between_items = args.delay
-      self.autorun()
+
+      if args.delay:
+        self.sleep_between_items = args.delay
+      
+      if launchScreenImmediately:
+        self.autorun
+      else:
+        return self

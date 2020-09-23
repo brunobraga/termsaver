@@ -73,7 +73,7 @@ class ExamplePluginScreen(ExamplePluginScreenBase):
         print(self.example_echo("Hello World"))
         time.sleep(1)
 
-    def _parse_args(self):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -88,4 +88,7 @@ class ExamplePluginScreen(ExamplePluginScreenBase):
         # See the documentation on the argparse library.
         args, unknown_args = self.parser.parse_known_args()
         
-        self.autorun()
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
