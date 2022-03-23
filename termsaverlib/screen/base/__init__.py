@@ -84,7 +84,13 @@ consistent).
 #
 import os
 import getopt
+import importlib
 import sys
+
+# Check for pynput module
+pynput_installed = importlib.util.find_spec('pynput')
+if (pynput_installed is not None):
+    from pynput import keyboard
 
 #
 # Internal modules
@@ -182,6 +188,25 @@ class ScreenBase(ScreenHelperBase):
         self.description = description
         self.cli_opts = cli_opts
 
+        if pynput_installed is not None:
+            self.listener = keyboard.Listener(
+                on_press=self.on_press,
+                on_release=self.on_release)
+    
+    def on_press(self, key):
+        """
+        This method is called when a key is pressed.
+        """
+        if pynput_installed is not None:
+            self.listener.stop()
+    
+    def on_release(self,key):
+        """
+        This method is called when a key is released.
+        Unused for now, but leaving it in so we have options in the future.
+        """
+        pass
+
     def autorun(self, args, loop=True):
         """
         The accessible method for dynamically running a screen.
@@ -232,8 +257,16 @@ class ScreenBase(ScreenHelperBase):
 
         # execute the cycle
         self.clear_screen()
+        
+        if pynput_installed is not None:
+            # Start key listener
+            self.listener.start()
 
-        while(loop):
+        while( 
+            (loop and pynput_installed is None) 
+            or 
+            (loop and pynput_installed is not None and self.listener.is_alive())
+            ):
             try:
                 self._run_cycle()
             except KeyboardInterrupt as e:
