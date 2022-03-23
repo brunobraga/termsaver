@@ -28,14 +28,13 @@
 ###############################################################################
 -->
 
+LOOKING FOR MAINTAINERS! - Ping me if you are up to the task :blush:
+=========
+
 TermSaver
 =========
 
 *A simple text-based screensaver for terminal windows.*
-
-You may also want to visit our website: 
-
-**<http://termsaver.brunobraga.net>**
 
 ![termsaver](https://github.com/brunobraga/termsaver/raw/master/extras/termsaver-main_medium.jpeg)
 
