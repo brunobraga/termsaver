@@ -42,6 +42,7 @@ import random
 #
 from termsaverlib.screen.base.urlfetcher import SimpleUrlFetcherBase
 from termsaverlib.i18n import _
+from termsaverlib.screen.base import ScreenBase
 
 
 class RFCScreen(SimpleUrlFetcherBase):
@@ -89,7 +90,7 @@ class RFCScreen(SimpleUrlFetcherBase):
     The URL format that can return a text version of a specific RFC number.
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class, using most default values from its super
         class, `SimpleUrlFetcherBase`.
@@ -97,7 +98,9 @@ class RFCScreen(SimpleUrlFetcherBase):
         SimpleUrlFetcherBase.__init__(self,
             "rfc",
             _("randomly displays RFC contents"),
-            "localhost")  # base class require a URL
+            parser,
+            "localhost",
+        )  # base class require a URL
 
     def _run_cycle(self):
         """
@@ -111,3 +114,9 @@ class RFCScreen(SimpleUrlFetcherBase):
         data = self.fetch(self.url)
         self.clear_screen()
         self.typing_print(data.decode("utf-8"))
+
+    def _parse_args(self, launchScreenImmediately=True):
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self

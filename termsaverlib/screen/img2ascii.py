@@ -129,7 +129,7 @@ You may also use online images by sending a url instead of image path.
     }
 
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class (used by termsaver script)
 
@@ -147,66 +147,85 @@ You may also use online images by sending a url instead of image path.
         ScreenBase.__init__(self,
             "img2ascii",
             _("displays images in typing animation"),
-            cli_opts={
-                'opts': 'hicd:p:w:s:z:f:',
-                'long_opts': ['help', 'invert', 'path=', 'wide=', 'contrast', 'set=', 'framedelay=', 'scale='],
-            })
+            parser
+        )
+        
+        if self.parser:
+            self.parser.add_argument("-p","--path", required=True, action="store", default=None, help="Sets the location to search for text-based source files.")
+            self.parser.add_argument("-d","--delay",action="store", default=0.002, help="Sets the speed of the displaying characters.")
+            self.parser.add_argument("-w","--wide",action="store", default=2, help="The width of each 'character' of the image.")
+            self.parser.add_argument("-c","--contrast",action="store_true", default=False, help="Displays image using a contrast based character set.")
+            self.parser.add_argument("-i","--invert",action="store_true", default=False, help="Displays the image with inverted colors.")
+            self.parser.add_argument("-s","--set",action="store", default=' .:;+=xX$&', help="A string representing the character set to render with.")
+            self.parser.add_argument("-z","--scale",action="store", default=1, help="Image Scale")
+            self.parser.add_argument("-f","--framedelay",action="store", default=5, help="Sets the amount of time between images.")
+
+        
         self.delay = 0.002
         self.frame_delay = 5
         # self.path = path
         self.cleanup_per_cycle = False
-        self.options = {'wide':2}
+        self.options = {
+            'invert':False,
+            'wide':2,
+            'contrast':False,
+            'customcharset': ' .:;+=xX$&',
+            'framedelay': self.frame_delay,
+            'scale':1
+        }
         self.cleanup_per_cycle = True
         self.cleanup_per_file = True
-        self.options = {}
 
-    def _parse_args(self, prepared_args):
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-i", "--invert"):
-                self.options['invert'] = True
-            elif o in ("-w", "--wide"):
-                try:
-                    # makes sure this is a valid integer
-                    self.options['wide'] = int(a)
-                except:
-                    raise exception.InvalidOptionException("wide")
-            elif o in ("-c", "--contrast"):
-                self.options['contrast'] = True
-            elif o in ("-s", "--set"):
-                self.options['customcharset'] = a
-            elif o in ("-f", "--framedelay"):
-                try:
-                    self.option['framedelay'] = int(a)
-                except:
-                    raise exception.InvalidOptionException("framedelay")
-            elif o in ("-z", "--scale"):
-                try:
-                    self.options['scale'] = int(a)
-                except:
-                    raise exception.InvalidOptionException("scale")
-            elif o in ("-d", "--delay"):
-                try:
-                    # make sure argument is a valid value (float)
-                    self.delay = float(a)
-                except:
-                    raise exception.InvalidOptionException("delay")
-            elif o in ("-p", "--path"):
-                # make sure argument is a valid value (existing path)
-                self.path = a
-                if not os.path.exists(self.path) and self.path[0:4].lower() != 'http':
-                    raise exception.PathNotFoundException(self.path,
-                        _("Make sure the file or directory exists."))
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+    def _parse_args(self, launchScreenImmediately=True):
+        
+        args, unknown = self.parser.parse_known_args()
 
-        # last validations
-        if self.path in (None, ''):
-            raise exception.InvalidOptionException("path",
-                _("It is mandatory option"), help=self._message_no_path())
+        if args.invert:
+            self.options['invert'] = True
+        
+        if args.wide:
+            try:
+                # makes sure this is a valid integer
+                self.options['wide'] = int(args.wide)
+            except:
+                raise exception.InvalidOptionException("wide")
+        
+        if args.contrast:
+            self.options['contrast'] = True
+        
+        if args.set:
+            self.options['customcharset'] = args.set
+            
+        if args.framedelay:
+            try:
+                self.options['framedelay'] = int(args.framedelay)
+            except:
+                raise exception.InvalidOptionException("framedelay")
+            
+        if args.scale:
+            try:
+                self.options['scale'] = int(args.scale)
+            except:
+                raise exception.InvalidOptionException("scale")
+        
+        if args.delay:
+            try:
+                # make sure argument is a valid value (float)
+                self.delay = float(args.delay)
+            except:
+                raise exception.InvalidOptionException("delay")
+        
+        if args.path:
+            # make sure argument is a valid value (existing path)
+            self.path = args.path
+            if not os.path.exists(self.path) and self.path[0:4].lower() != 'http':
+                raise exception.PathNotFoundException(self.path,
+                    _("Make sure the file or directory exists."))
+        
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
     def _run_cycle(self):
         """
@@ -277,24 +296,6 @@ You may also use online images by sending a url instead of image path.
         configured there will be accepted here.
         """
         print (_("""
-Options:
-
- -p, --path         Sets the location to search for text-based source files.
-                    This option is mandatory.
- -d, --delay        Sets the speed of the displaying characters.
-                    Default is 2/1000th of a second
- -w, --wide         The width of each 'character' of the image.
-                    Default is 2 units. (Recommended left at default)
- -c, --contrast     Displays image using a contrast based character set.
- -i, --invert       Displays the image with inverted colors.
- -s, --set          Allows the use of a custom character set.
-                    Default is ' .:;+=xX$&'.
- -z, --scale        Scales the image.
-                    Default is 1.
- -f, --framedelay   Sets the amount of time between image shifts.
-                    Default is 5 seconds
- -h, --help         Displays this help message.
-
 Examples:
 
     $ %(app_name)s %(screen)s -p /path/to/images/

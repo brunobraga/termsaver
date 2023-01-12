@@ -31,7 +31,7 @@ See additional information in the class itself.
 
 The screen class available here is:
 
-    * `AsciArtFartsScreen`
+    * `AsciiArtFartsScreen`
 """
 
 #
@@ -41,7 +41,7 @@ from termsaverlib.screen.base.rssfeed import SimpleRSSFeedScreenBase
 from termsaverlib.i18n import _
 
 
-class AsciArtFartsScreen(SimpleRSSFeedScreenBase):
+class AsciiArtFartsScreen(SimpleRSSFeedScreenBase):
     """
     A simple screen that connects to asciiartfarts.com RSS feeds to display
     ascii arts on screen.
@@ -67,7 +67,7 @@ class AsciArtFartsScreen(SimpleRSSFeedScreenBase):
           is displayed
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class, using most default values from its super
         class, `SimpleRSSFeedScreenBase`.
@@ -77,13 +77,17 @@ class AsciArtFartsScreen(SimpleRSSFeedScreenBase):
 
         NOTE: Maybe NSFW (Not Safe For Work)
         """
-        super(AsciArtFartsScreen, self).__init__(
+        SimpleRSSFeedScreenBase.__init__(self,
             "asciiartfarts",
             _("displays ascii images from asciiartfarts.com (NSFW)"),
+            parser,
             'http://www.asciiartfarts.com/farts.rss',
             ["description"],
             "%(description)s",
         )
+
+        if self.parser:
+          self.parser.add_argument("-d", "--delay", help="Delay in seconds between images", type=int, default=5)
 
         # set defaults for this screen
         self.cleanup_per_cycle = True
@@ -92,3 +96,11 @@ class AsciArtFartsScreen(SimpleRSSFeedScreenBase):
         self.center_horizontally = True
         self.clean_dirt = ['<pre>', '</pre>']
         self.cleanup_per_item = True
+
+    def _parse_args(self, launchScreenImmediately=True):
+      args, unknown = self.parser.parse_known_args()
+      self.sleep_between_items = args.delay
+      if launchScreenImmediately:
+        self.autorun()
+      else:
+        return self

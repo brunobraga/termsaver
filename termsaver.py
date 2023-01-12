@@ -56,6 +56,9 @@ from termsaverlib.screen.helper import ScreenHelperBase
 from termsaverlib import common, exception, constants
 from termsaverlib.i18n import _
 
+import argparse
+from termsaverlib.helper.smartformatter import SmartFormatter
+
 verbose = False
 """
 Defines if the error output should contain more debuging information.
@@ -64,7 +67,6 @@ The verbose mode here does not actually refer to printing logs on screen
 kills the application will be just completely printed out for troubleshooting
 purposes only.
 """
-
 
 def usage():
     """
@@ -95,70 +97,72 @@ Refer also to each screen's help by typing: %(app_name)s [screen] -h
     ScreenBase.usage_footer()
 
 
-def parse_args(args):
-    """
-    Simple routine to parse and handle arguments passed to termsaver.
-    Here, a manual parsing is required because we need to transfer the
-    arguments to the corresponding screen being called, if applicable.
+def skip(arg = None):
+    pass
 
-    Some arguments are universal, though:
+            
+def entryPoint():
+    tscreen = getScreen()
+    if tscreen:
+        (screen, parser) = tscreen
+        screen(parser=parser)._parse_args()
+        
 
-        * -v, --verbose: can only be used by the main termsaver script
-                         it will be removed from the arguments list before
-                         being transferred to the corresnponding screen.
-
-                         It basically prints out python exception details
-                         that can be useful for troubleshooting.
-
-        * -h, --help:    reused by screens, to display each screen's usage
-                         information. If no screens have been informed in
-                         the arguments, the main usage information will be
-                         then displayed.
-    """
-    #
-    # We have to parse them the hard-way to allow getopt to act within each
-    # screen class instead.
-    #
-
-    # force parsing verbose mode from any screen
-    global verbose
-    for arg in args:
-        if arg in ('-v', '--verbose'):
-            verbose = True
-            args.remove(arg)
-
-    if len(args) < 1:
-        usage()
-        sys.exit(0)
-
-    elif args[0] in ('-h', '--help'):
-        usage()
-        sys.exit(0)
-
-    elif args[0] in [s().name for s in get_available_screens()]:
-        # a proper screen was chosen, so send the args to be parsed
-        # by the screen class
-        for screen in \
-            [s for s in get_available_screens() if args[0] == s().name]:
-            screen().autorun(args[1:])
-
-    else:
-        txt = 'screen'
-        if str(args[0]).startswith('-'):
-            txt = 'option'
-        raise exception.InvalidOptionException('',
-                _('It seems you chose an invalid %s.') % txt)
-
-
-if __name__ == '__main__':
-    #
-    # The entry point of this application, as this should not be accessible as
-    # a python module to be imported by another application.
-    #
-
+def getScreen():
+    verbose = False
     try:
         # parse arguments and execute them accordingly
-        parse_args(sys.argv[1:])
+
+        # Set help parser with a custom formatter class (So we can use the line breaks and build_screen_usage_list())
+        # Also, add_help removes the built-in help functionality from -h. 
+        # We have to add it ourself, but it's customisable this way.
+        parser = argparse.ArgumentParser(formatter_class=SmartFormatter,add_help=False, conflict_handler='resolve')
+        # Adding parser arguments
+        parser.add_argument("screen", type=str, action="store", default=None)
+        parser.add_argument("-v", "--verbose",
+                  action="store_true", dest="verbose", default=False,
+                  help="Displays python exception errors (for debugging)")
+        parser.add_argument("-h", "--help", action="store_true",dest="help",default=False)
+
+        # Override the default format/help/error functions so we only see the information we want
+        parser.format_usage = skip
+        parser.format_help = skip
+        parser.error = skip
+
+        # Parse arguments into args we know of and args we don't.
+        # We'll use this all over so the system can ignore arguments meant for specific screens.
+        args, unkown = parser.parse_known_args()
+        
+        # Assign the important arguments on module init.
+        verbose = True if args.verbose else False
+        if args.screen == None or (args.screen == None and args.h0elp == True):
+            usage()
+            sys.exit(0)
+
+        # Find the screen we're using and create it's parser as well as check validity with args.
+        parsers = {}
+        screenparsers = parser.add_subparsers()
+        screen = None
+        for s in get_available_screens():
+            # Create the parsers for each screen.
+            parsers[s.__name__.lower()] = screenparsers.add_parser(s.__name__.lower(), formatter_class=SmartFormatter, conflict_handler='resolve')
+            if s().name.lower() == args.screen:
+                screen = s
+
+        if screen == None:
+            print(_("Invalid Screen."))
+            usage()
+            sys.exit(0)
+
+        # Pass the parser to the selected screen.
+        parser = parsers[screen.__name__.lower()]
+        
+        # Display usage if screen is select but help is requested.
+        if (args.screen != None and args.help == True):
+            screen(parser=parser).usage()
+        else:
+            #Go forth and parse args!
+            return screen,parser
     except KeyboardInterrupt as e:
         #
         # Handles keyboard interrupt to exit this application
@@ -291,3 +295,9 @@ Thanks!
 """))
 
         sys.exit(errno.EPERM)
+if __name__ == '__main__':
+    #
+    # The entry point of this application, as this should not be accessible as
+    # a python module to be imported by another application.
+    #
+    entryPoint()

@@ -1,8 +1,8 @@
 ###############################################################################
 #
-# file:     .gitignore
+# file:     smartformatter.py
 #
-# Purpose:  Forces GIT to ignore certain files when commiting changes.
+# Purpose:  refer to module documentation for details
 #
 # Note:     This file is part of Termsaver application, and should not be used
 #           or executed separately.
@@ -24,31 +24,15 @@
 # under the License.
 #
 ###############################################################################
+import argparse
+import sys
 
-# compiled files
-*.py[co]
-#*.mo
+class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
+    def _split_lines(self, text, width):
 
-# Installer logs
-pip-log.txt
+        if text.startswith('R|'):
+            text = text[2:]
+            return text.split_lines(self,text,width)
 
-# Unit test / coverage reports
-.coverage
-.tox
-
-# Source Code Cache
-termsaver_cache.list
-.wakatime-project
+        return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)

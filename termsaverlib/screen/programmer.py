@@ -32,9 +32,11 @@ The helper class available here is:
 
     * `ProgrammerScreen`
 """
+import os
 from termsaverlib.screen.base.filereader import FileReaderBase
-from termsaverlib import constants
+from termsaverlib import constants, exception
 from termsaverlib.i18n import _
+from argparse import ArgumentParser
 
 
 class ProgrammerScreen(FileReaderBase):
@@ -49,7 +51,7 @@ class ProgrammerScreen(FileReaderBase):
         * `FileReaderBase.cleanup_per_file` as True
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class (used by termsaver script)
 
@@ -66,11 +68,42 @@ class ProgrammerScreen(FileReaderBase):
         """
         FileReaderBase.__init__(self,
             "programmer",
-            _("displays source code in typing animation (with pygments support)"))
+            _("displays source code in typing animation (with pygments support)"),
+            parser
+        )
+
         self.cleanup_per_cycle = True
         self.cleanup_per_file = True
         self.colorize = True
         self.ignore_binary = True
+
+    def _parse_args(self, launchScreenImmediately=True):
+        """
+        Handles the special command-line arguments available for this screen.
+        Although this is a base screen, having these options prepared here
+        can save coding for screens that will not change the default options.
+
+        Additionally, this is dependent on the values exposed in `cli_opts`,
+        passed to this class during its instantiation. Only values properly
+        configured there will be accepted here.
+        """
+        args, unknown = self.parser.parse_known_args()
+        
+        if args.path:
+            # make sure argument is a valid value (existing path)
+            self.path = args.path
+            if not os.path.exists(self.path) and self.path[0:4].lower() != 'http':
+                raise exception.PathNotFoundException(path=args.path)
+        
+        if args.delay:
+            self.delay = args.delay
+        else:
+            self.delay = constants.Settings.CHAR_DELAY_SECONDS
+        
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
     def _message_no_path(self):
         """

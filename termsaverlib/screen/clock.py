@@ -48,6 +48,9 @@ from termsaverlib.screen.helper.position import PositionHelperBase
 from termsaverlib import common
 from termsaverlib.i18n import _
 
+from termsaverlib.helper.smartformatter import SmartFormatter
+import argparse
+
 
 class ClockScreen(ScreenBase, PositionHelperBase):
     """
@@ -87,20 +90,20 @@ class ClockScreen(ScreenBase, PositionHelperBase):
     lineindigimap = 6
 
     digmap = {
-        '0': '  ___  \n / _ \ \n| | | |\n| |_| |\n \___/ \n       \n',
+        '0': '  ___  \n / _ \\ \n| | | |\n| |_| |\n \\___/ \n       \n',
         '1': '   _   \n  / |  \n  | |  \n  | |  \n  |_|  \n       \n',
-        '2': ' ____  \n|___ \ \n  __) |\n / __/ \n|_____|\n       \n',
-        '3': ' _____ \n|___ / \n  |_ \ \n ___) |\n|____/ \n       \n',
+        '2': ' ____  \n|___ \\ \n  __) |\n / __/ \n|_____|\n       \n',
+        '3': ' _____ \n|___ / \n  |_ \\ \n ___) |\n|____/ \n       \n',
         '4': ' _  _  \n| || | \n| || | \n|__  | \n   |_| \n       \n',
-        '5': ' ____  \n| ___| \n|___ \ \n ___) |\n|____/ \n       \n',
-        '6': '  __   \n / /_  \n| \'_ \ \n| (_) |\n \___/ \n       \n',
+        '5': ' ____  \n| ___| \n|___ \\ \n ___) |\n|____/ \n       \n',
+        '6': '  __   \n / /_  \n| \'_ \\ \n| (_) |\n \\___/ \n       \n',
         '7': ' _____ \n|___  |\n   / / \n  / /  \n /_/   \n       \n',
-        '8': '  ___  \n ( _ ) \n / _ \ \n| (_) |\n \___/ \n       \n',
-        '9': '  ___  \n / _ \ \n| (_) |\n \__, |\n   /_/ \n       \n',
+        '8': '  ___  \n ( _ ) \n / _ \\ \n| (_) |\n \\___/ \n       \n',
+        '9': '  ___  \n / _ \\ \n| (_) |\n \\__, |\n   /_/ \n       \n',
         ':': '       \n   _   \n  (_)  \n   _   \n  (_)  \n       \n',
         'm': '       \n _ _ _ \n|     |\n| | | |\n|_|_|_|\n       \n',
-        'p': '       \n _ __  \n| `_ \ \n| |_) |\n| .__/ \n|_|    \n',
-        'a': '       \n  __ _ \n / _` |\n| (_| |\n \__,_|\n       \n',
+        'p': '       \n _ __  \n| `_ \\ \n| |_) |\n| .__/ \n|_|    \n',
+        'a': '       \n  __ _ \n / _` |\n| (_| |\n \\__,_|\n       \n',
         ' ': '       \n       \n       \n       \n       \n       \n',
     }
     """
@@ -133,15 +136,19 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         ' ' : '     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n     \n',
     }
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class.
         """
         ScreenBase.__init__(self,
             "clock",
             _("displays a digital clock on screen"),
-            {'opts': 'hmb', 'long_opts': ['help', 'ampm', "big"]},
+            parser
         )
+        if self.parser:
+            self.parser.add_argument("-m","--ampm", help="Use a 12 hour clock with am/pm suffix.", action="store_true", default=False)
+            self.parser.add_argument("-b","--big", help="Big mode using a constrast block method.", action="store_true", default=False)
+
         self.cleanup_per_cycle = True
 
     def _run_cycle(self):
@@ -175,54 +182,26 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         time.sleep(sleep_time)
 
     def _usage_options_example(self):
-        """
-        Describe here the options and examples of this screen.
+        return (_("""
+        termsaver clock -mb         Shows the clock in 12 hour and big mode.
+        termsaver clock --big       Shows the clock in big mode."""))
 
-        The method `_parse_args` will be handling the parsing of the options
-        documented here.
+    def _parse_args(self, launchScreenImmediately=True):
+        
+        args, unknown = self.parser.parse_known_args()
 
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        print (_("""
-Options:
+        self.ampm = args.ampm
+        self.big = args.big
+        
+        if (self.big):
+            self.lineindigimap = 15
+            self.digmap = self.digimapbig
 
- -h, --help   Displays this help message
-
- -m, --ampm   Shows the clock in am/pm 12-hour format, without seconds.
- 
- -b, --big   Shows the clock big number format, without seconds.
-
-
-"""))
-
-    def _parse_args(self, prepared_args):
-        """
-        Handles the special command-line arguments available for this screen.
-        Although this is a base screen, having these options prepared here
-        can save coding for screens that will not change the default options.
-
-        See `_usage_options_example` method for documentation on each of the
-        options being parsed here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        for o, __ in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-m", "--ampm"):
-                self.ampm = True
-            elif o in ("-b", "--big"):
-                self.big = True
-                self.lineindigimap = 15
-                self.digmap = self.digimapbig
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
+            
 
     def get_ascii_time(self, date_time):
         """

@@ -32,7 +32,7 @@ See additional information in the class itself.
 
 The screen class available here is:
 
-    * `Jokes4AllRSSFeedScreen`
+    * `Jokes4AllScreen`
 """
 
 #
@@ -40,6 +40,7 @@ The screen class available here is:
 #
 from termsaverlib.screen.base.rssfeed import SimpleRSSFeedScreenBase
 from termsaverlib.i18n import _
+from termsaverlib.screen.base import ScreenBase
 
 
 class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
@@ -71,7 +72,7 @@ class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
       * center in vertical
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class, using most default values from its super
         class, `SimpleRSSFeedScreenBase`.
@@ -81,6 +82,7 @@ class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         SimpleRSSFeedScreenBase.__init__(self,
             "jokes4all",
             _("displays recent jokes from jokes4all.net (NSFW)"),
+            parser,
             "http://jokes4all.net/rss/360010113/jokes.xml",
             ["pubDate", "link", "description"],
             '\n%(description)s\n\n%(pubDate)s %(link)s\n',
@@ -93,3 +95,17 @@ class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         self.cleanup_per_item = True
         self.cleanup_per_cycle = True
         self.center_vertically = True
+        
+        if self.parser:
+          self.parser.add_argument("-d", "--delay", help="Delay in seconds between jokes", type=int, default=self.sleep_between_items)
+
+    def _parse_args(self, launchScreenImmediately=True):
+      args, unknown = self.parser.parse_known_args()
+
+      if args.delay:
+        self.sleep_between_items = args.delay
+      
+      if launchScreenImmediately:
+        self.autorun
+      else:
+        return self

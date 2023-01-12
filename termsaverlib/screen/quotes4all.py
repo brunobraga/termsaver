@@ -77,18 +77,22 @@ class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
 
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class (used by termsaver script)
         """
         SimpleRSSFeedScreenBase.__init__(self,
             "quotes4all",
             _("displays recent quotes from quotes4all.net"),
+            parser,
             "http://quotes4all.net/rss/360010110/quotes.xml",
             ["title", "description"],
             '"%(description)s" -- %(title)s',
             0.015
         )
+
+        if self.parser:
+          self.parser.add_argument("-d", "--delay", help="Delay in seconds between images", type=int, default=10)
 
         # set defaults for this screen
         self.sleep_between_items = 10
@@ -98,3 +102,13 @@ class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         self.center_vertically = True
         self.center_horizontally = True
         self.clean_dirt = ["\n", "  "]
+
+    def _parse_args(self, launchScreenImmediately=True):
+      args, unknown = self.parser.parse_known_args()
+      if args.delay:
+        self.sleep_between_items = args.delay
+
+      if launchScreenImmediately:
+        self.autorun()
+      else:
+        return self

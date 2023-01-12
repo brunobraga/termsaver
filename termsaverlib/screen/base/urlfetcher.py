@@ -44,8 +44,7 @@ from termsaverlib.screen.helper.typing import TypingHelperBase
 from termsaverlib.i18n import _
 
 
-class UrlFetcherBase(ScreenBase,
-                     TypingHelperBase,
+class UrlFetcherBase(TypingHelperBase,
                      URLFetcherHelperBase):
     """
     A base class used to handle URL fetched contents, and display them
@@ -65,9 +64,7 @@ class UrlFetcherBase(ScreenBase,
     """
     the URL address to fetch data from
     """
-
-    def __init__(self, name, description, url=None,
-                 delay=None, cli_opts=None):
+    def __init__(self, parser, url=None, delay=None):
         """
         Creates a new instance of this class.
 
@@ -79,14 +76,13 @@ class UrlFetcherBase(ScreenBase,
             * `delay`: defines the delay for printing out characters of
                a string
        """
-        ScreenBase.__init__(self, name, description, cli_opts)
-        if not cli_opts:
-            self.cli_opts = {
-                             'opts': 'hd:u:',
-                             'long_opts': ['help', 'delay=', 'url='],
-            }
+        if self.parser:
+            self.parser.add_argument("-d","--delay", action="store", type=int, help="""Sets the speed of the displaying characters
+                    default is%(default_delay)s of a second""" % {'default_delay': constants.Settings.CHAR_DELAY_SECONDS})
+
         self.delay = delay
         self.url = url
+        self.parser = parser
 
     def _run_cycle(self):
         """
@@ -108,44 +104,7 @@ class UrlFetcherBase(ScreenBase,
         """
         return ""
 
-    def _usage_options_example(self):
-        """
-        Describe here the options and examples of this screen.
-
-        The method `_parse_args` will be handling the parsing of the options
-        documented here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        print (_("""
-Options:
-
- -u, --url    Defines the URL location from where the information
-              should be fetched, then displayed.
-              This option is MANDATORY.
- -d, --delay  Sets the speed of the displaying characters
-              default is 0.003 of a second (advised to keep
-              between 0.01 and 0.001).
- -h, --help   Displays this help message
-
-Examples:
-
-    $ %(app_name)s %(screen)s -u www.google.com
-    This will trigger the screensaver to fetch the HTML contents of this web
-    site and display progressively.
-
-    $ %(app_name)s %(screen)s -u www.google.com -d 0
-    This will trigger the screensaver to fetch the HTML contents of this web
-    site with no delay (too fast for a screensaver, but it's your choice that
-    matters!)
-""") % {
-        'screen': self.name,
-        'app_name': constants.App.NAME,
-    })
-
-    def _parse_args(self, prepared_args):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -158,88 +117,52 @@ Examples:
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-d", "--delay"):
-                try:
-                    # make sure argument is a valid value (float)
-                    self.delay = float(a)
-                except:
-                    raise exception.InvalidOptionException("delay")
-            elif o in ("-u", "--url"):
-                try:
-                    # try to fix the url formatting
-                    self.url = self.fix_uri(a)
-                except Exception as e:
-                    error_message = ""
-                    if hasattr(e, 'message'):
-                        error_message = e.message
-                    else:
-                        error_message = e
-                    raise exception.InvalidOptionException("url", error_message)
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+        args,unknown = self.parser.parse_known_args()
+        if args.delay:
+            try:
+                self.delay = float(args.delay)
+            except:
+                raise exception.InvalidOptionException("delay")
+
+        if args.url:
+            try:
+                self.url = self.fix_uri(args.url)
+            except Exception as e:
+                error_message = ""
+                if hasattr(e, 'message'):
+                    error_message = e.message
+                else:
+                    error_message = e
+                raise exception.InvalidOptionException("url", error_message)
 
         # last validations
         if self.url in (None, ''):
             raise exception.InvalidOptionException("url",
                 _("It is mandatory option"), help=self._message_no_url())
+        
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
 
-class SimpleUrlFetcherBase(UrlFetcherBase):
+class SimpleUrlFetcherBase(ScreenBase, UrlFetcherBase):
     """
     Inherits the `UrlFetcherBase` class to handle basic URL fetching.
     This will simplify the use of UrlFetcherBase by forcing a fixed
     URL, and simplify the code of screens inheriting from it.
     """
 
-    def __init__(self, name, description, url, delay=None):
+    def __init__(self, name, description, parser, url, delay=None):
         """
         Creates a new instance of this class.
 
         This constructor has forced the url argument, compared with its base
         class, as it has no command line options to define its value manually
         """
-        UrlFetcherBase.__init__(self, name, description, url, delay,
-                            {'opts': 'h', 'long_opts': ['help']})
+        ScreenBase.__init__(self, name, description, parser)
+        UrlFetcherBase.__init__(self, parser, url, delay)
 
-    def _usage_options_example(self):
-        """
-        Describe here the options and examples of this screen.
-
-        The method `_parse_args` will be handling the parsing of the options
-        documented here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        print ("""
-Options:
-
- -h, --help   Displays this help message
-""")
-
-    def _parse_args(self, prepared_args):
-        """
-        Handles the special command-line arguments available for this screen.
-        Although this is a base screen, having these options prepared here
-        can save coding for screens that will not change the default options.
-
-        See `_usage_options_example` method for documentation on each of the
-        options being parsed here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        for o, __ in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+    
+    def _run_cycle(self):
+        UrlFetcherBase._run_cycle(self)

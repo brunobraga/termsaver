@@ -42,6 +42,7 @@ import time
 #
 # Internal modules
 #
+from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.base.urlfetcher import UrlFetcherBase
 from termsaverlib.screen.helper.xmlreader import XMLReaderHelperBase
 from termsaverlib.screen.helper.typing import TypingHelperBase
@@ -117,8 +118,8 @@ class RSSFeedScreenBase(UrlFetcherBase,
     Defines that the output text must be cleaned from HTML tags.
     """
 
-    def __init__(self, name, description, url=None, tags=None,
-                 print_format=None, delay=None, cli_opts=None):
+    def __init__(self, parser, url=None,
+                  tags=None, print_format=None, delay=None):
         """
        Creates a new instance of this class.
 
@@ -136,66 +137,29 @@ class RSSFeedScreenBase(UrlFetcherBase,
               the tags available (use python string format with dictionary. eg.
               '%(title)s (%(pubDate)s)\n\n')
         """
-        UrlFetcherBase.__init__(self,
-            name, description, url, delay, cli_opts)
 
+        UrlFetcherBase.__init__(self, parser, url, delay)
         XMLReaderHelperBase.__init__(self, "item", tags)
-
+        
+        if self.parser != None:
+            self.parser.add_argument("-u", "--url", help="The rss feed url", type=str)
+            self.parser.add_argument("-r", "--raw", help="Shows all text available (with HTML if any)", action="store_true")
+            
+            #if not hasFormat:
+            self.parser.add_argument("-f", "--format",type=str, action="store", help="""|R
+            The printing format according to values available in RSS feed:
+                    * pubDate
+                    * title
+                    * link
+                    * description
+            You must use python dictionary based formatting style
+            (see examples for details)""")
+        
         self.print_format = print_format
-
-        # build deafults
-        if not cli_opts:
-            self.cli_opts = {
-                             'opts': 'hrd:u:f:',
-                             'long_opts': ['raw', 'help', 'delay=',
-                                           'url=', 'format=']
-            }
-
         if not print_format:
             self.print_format = '%(title)s (%(pubDate)s)\n\n'
 
-    def _usage_options_example(self):
-        """
-        Describe here the options and examples of this screen.
-
-        The method `_parse_args` will be handling the parsing of the options
-        documented here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        print (_("""
-Options:
-
- -h,  --help   Displays this help message
- -u,  --url    The URL path of the RSS feed (text) to be displayed
- -r,  --raw    Shows all text available (with HTML if any)
- -f, --format  The printing format according to values available in RSS feed:
-                   * pubDate
-                   * title
-                   * link
-                   * description
-               You must use python dictionary based formatting style
-               (see examples for details)
-
-Example:
-
-    $ %(app_name)s %(screen)s -u http://rss.cnn.com/rss/edition.rss
-    This will trigger the screensaver to fetch the contents from the CNN feed
-    and display it in default formatting: '%%(title)s (%%(pubDate)s)\\n'
-
-    $ %(app_name)s %(screen)s -u http://rss.cnn.com/rss/edition.rss \\
-        -f '%%(title)s (%%(pubDate)s)\\n%%(description)s\\n%%(link)s'
-    This will trigger the screensaver to fetch the contents from the CNN feed
-    and display all contents as specified in the formatting.
-""") % {
-        'app_name': constants.App.NAME,
-        'screen': self.name,
-        'description': self.description,
-       })
-
-    def _parse_args(self, prepared_args):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -208,35 +172,32 @@ Example:
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
+        args, unknown = self.parser.parse_known_args()
+        
+        if args.raw:
+            self.clean_html = False
 
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            elif o in ("-r", "--raw"):
-                self.clean_html = False
-            elif o in ("-f", "--format"):
-                #remove escaping
-                self.print_format = common.unescape_string(a)
-            elif o in ("-u", "--url"):
-                try:
-                    # try to fix the url formatting
-                    self.url = self.fix_uri(a)
-                except Exception as e:
-                    error_message = ""
-                    if hasattr(e, 'message'):
-                        error_message = e.message
-                    else:
-                        error_message = e
-                    raise exception.InvalidOptionException("url", error_message)
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+        if args.format:
+            self.print_format = common.unescape_string(args.format)
 
-        # last validations
-        if self.url in (None, ''):
-            raise exception.InvalidOptionException("url",
-                "It is mandatory option", help=self._message_no_url())
+        if args.url:
+            try:
+                # try to fix the url formatting
+                self.url = self.fix_uri(args.url)
+            except Exception as e:
+                error_message = ""
+                if hasattr(e, 'message'):
+                    error_message = e.message
+                else:
+                    error_message = e
+                raise exception.InvalidOptionException("url", error_message)
+        else:
+            raise exception.InvalidOptionException("url", "URL is required")
+        
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
     def _run_cycle(self):
         """
@@ -273,68 +234,32 @@ Example:
                     new_text = self.center_text_horizontally(new_text)
 
             self.typing_print(new_text)
-
             time.sleep(self.sleep_between_items)
 
             if self.cleanup_per_item:
                 self.clear_screen()
 
 
-class SimpleRSSFeedScreenBase(RSSFeedScreenBase):
+class SimpleRSSFeedScreenBase(ScreenBase, RSSFeedScreenBase):
     """
     Inherits the `RSSFeedScreenBase` class to handle basic RSS parsing.
     This will simplify the use of RSSFeedScreenBase by forcing a fixed
     URL feed, and simplify the code of screens inheriting from it.
     """
 
-    def __init__(self, name, description, url, tags=None,
-                 print_format=None, delay=None):
+    def __init__(self, name, description, parser, url, 
+                 tags=None, print_format=None, delay=None):
         """
         Creates a new instance of this class.
 
         This constructor has forced the url argument, compared with its base
         class, as it has no command line options to define its value manually
         """
+        ScreenBase.__init__(self, name, description, parser)
         RSSFeedScreenBase.__init__(self,
-                name, description, url, tags,
-                 print_format, delay,
-                 {'opts': 'h', 'long_opts': ['help']}
+                parser, url, tags,
+                print_format, delay
         )
-
-    def _usage_options_example(self):
-        """
-        Describe here the options and examples of this screen.
-
-        The method `_parse_args` will be handling the parsing of the options
-        documented here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        print ("""
-Options:
-
- -h,  --help   Displays this help message
-""")
-
-    def _parse_args(self, prepared_args):
-        """
-        Handles the special command-line arguments available for this screen.
-        Although this is a base screen, having these options prepared here
-        can save coding for screens that will not change the default options.
-
-        See `_usage_options_example` method for documentation on each of the
-        options being parsed here.
-
-        Additionally, this is dependent on the values exposed in `cli_opts`,
-        passed to this class during its instantiation. Only values properly
-        configured there will be accepted here.
-        """
-        for o, __ in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+    
+    def _run_cycle(self):
+        RSSFeedScreenBase._run_cycle(self)

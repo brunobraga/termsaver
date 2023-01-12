@@ -172,7 +172,6 @@ class URLFetcherHelperBase(ScreenHelperBase):
             self.__last_fetched = time.time()
 
             self.raw = resp.read()
-
             # make sure the content is not binary (eg. image)
             if self.__is_response_binary(self.raw):
                 raise exception.UrlException(uri, _("Fetched data is binary."))

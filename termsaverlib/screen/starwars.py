@@ -60,14 +60,15 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
           cycle is displayed
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         The constructor of this class.
         """
         ScreenBase.__init__(self,
             "starwars",
             _("displays the star wars asciimation on screen"),
-            {'opts': 'h', 'long_opts': ['help']})
+            parser
+        )
         self.cleanup_per_cycle = True
         self.is_initalized = False
 
@@ -115,7 +116,7 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
         
     """))
 
-    def _parse_args(self, prepared_args):
+    def _parse_args(self, launchScreenImmediately=True):
         """
         Handles the special command-line arguments available for this screen.
         Although this is a base screen, having these options prepared here
@@ -128,10 +129,8 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
         passed to this class during its instantiation. Only values properly
         configured there will be accepted here.
         """
-        for o, a in prepared_args[0]:  # optlist, args
-            if o in ("-h", "--help"):
-                self.usage()
-                self.screen_exit()
-            else:
-                # this should never happen!
-                raise Exception(_("Unhandled option. See --help for details."))
+
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self

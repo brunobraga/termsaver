@@ -47,13 +47,25 @@ class UrlFetcherScreen(UrlFetcherBase):
     Simple screensaver that displays data from a URL.
     """
 
-    def __init__(self):
+    def __init__(self, parser = None):
         """
         Creates a new instance of this class.
         """
         UrlFetcherBase.__init__(self,
             "urlfetcher",
-            _("displays url contents with typing animation"))
+            _("displays url contents with typing animation"),
+            parser
+        )
+
+        if self.parser:
+            self.parser.add_argument("-u", "--url",
+                help="Defines the URL location from where the information should be fetched, then displayed.",
+                required=True, default=''
+            )
+            self.parser.add_argument("-d","--delay",
+                help="Sets the speed of the displaying characters default is 0.003 of a second (advised to keep)",
+                default=0.0003
+        )
 
     def _message_no_url(self):
         """
