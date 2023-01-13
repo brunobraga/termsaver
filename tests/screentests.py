@@ -1,8 +1,8 @@
-import unittest
-import sys
-import os
 import argparse
+import os
+import sys
 import time
+import unittest
 
 bin_path = os.path.dirname(os.path.realpath(__file__))
 lib_path = os.path.abspath(bin_path)
@@ -10,9 +10,11 @@ par_path = os.path.abspath(os.path.join(lib_path,os.path.pardir))
 sys.path.insert(0, lib_path)
 sys.path.insert(0, par_path)
 
-import termsaver
-from termsaverlib import constants
-from termsaverlib.exception import InvalidOptionException, PathNotFoundException
+import termsaver as termsaver
+from termsaver.termsaverlib import constants
+from termsaver.termsaverlib.exception import (InvalidOptionException,
+                                              PathNotFoundException)
+
 
 class ScreenTestCase(unittest.TestCase):
     screenName = ""

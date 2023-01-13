@@ -60,7 +60,7 @@ locale_path="$base_path/$locale_path"
 # in this case, the termsaverlib.constants.App properties.
 #
 function get_prop() {
-    python -c "from termsaverlib import constants as c; print c.App.$@"
+    python -c "from termsaver.termsaverlib import constants as c; print c.App.$@"
 }
 
 cd $base_path

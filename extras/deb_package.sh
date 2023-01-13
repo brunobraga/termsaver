@@ -34,7 +34,7 @@ base_path="`pwd`/`dirname $0`/.."
 cur_dir=`pwd`
 
 function get_prop() {
-    python -c "from termsaverlib import constants; print constants.App.$@"
+    python -c "from termsaver.termsaverlib import constants; print constants.App.$@"
 }
 
 
