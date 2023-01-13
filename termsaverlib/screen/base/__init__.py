@@ -79,21 +79,27 @@ consistent).
 
 """
 
+import getopt
+import importlib
 #
 # Python built-in modules
 #
 import os
-import getopt
 import sys
 
+pynput_installed = importlib.util.find_spec('pynput')
+if (pynput_installed is not None):
+    from pynput import keyboard
+
 #
+import argparse
+
 # Internal modules
 #
 from termsaverlib import common, constants, exception
-from termsaverlib.screen.helper import ScreenHelperBase
-from termsaverlib.i18n import _
 from termsaverlib.helper.smartformatter import SmartFormatter
-import argparse
+from termsaverlib.i18n import _
+from termsaverlib.screen.helper import ScreenHelperBase
 
 
 class ScreenBase(ScreenHelperBase):
@@ -177,6 +183,26 @@ class ScreenBase(ScreenHelperBase):
 
         self.name = name
         self.description = description
+        
+        if pynput_installed is not None:
+            self.listener = keyboard.Listener(
+                on_press=self.on_press,
+                on_release=self.on_release
+            )
+    
+    def on_press(self, key):
+        """
+        This method is called when a key is pressed.
+        """
+        if pynput_installed is not None:
+            self.listener.stop()
+    
+    def on_release(self, key):
+        """
+        This method is called when a key is released.
+        Unused for now, but leaving it in so we have options in the future.
+        """
+        pass
 
     def autorun(self, loop=True):
         """
@@ -202,7 +228,13 @@ class ScreenBase(ScreenHelperBase):
         # execute the cycle
         self.clear_screen()
 
-        while(loop):
+        if pynput_installed is not None:
+            self.listener.start()
+        while(
+            (loop and pynput_installed is None)
+            or
+            (loop and pynput_installed is not None and self.listener.is_alive())
+        ):
             try:
                 self._run_cycle()
             except KeyboardInterrupt as e:
