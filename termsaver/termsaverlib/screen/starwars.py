@@ -36,6 +36,7 @@ The screen class available here is:
 import io
 import itertools
 import time
+from pathlib import Path
 
 from termsaver.termsaverlib import common
 from termsaver.termsaverlib.i18n import _
@@ -81,7 +82,8 @@ class StarWarsScreen(ScreenBase, PositionHelperBase):
         """
         
         if self.is_initalized is False:
-            with io.open("data/sw1.txt","rb") as swfile:
+            filepath = Path(__file__).resolve().parent.parent.parent / "data" / "sw1.txt"
+            with io.open(filepath,"rb") as swfile:
                 lines = swfile.readlines()
                 lines = [line.decode('utf-8') for line in lines]
 

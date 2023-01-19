@@ -30,3 +30,4 @@
 #
 recursive-include locale completion *.mo
 
+include termsaver/data/*

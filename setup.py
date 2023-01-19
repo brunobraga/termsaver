@@ -6,13 +6,15 @@ import setuptools
 from termsaver.termsaverlib import constants
 
 long_desc = open("README.md").read()
-required = ['argparse', 'pillow', 'requests'] # Comma seperated dependent libraries name
+required = ['pillow', 'requests'] # Comma seperated dependent libraries name
 
 setuptools.setup(
     name="termsaver",
     version=constants.App.VERSION,
     author="Bruno Braga",
     author_email="bruno@brunobraga.net",
+    maintainer="Eddie Dover",
+    maintainer_email="ed@eddiedover.dev",
     license="Apache License v2",
     description="Simple text-based terminal screensaver.",
     long_description=long_desc,

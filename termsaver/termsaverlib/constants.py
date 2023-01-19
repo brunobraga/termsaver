@@ -48,7 +48,7 @@ class App(PropertyClass):
     Refer to each of the available properties for detailed documentation.
     """
 
-    VERSION = "0.5"
+    VERSION = "0.5.7"
     """
     Defines the version of termsaver application. This is accessed during
     install process, and to any help and usage messages informed by it.
@@ -86,7 +86,7 @@ class App(PropertyClass):
                'Bruno Braga <bruno.braga@gmail.com>',
                'Shelby Jueden <shelbyjueden@gmail.com>',
                'Alexander Riccio <alexander@riccio.com>',
-               'Eddie Dover <EddieDover@gmail.com>',
+               'Eddie Dover <ed@eddiedover.dev>',
     ]
     """
     Defines a list of all authors contributing to the termsaver application.
