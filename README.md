@@ -68,14 +68,6 @@ Requirements
 
 Installation
 ------------
-
-#### Apt (Advanced Packaging Tool)
-
-For Ubuntu (12.10+) distro, you can use:
-
-        sudo apt-get install termsaver
-
-
 #### Pip (Pip Installs Packages, for Python Package Index)
 
 For those using others, and still want to do it the easy way, I recommend:
@@ -88,23 +80,19 @@ For those using others, and still want to do it the easy way, I recommend:
 For the brave (laughs), you can compile/install from the source:
 
 1. Download the Source 
-[here](http://pypi.python.org/pypi/termsaver/)
+[here](http://pypi.python.org/pypi/termsaver/) or [here](https://github.com/brunobraga/termsaver/)
+
 2. Unpack it
      
         tar -zxvf termsaver-{version}.tar.gz
 
+3. Build it
+        cd termsaver-{version}/
+        python -m build
+
 3. Install it
-
-        sudo python setup.py install 
-
-
-#### PPA (Personal Package Archive)
-
-If you can't wait for Debian/Ubuntu releases, you can get the latest packages from:
-
-        sudo add-apt-repository ppa:bruno-braga/termsaver
-        sudo apt-get update
-        sudo apt-get install termsaver
+        cd dist/
+        pip install termsaver-{version}-py3-none-any.whl
 
 
 Features
