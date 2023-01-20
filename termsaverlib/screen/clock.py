@@ -177,7 +177,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
 """ % (
        date_time.strftime('%A, %%d%%s %B %Y') % (date_time.day,
                 common.get_day_suffix(date_time.day)),
-       self.timeToBinaryCodedClock(date_time) if self.binary else self.get_ascii_time(date_time),
+       self.get_binary_coded_clock(date_time) if self.binary else self.get_ascii_time(date_time),
        )
 
         text = self.center_text_horizontally(text)
@@ -217,7 +217,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
             
 
     
-    def timeToBinaryCodedClock(self, date_time):
+    def get_binary_coded_clock(self, date_time):
         
         hours = int(date_time.strftime('%H'))
         if self.ampm and hours >= 12:
