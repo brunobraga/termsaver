@@ -150,7 +150,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             self.parser.add_argument("-n","--no-adjust", dest="adjust", action="store_true", help="""
             Forces the charts to displays 0 ~ 100%% values, instead of dynamically adjusted values based on current maximum.
             """)
-            self.parser.add_argument("-p","--path", action="store_true", default=False, help="""
+            self.parser.add_argument("-p","--path", help="""
             Sets the location of a file to be monitored. The file must only contain a number from 0 to 100, or the screen will not start.
             This option is optional.
             """)
@@ -158,7 +158,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             Sets the alternative mode, which uses a different set of unicode symbols to draw the charts.
             Will not work with -a / -ascii option.
             """)
-            self.parser.add_argument("-a", "--ascii", help="""
+            self.parser.add_argument("-a", "--ascii", action="store_true", default=False, help="""
             Sets the ASCII mode, which uses only ASCII characters to draw the charts.
             Will not work with -v / -variant option.
             """)
