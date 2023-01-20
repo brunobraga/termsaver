@@ -90,14 +90,6 @@ class AsciiArtFartsScreen(SimpleUrlFetcherBase, PositionHelperBase):
         if self.parser:
           self.parser.add_argument("-d", "--delay", help="Delay in seconds between images", type=int, default=5)
 
-        # set defaults for this screen
-        self.cleanup_per_cycle = True
-        self.sleep_between_items = 5
-        self.center_vertically = True
-        self.center_horizontally = True
-        self.clean_dirt = [] # ['<pre>', '</pre>']
-        self.cleanup_per_item = True
-
     def _run_cycle(self):
         """
         Executes a cycle of this screen. Overriden from its superclass because
