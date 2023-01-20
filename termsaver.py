@@ -41,23 +41,25 @@ See more details of this documentation in:
     * `parse_args` function
 """
 
+import argparse
+import errno
 #
 # Python built-in modules
 #
 import sys
-import errno
+from signal import SIGINT, signal
 
+from termsaverlib import common, constants, exception
+from termsaverlib.helper.smartformatter import SmartFormatter
+from termsaverlib.helper.utilities import (hide_stdout_cursor,
+                                           show_stdout_cursor)
+from termsaverlib.i18n import _
 #
 # Internal modules
 #
 from termsaverlib.screen import build_screen_usage_list, get_available_screens
 from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.helper import ScreenHelperBase
-from termsaverlib import common, exception, constants
-from termsaverlib.i18n import _
-
-import argparse
-from termsaverlib.helper.smartformatter import SmartFormatter
 
 verbose = False
 """
@@ -100,6 +102,11 @@ Refer also to each screen's help by typing: %(app_name)s [screen] -h
 def skip(arg = None):
     pass
 
+def handler(signal_received, frame):
+    # Handle any cleanup here
+    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    show_stdout_cursor()
+    sys.exit(0)
             
 def entryPoint():
     tscreen = getScreen()
@@ -300,4 +307,6 @@ if __name__ == '__main__':
     # The entry point of this application, as this should not be accessible as
     # a python module to be imported by another application.
     #
+    signal(SIGINT, handler)
+    hide_stdout_cursor()
     entryPoint()
