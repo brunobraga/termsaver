@@ -130,6 +130,11 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     value available
     """
 
+    symbol_index = 0
+    """
+    Holds the index of the symbol set we're using.
+    """
+
 
     def __init__(self, parser = None):
         """
@@ -162,9 +167,6 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             Sets the ASCII mode, which uses only ASCII characters to draw the charts.
             Will not work with -v / -variant option.
             """)
-        
-        self.symbol_index = 0
-
         #
         # Due to a time delay to calculate CPU usage
         # we need to clear the screen manually
