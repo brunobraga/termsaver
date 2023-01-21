@@ -144,6 +144,7 @@ def getScreen():
         verbose = True if args.verbose else False
         if args.screen == None or (args.screen == None and args.h0elp == True):
             usage()
+            show_stdout_cursor()
             sys.exit(0)
 
         # Find the screen we're using and create it's parser as well as check validity with args.
@@ -159,6 +160,7 @@ def getScreen():
         if screen == None:
             print(_("Invalid Screen."))
             usage()
+            show_stdout_cursor()
             sys.exit(0)
 
         # Pass the parser to the selected screen.
@@ -180,6 +182,7 @@ def getScreen():
             common.prettify_exception(e)
 
         # Just finish gracefully
+        show_stdout_cursor()
         sys.exit(0)
 
     except exception.TermSaverException as e:
@@ -269,6 +272,7 @@ def getScreen():
         if e.help_msg not in (None, ''):
             print(e.help_msg)
 
+        show_stdout_cursor()
         sys.exit(error_number)
 
     except Exception as e:
@@ -300,7 +304,7 @@ option --verbose and copy the output when you are filling
 the bug report, that will help track faster the problem.
 Thanks!
 """))
-
+        show_stdout_cursor()
         sys.exit(errno.EPERM)
 if __name__ == '__main__':
     #
