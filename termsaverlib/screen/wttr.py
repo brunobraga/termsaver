@@ -44,6 +44,8 @@ from termsaverlib.screen.helper.position import PositionHelperBase
 class WTTRScreen(SimpleUrlFetcherBase, PositionHelperBase):
     
     units = None
+    typing = False
+    narrow = False
     
     def __init__(self, parser = None):
 
@@ -65,6 +67,7 @@ class WTTRScreen(SimpleUrlFetcherBase, PositionHelperBase):
             # self.parser.add_argument("-l", "--location", help="Location to fetch weather for", type=str, default="")
             self.parser.add_argument("-t", "--typing", help="Types the weather report out instead of printing it", action="store_true", default=False)
             self.parser.add_argument("-u", "--units", help="Units to use for temperature and wind speed.", type=str, default=None, choices=["metric", "imperial"])
+            self.parser.add_argument("-n", "--narrow", help="Narrow the output to 80 characters", action="store_true", default=False)
 
     def _run_cycle(self):
 
@@ -73,6 +76,8 @@ class WTTRScreen(SimpleUrlFetcherBase, PositionHelperBase):
         additions = ""
         if self.units is not None:
             additions += "m" if self.units == "metric" else "u"
+        if self.narrow:
+            additions += "n"
         if additions != "":
             self.url += additions
         new_text = self.fetch(self.url, 'GET', 'curl/7.37.0',).decode("utf-8")
@@ -91,6 +96,7 @@ class WTTRScreen(SimpleUrlFetcherBase, PositionHelperBase):
         self.sleep_between_items = args.delay
         self.typing = args.typing
         self.units = args.units
+        self.narrow = args.narrow
         # self.location = args.location
         if launchScreenImmediately:
             self.autorun()
