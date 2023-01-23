@@ -28,9 +28,6 @@
 ###############################################################################
 -->
 
-LOOKING FOR MAINTAINERS! - Ping me if you are up to the task :blush:
-=========
-
 TermSaver
 =========
 
@@ -201,6 +198,9 @@ This is a screensaver that displays the Star Wars Asciimation from
 (For Linux/Mac systems only) Displays the CPU/Memory usage over time in a graphic
 alike screensaver.
 
+#### WWTR.IN
+
+Shows weather information from [wttr.in](https://www.wttr.in/)
 
  - - -
 

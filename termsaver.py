@@ -89,6 +89,11 @@ Options:
  -h, --help     Displays this help message
  -v, --verbose  Displays python exception errors (for debugging)
 
+Enhanced Features:
+ * Install the following modules to enable enhanced features:
+    * pynput - Enables the 'Press any key to exit' feature.
+    * pygments - Colorizes the output of the Programmer screen.
+
 Refer also to each screen's help by typing: %(app_name)s [screen] -h
 """) % {
         'app_name': constants.App.NAME,

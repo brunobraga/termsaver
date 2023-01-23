@@ -34,21 +34,20 @@ The helper class available here is:
 
 """
 
+import time
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse, urlsplit, urlunsplit
 #
 # Python built-in modules
 #
 from urllib.request import Request, urlopen
-from urllib.error import URLError, HTTPError
-from urllib.parse import urlparse, urlsplit, urlunsplit
 
-import time
-
+from termsaverlib import constants, exception
+from termsaverlib.i18n import _
 #
 # Internal modules
 #
 from termsaverlib.screen.helper import ScreenHelperBase
-from termsaverlib import exception, constants
-from termsaverlib.i18n import _
 
 
 class URLFetcherHelperBase(ScreenHelperBase):
@@ -128,7 +127,7 @@ class URLFetcherHelperBase(ScreenHelperBase):
             url_fields[2] = '/'
         return urlunsplit(url_fields)
 
-    def fetch(self, uri):
+    def fetch(self, uri, method_override="POST", user_agent_override=None):
         """
         Executes the fetch action toward a specified URI. This will also
         try to avoid unnecessary calls to the Internet by setting the flag
@@ -145,20 +144,29 @@ class URLFetcherHelperBase(ScreenHelperBase):
                 constants.Settings.FETCH_INTERVAL_SECONDS:
             return self.raw
 
-        headers = {'User-Agent': "%s/%s" % (constants.App.NAME,
+        if not user_agent_override:
+            headers = {'User-Agent': "%s/%s" % (constants.App.NAME,
                                             constants.App.VERSION)}
-        # separate possible querystring data from plain URL
-        temp = uri.split('?')
-        url = temp[0]
-        if len(temp) > 1:  # old style condition for old python compatibility
-            data = temp[1]
         else:
-            data = None
+            headers = {'User-Agent': user_agent_override}
+        url = uri
+        data = None
+        if method_override == "POST":
+            # separate possible querystring data from plain URL
+            temp = uri.split('?')
+            url = temp[0]
+            if len(temp) > 1:  # old style condition for old python compatibility
+                data = temp[1]
+            else:
+                data = None
+            
+            if data:
+                data = data.encode('utf-8')
 
         self.log(_("Connecting to %s ... (this could take a while)") % uri)
 
         # execute URL fetch
-        req = Request(url, data, headers)
+        req = Request(url, data, headers, method=method_override)
         resp = None
         try:
             resp = urlopen(req)
