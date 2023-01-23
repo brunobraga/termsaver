@@ -34,20 +34,20 @@ The screen class available here is:
     * `SysmonScreen`
 """
 
+import os
+import re
 #
 # Python mobdules
 #
 import time
-import re
-import os
 
+from termsaverlib import common, constants, exception
+from termsaverlib.i18n import _
 #
 # Internal modules
 #
 from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.helper.position import PositionHelperBase
-from termsaverlib import constants, exception, common
-from termsaverlib.i18n import _
 
 
 class SysmonScreen(ScreenBase, PositionHelperBase):
@@ -95,23 +95,31 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     # Graphical elements
     #
 
-    pie_chart = ['○', '◔', '◑', '◕', '●']
+    pie_chart = [
+        ['○', '◔', '◑', '◕', '●'],
+        [' ', '|', '(', 'C', 'O'],
+        [' ', '|', '(', 'C', 'O']
+    ]
     """
     Holds the unicode symbols for pie chart representation of percentage
     """
-    block = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '█']
+    block = [
+        [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '█'],
+        [' ', '\033(0s\033(B', '\033(0s\033(B', '\033(0s\033(B', '\033(0s\033(B', '\033[7m \033[27m', '\033[7m \033[27m', '\033[7m \033[27m', '\033[7m \033[27m', '\033[7m \033[27m'],
+        [' ', '_', '_', 'm', 'm', 'm', '#', '#', '#', '#']
+    ]
     """
     Holds the block unicode symbolds used to draw the charts
     """
-    axis_corner = "└"
+    axis_corner = ["└","\033(0m\033(B","+"]
     """
     Represents the unicode symbol for the axis corner in the xy chart
     """
-    axis_h = "─"
+    axis_h = ["─","\033(0q\033(B","-"]
     """
     Represents the unicode symbol for the horizontal axis in the xy chart
     """
-    axis_v = "│"
+    axis_v = ["│","\033(0x\033(B","|"]
     """
     Represents the unicode symbol for the vertical axis in the xy chart
     """
@@ -120,6 +128,11 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
     """
     Defines if the graphics should hold a 0-100 count or adjust to the highest
     value available
+    """
+
+    symbol_index = 0
+    """
+    Holds the index of the symbol set we're using.
     """
 
 
@@ -146,7 +159,14 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
             Sets the location of a file to be monitored. The file must only contain a number from 0 to 100, or the screen will not start.
             This option is optional.
             """)
-
+            self.parser.add_argument("-v", "--variant",  action="store_true", default="False", help="""
+            Sets the alternative mode, which uses a different set of unicode symbols to draw the charts.
+            Will not work with -a / -ascii option.
+            """)
+            self.parser.add_argument("-a", "--ascii", action="store_true", default=False, help="""
+            Sets the ASCII mode, which uses only ASCII characters to draw the charts.
+            Will not work with -v / -variant option.
+            """)
         #
         # Due to a time delay to calculate CPU usage
         # we need to clear the screen manually
@@ -315,8 +335,8 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         given.
         """
         pos = int(perc * 5 / 100)
-        if pos < len(self.pie_chart) and pos >= 0:
-            return self.pie_chart[pos]
+        if pos < len(self.pie_chart[self.symbol_index]) and pos >= 0:
+            return self.pie_chart[self.symbol_index][pos]
         else:
             return ""
 
@@ -334,7 +354,7 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
         # create output (11 lines)
         for y in range(ysize - 1, -1, -1):
             current_position = 0
-            txt += " " + self.axis_v
+            txt += " " + self.axis_v[self.symbol_index]
             for x in range(self.geometry['x'] - 5): # padding
                 if len(self.info['db']) - 1 < x:
                     txt += " "
@@ -348,17 +368,17 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
 
                     # based on number of blocks (10)
                     if ratio >= y + 1:
-                        txt += self.block[-1]
+                        txt += self.block[self.symbol_index][-1]
                     elif y > 0 and ratio > y:
-                        txt += self.block[ratio - y]
+                        txt += self.block[self.symbol_index][ratio - y]
                     elif y > 0:
-                        txt += self.block[0]
+                        txt += self.block[self.symbol_index][0]
                     else:
-                        txt += self.block[1]
+                        txt += self.block[self.symbol_index][1]
 
             txt += "\n"
 
-        txt += " " + self.axis_corner + self.axis_h * (self.geometry['x'] - 5) + "\n"
+        txt += " " + self.axis_corner[self.symbol_index] + self.axis_h[self.symbol_index] * (self.geometry['x'] - 5) + "\n"
 
         txt += "%s%s%s\n" % (self.format_time(self.info['db'][0]['time']),
                 " " * (current_position - 5), _("now"))
@@ -421,6 +441,11 @@ class SysmonScreen(ScreenBase, PositionHelperBase):
                 self.delay = float(args.delay)
             except:
                 raise exception.InvalidOptionException("delay")
+
+        if args.variant:
+            self.symbol_index = 1
+        elif args.ascii:
+            self.symbol_index = 2
 
         if launchScreenImmediately:
             self.autorun()
