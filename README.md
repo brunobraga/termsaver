@@ -28,9 +28,6 @@
 ###############################################################################
 -->
 
-LOOKING FOR MAINTAINERS! - Ping me if you are up to the task :blush:
-=========
-
 TermSaver
 =========
 

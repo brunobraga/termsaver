@@ -34,22 +34,21 @@ The screen class available here is:
     * `ClockScreen`
 """
 
+import argparse
 #
 # Python mobdules
 #
 import datetime
 import time
 
+from termsaverlib import common
+from termsaverlib.helper.smartformatter import SmartFormatter
+from termsaverlib.i18n import _
 #
 # Internal modules
 #
 from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.helper.position import PositionHelperBase
-from termsaverlib import common
-from termsaverlib.i18n import _
-
-from termsaverlib.helper.smartformatter import SmartFormatter
-import argparse
 
 
 class ClockScreen(ScreenBase, PositionHelperBase):
@@ -72,9 +71,19 @@ class ClockScreen(ScreenBase, PositionHelperBase):
     Defines the format of the datetime to be displayed.
     """
 
-    big = False
+    giant = False
     """
     Defines the format of the datetime to be displayed.
+    """
+    
+    binary = False
+    """
+    Defines if the clock is in binary decimal format.
+    """
+    
+    cube_size = 3
+    """
+    The size of the cubes in binary decimal format.
     """
 
     cseparator = ":"
@@ -147,7 +156,9 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         )
         if self.parser:
             self.parser.add_argument("-m","--ampm", help="Use a 12 hour clock with am/pm suffix.", action="store_true", default=False)
-            self.parser.add_argument("-b","--big", help="Big mode using a constrast block method.", action="store_true", default=False)
+            self.parser.add_argument("-g","--giant", help="Giant mode using a constrast block method.", action="store_true", default=False)
+            self.parser.add_argument("-b", "--binary", help="Binary clock mode.", action="store_true", default=False)
+            self.parser.add_argument("-s","--size", help="Size of the binary clock in characters.", action="store", default=3, type=int)
 
         self.cleanup_per_cycle = True
 
@@ -166,7 +177,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
 """ % (
        date_time.strftime('%A, %%d%%s %B %Y') % (date_time.day,
                 common.get_day_suffix(date_time.day)),
-       self.get_ascii_time(date_time),
+       self.get_binary_coded_clock(date_time) if self.binary else self.get_ascii_time(date_time),
        )
 
         text = self.center_text_horizontally(text)
@@ -191,9 +202,11 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         args, unknown = self.parser.parse_known_args()
 
         self.ampm = args.ampm
-        self.big = args.big
+        self.giant = args.giant
+        self.binary = args.binary
+        self.cube_size = args.size
         
-        if (self.big):
+        if (self.giant):
             self.lineindigimap = 15
             self.digmap = self.digimapbig
 
@@ -202,6 +215,38 @@ class ClockScreen(ScreenBase, PositionHelperBase):
         else:
             return self
             
+
+    
+    def get_binary_coded_clock(self, date_time):
+        
+        hours = int(date_time.strftime('%H'))
+        if self.ampm and hours >= 12:
+            hours -= 12
+        minutes = int(date_time.strftime('%M'))
+        seconds = int(date_time.strftime('%S'))
+
+        h1 = bin(hours // 10)[2:].zfill(4)
+        h2 = bin(hours % 10)[2:].zfill(4)
+        
+        m1 = bin(minutes // 10)[2:].zfill(4)
+        m2 = bin(minutes % 10)[2:].zfill(4)
+        
+        s1 = bin(seconds // 10)[2:].zfill(4)
+        s2 = bin(seconds % 10)[2:].zfill(4)
+        
+        output = ""
+        for x in range(0, 4):
+            line = [h1[x],h2[x],m1[x],m2[x],s1[x],s2[x]]
+            for w in range(0, 1):
+                for h in range(0, self.cube_size):
+                    for num in line:
+                        if (num == "1"):
+                            output += "".join(["#" for c in range(0,self.cube_size)]) + " "
+                        else:
+                            output += "".join([" " for c in range(0,self.cube_size)]) + " "
+                    output += "\n"
+                output += "\n"
+        return output
 
     def get_ascii_time(self, date_time):
         """
@@ -232,7 +277,7 @@ class ClockScreen(ScreenBase, PositionHelperBase):
             if hour == 0:
                 hour = 12
             clock = "%s%s%s%s" % (hour, separator, date_time.strftime('%M'), suffix)
-        elif self.big:
+        elif self.giant:
             clock = date_time.strftime('%H' + separator + '%M')
         else:
             # 24hs format includes seconds
