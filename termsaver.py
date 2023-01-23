@@ -41,23 +41,22 @@ See more details of this documentation in:
     * `parse_args` function
 """
 
+import argparse
+import errno
 #
 # Python built-in modules
 #
 import sys
-import errno
 
+from termsaverlib import common, constants, exception
+from termsaverlib.helper.smartformatter import SmartFormatter
+from termsaverlib.i18n import _
 #
 # Internal modules
 #
 from termsaverlib.screen import build_screen_usage_list, get_available_screens
 from termsaverlib.screen.base import ScreenBase
 from termsaverlib.screen.helper import ScreenHelperBase
-from termsaverlib import common, exception, constants
-from termsaverlib.i18n import _
-
-import argparse
-from termsaverlib.helper.smartformatter import SmartFormatter
 
 verbose = False
 """
@@ -86,6 +85,11 @@ Options:
 
  -h, --help     Displays this help message
  -v, --verbose  Displays python exception errors (for debugging)
+
+Enhanced Features:
+ * Install the following modules to enable enhanced features:
+    * pynput - Enables the 'Press any key to exit' feature.
+    * pygments - Colorizes the output of the Programmer screen.
 
 Refer also to each screen's help by typing: %(app_name)s [screen] -h
 """) % {
