@@ -79,25 +79,23 @@ consistent).
 
 """
 
-import getopt
-import importlib
 #
 # Python built-in modules
 #
-import os
+import subprocess
 import sys
 
-pynput_installed = importlib.util.find_spec('pynput')
-if (pynput_installed is not None):
+pynput_installed = None
+reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
+installed_packages = [r.decode().split('==')[0] for r in reqs.split()]
+if 'pynput' in installed_packages:
+    pynput_installed = True
     from pynput import keyboard
 
 #
-import argparse
-
 # Internal modules
 #
-from termsaverlib import common, constants, exception
-from termsaverlib.helper.smartformatter import SmartFormatter
+from termsaverlib import constants
 from termsaverlib.i18n import _
 from termsaverlib.screen.helper import ScreenHelperBase
 
