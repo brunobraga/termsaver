@@ -34,11 +34,11 @@ import time
 #
 # Internal modules
 #
-from termsaverlib import constants
-from termsaverlib.i18n import _
-from termsaverlib.screen.base import ScreenBase
-from termsaverlib.screen.base.urlfetcher import SimpleUrlFetcherBase
-from termsaverlib.screen.helper.position import PositionHelperBase
+from termsaver.termsaverlib import constants
+from termsaver.termsaverlib.i18n import _
+from termsaver.termsaverlib.screen.base import ScreenBase
+from termsaver.termsaverlib.screen.base.urlfetcher import SimpleUrlFetcherBase
+from termsaver.termsaverlib.screen.helper.position import PositionHelperBase
 
 
 class WTTRScreen(SimpleUrlFetcherBase, PositionHelperBase):
