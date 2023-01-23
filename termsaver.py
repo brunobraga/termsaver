@@ -47,9 +47,12 @@ import errno
 # Python built-in modules
 #
 import sys
+from signal import SIGINT, signal
 
 from termsaverlib import common, constants, exception
 from termsaverlib.helper.smartformatter import SmartFormatter
+from termsaverlib.helper.utilities import (hide_stdout_cursor,
+                                           show_stdout_cursor)
 from termsaverlib.i18n import _
 #
 # Internal modules
@@ -104,6 +107,11 @@ Refer also to each screen's help by typing: %(app_name)s [screen] -h
 def skip(arg = None):
     pass
 
+def handler(signal_received, frame):
+    # Handle any cleanup here
+    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    show_stdout_cursor()
+    sys.exit(0)
             
 def entryPoint():
     tscreen = getScreen()
@@ -141,6 +149,7 @@ def getScreen():
         verbose = True if args.verbose else False
         if args.screen == None or (args.screen == None and args.h0elp == True):
             usage()
+            show_stdout_cursor()
             sys.exit(0)
 
         # Find the screen we're using and create it's parser as well as check validity with args.
@@ -156,6 +165,7 @@ def getScreen():
         if screen == None:
             print(_("Invalid Screen."))
             usage()
+            show_stdout_cursor()
             sys.exit(0)
 
         # Pass the parser to the selected screen.
@@ -177,6 +187,7 @@ def getScreen():
             common.prettify_exception(e)
 
         # Just finish gracefully
+        show_stdout_cursor()
         sys.exit(0)
 
     except exception.TermSaverException as e:
@@ -266,6 +277,7 @@ def getScreen():
         if e.help_msg not in (None, ''):
             print(e.help_msg)
 
+        show_stdout_cursor()
         sys.exit(error_number)
 
     except Exception as e:
@@ -297,11 +309,13 @@ option --verbose and copy the output when you are filling
 the bug report, that will help track faster the problem.
 Thanks!
 """))
-
+        show_stdout_cursor()
         sys.exit(errno.EPERM)
 if __name__ == '__main__':
     #
     # The entry point of this application, as this should not be accessible as
     # a python module to be imported by another application.
     #
+    signal(SIGINT, handler)
+    hide_stdout_cursor()
     entryPoint()
