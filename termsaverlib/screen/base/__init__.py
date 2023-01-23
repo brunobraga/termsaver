@@ -85,6 +85,8 @@ consistent).
 import subprocess
 import sys
 
+from termsaverlib.helper.utilities import show_stdout_cursor
+
 pynput_installed = None
 reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
 installed_packages = [r.decode().split('==')[0] for r in reqs.split()]
@@ -245,6 +247,7 @@ class ScreenBase(ScreenHelperBase):
             # Clear screen if appropriate
             if self.cleanup_per_cycle:
                 self.clear_screen()
+        show_stdout_cursor()
 
     def _run_cycle(self):
         """
