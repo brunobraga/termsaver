@@ -150,7 +150,7 @@ def getScreen():
         
         # Assign the important arguments on module init.
         verbose = True if args.verbose else False
-        if args.screen == None or (args.screen == None and args.h0elp == True):
+        if args.screen == None or (args.screen == None and args.help == True):
             usage()
             show_stdout_cursor()
             sys.exit(0)
