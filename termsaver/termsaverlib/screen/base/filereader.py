@@ -157,18 +157,21 @@ class FileReaderBase(ScreenBase, TypingHelperBase):
         # validate path
         if not os.path.exists(self.path):
             raise exception.PathNotFoundException(self.path)
-
-        queue_of_valid_files = queue.Queue()
-
-        threads = [FileReaderBase.FileScannerThread(self, queue_of_valid_files, self.path)]
-        threads[-1].daemon = True
-        threads[-1].start()
         
-        print(_("""
-Scanning path for supported files.
-If this message does not disappear then there are no supported file types in the given path."""))
+        if os.path.isdir(self.path):            
+            queue_of_valid_files = queue.Queue()
 
-        nextFile = queue_of_valid_files.get()
+            threads = [FileReaderBase.FileScannerThread(self, queue_of_valid_files, self.path)]
+            threads[-1].daemon = True
+            threads[-1].start()
+            
+            print(_("""
+    Scanning path for supported files.
+    If this message does not disappear then there are no supported file types in the given path."""))
+
+            nextFile = queue_of_valid_files.get()
+        else:
+            nextFile = self.path
     
         #self.clear_screen() hides any error message produced before it!
         self.clear_screen()

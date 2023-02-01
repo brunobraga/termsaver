@@ -54,3 +54,4 @@ termsaver_cache.list
 .wakatime-project
 
 dev_env/
+.vscode/launch.json

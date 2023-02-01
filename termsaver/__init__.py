@@ -111,6 +111,12 @@ def skip(arg = None):
 def handler(signal_received, frame):
     # Handle any cleanup here
     print('SIGINT or CTRL-C detected. Exiting gracefully')
+    # if pygments is installed, reset the terminal colors to default
+    try:
+        from pygments import formatters
+        print(formatters.TerminalFormatter().reset)
+    except ImportError:
+        pass
     show_stdout_cursor()
     sys.exit(0)
             

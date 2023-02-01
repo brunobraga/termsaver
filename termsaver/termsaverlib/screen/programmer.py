@@ -92,7 +92,7 @@ class ProgrammerScreen(FileReaderBase):
         
         if args.path:
             # make sure argument is a valid value (existing path)
-            self.path = args.path
+            self.path = args.path.strip()
             if not os.path.exists(self.path) and self.path[0:4].lower() != 'http':
                 raise exception.PathNotFoundException(path=args.path)
         
