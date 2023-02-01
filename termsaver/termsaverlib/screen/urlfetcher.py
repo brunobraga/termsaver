@@ -39,10 +39,10 @@ from termsaver.termsaverlib.i18n import _
 #
 # Internal modules
 #
-from termsaver.termsaverlib.screen.base.urlfetcher import UrlFetcherBase
+from termsaver.termsaverlib.screen.base.urlfetcher import SimpleUrlFetcherBase
 
 
-class UrlFetcherScreen(UrlFetcherBase):
+class UrlFetcherScreen(SimpleUrlFetcherBase):
     """
     Simple screensaver that displays data from a URL.
     """
@@ -51,21 +51,38 @@ class UrlFetcherScreen(UrlFetcherBase):
         """
         Creates a new instance of this class.
         """
-        UrlFetcherBase.__init__(self,
+
+        SimpleUrlFetcherBase.__init__(self,
             "urlfetcher",
             _("displays url contents with typing animation"),
-            parser
+            parser,
+            ''
         )
 
         if self.parser:
             self.parser.add_argument("-u", "--url",
                 help="Defines the URL location from where the information should be fetched, then displayed.",
-                required=True, default=''
+                required=True
             )
             self.parser.add_argument("-d","--delay",
                 help="Sets the speed of the displaying characters default is 0.003 of a second (advised to keep)",
                 default=0.0003
         )
+
+    def _parse_args(self, launchScreenImmediately=True):
+        args, unknown = self.parser.parse_known_args()
+
+        if args.delay:
+            self.sleep_between_items = args.delay
+    
+        if args.url:
+            self.url = args.url
+            self.url = self.url.replace('https://', 'http://') # Fetched URL returns 405 on https. Investigate later.
+      
+        if launchScreenImmediately:
+            self.autorun()
+        else:
+            return self
 
     def _message_no_url(self):
         """
