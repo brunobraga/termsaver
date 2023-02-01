@@ -33,17 +33,20 @@ See additional information in the class itself.
 
 The screen class available here is:
 
-    * `Quotes4AllRSSFeedScreen`
+    * `Quotes4AllScreen`
 """
+
+import time
 
 from termsaver.termsaverlib.i18n import _
 #
 # Internal modules
 #
-from termsaver.termsaverlib.screen.base.rssfeed import SimpleRSSFeedScreenBase
+from termsaver.termsaverlib.screen.base.urlfetcher import SimpleUrlFetcherBase
+from termsaver.termsaverlib.screen.helper.position import PositionHelperBase
 
 
-class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
+class Quotes4AllScreen(SimpleUrlFetcherBase, PositionHelperBase):
     """
     Simple screensaver that displays recent jokes from http://jokes4all.net
     website, from its hourly updated RSS feed.
@@ -81,14 +84,11 @@ class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         """
         Creates a new instance of this class (used by termsaver script)
         """
-        SimpleRSSFeedScreenBase.__init__(self,
-            "quotes4all",
-            _("displays recent quotes from quotes4all.net"),
-            parser,
-            "http://quotes4all.net/rss/360010110/quotes.xml",
-            ["title", "description"],
-            '"%(description)s" -- %(title)s',
-            0.015
+        SimpleUrlFetcherBase.__init__(self,
+          'quotes4all',
+          _("displays random quotes from quotes4all.net (NSFW)"),
+          parser,
+          'https://quotes4all.net'
         )
 
         if self.parser:
@@ -102,6 +102,7 @@ class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         self.center_vertically = True
         self.center_horizontally = True
         self.clean_dirt = ["\n", "  "]
+        
 
     def _parse_args(self, launchScreenImmediately=True):
       args, unknown = self.parser.parse_known_args()
@@ -112,3 +113,26 @@ class Quotes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         self.autorun()
       else:
         return self
+
+
+    def _run_cycle(self):
+        """
+        Executes a cycle of this screen. Overriden from its superclass because
+        it needs to must randomize the URL to be fetched in every screen cycle.
+        """
+        new_text = self.process_data(self.fetch(self.url)).decode("utf-8")
+        self.get_terminal_size()
+        new_text = self.center_text_vertically(new_text)
+        new_text = self.center_text_horizontally(new_text)
+        self.clear_screen()
+        self.typing_print(new_text)
+        time.sleep(self.sleep_between_items)
+
+    def process_data(self, data):
+      data_string = data.decode('utf-8')
+      # Get the text between the first <div class='joke'> and the next </div>
+      data_string = data_string.split('<div class="q-te"><span>')[1].split('</span></div>')[0]
+      if (data_string):
+        data_string = data_string.replace("<br>", "\n")
+      # data_string = data_string.split('<pre>')[2].split('</pre>')[0]
+      return data_string.encode('utf-8')
