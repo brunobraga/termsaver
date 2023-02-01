@@ -35,15 +35,18 @@ The screen class available here is:
     * `Jokes4AllScreen`
 """
 
+import time
+
 from termsaver.termsaverlib.i18n import _
 from termsaver.termsaverlib.screen.base import ScreenBase
 #
 # Internal modules
 #
-from termsaver.termsaverlib.screen.base.rssfeed import SimpleRSSFeedScreenBase
+from termsaver.termsaverlib.screen.base.urlfetcher import SimpleUrlFetcherBase
+from termsaver.termsaverlib.screen.helper.position import PositionHelperBase
 
 
-class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
+class Jokes4AllRSSFeedScreen(SimpleUrlFetcherBase, PositionHelperBase):
     """
     Simple screensaver that displays recent jokes from http://jokes4all.net
     website, from its hourly updated RSS feed.
@@ -79,15 +82,13 @@ class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
 
         NOTE: Maybe NSFW (Not Safe For Work)
         """
-        SimpleRSSFeedScreenBase.__init__(self,
-            "jokes4all",
-            _("displays recent jokes from jokes4all.net (NSFW)"),
-            parser,
-            "http://jokes4all.net/rss/360010113/jokes.xml",
-            ["pubDate", "link", "description"],
-            '\n%(description)s\n\n%(pubDate)s %(link)s\n',
-            0.015
+        SimpleUrlFetcherBase.__init__(self,
+          'jokes4all',
+          _("displays random jokes from jokes4all.net (NSFW)"),
+          parser,
+          'https://jokes4all.net'
         )
+        
 
         # set defaults for this screen
         self.sleep_between_items = 30
@@ -106,6 +107,28 @@ class Jokes4AllRSSFeedScreen(SimpleRSSFeedScreenBase):
         self.sleep_between_items = args.delay
       
       if launchScreenImmediately:
-        self.autorun
+        self.autorun()
       else:
         return self
+
+    def _run_cycle(self):
+        """
+        Executes a cycle of this screen. Overriden from its superclass because
+        it needs to must randomize the URL to be fetched in every screen cycle.
+        """
+        self.clear_screen()
+        new_text = self.process_data(self.fetch(self.url)).decode("utf-8")
+        self.get_terminal_size()
+        new_text = self.center_text_vertically(new_text)
+        new_text = self.center_text_horizontally(new_text)
+        self.typing_print(new_text)
+        time.sleep(self.sleep_between_items)
+
+    def process_data(self, data):
+      data_string = data.decode('utf-8')
+      # Get the text between the first <div class='joke'> and the next </div>
+      data_string = data_string.split('<div class="joke">')[1].split('</div>')[0]
+      if (data_string):
+        data_string = data_string.replace("<br>", "\n")
+      # data_string = data_string.split('<pre>')[2].split('</pre>')[0]
+      return data_string.encode('utf-8')
