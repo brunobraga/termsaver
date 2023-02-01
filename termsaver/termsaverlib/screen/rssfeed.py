@@ -91,6 +91,9 @@ class RSSFeedScreen(ScreenBase, RSSFeedScreenBase):
         self.cleanup_per_item = False
         self.sleep_between_items = 3
         self.delay = 0.015
+        
+        if self.parser:
+            self.parser.add_argument("-u", "--url", help=_("URL of the RSS feed to be used."), required=True)
 
     def _message_no_url(self):
         """
