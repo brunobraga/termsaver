@@ -43,6 +43,7 @@ See more details of this documentation in:
 
 import argparse
 import errno
+import random
 #
 # Python built-in modules
 #
@@ -131,6 +132,22 @@ def entryPoint():
 
 def getScreen():
     verbose = False
+    use_random = False
+    available_random_screens = [
+        "asciiartfarts",
+        "clocks",
+        "jokes4all",
+        "matrix",
+        "quotes4all",
+        "rfc",
+        "starwars",
+        "sysmon",
+        "wttr"
+    ]
+    # if the operating system is windows, remove the sysmonscreen from the list of available screens
+    if sys.platform == "win32":
+        available_random_screens.remove("sysmon")
+
     try:
         # parse arguments and execute them accordingly
 
@@ -144,6 +161,7 @@ def getScreen():
                   action="store_true", dest="verbose", default=False,
                   help="Displays python exception errors (for debugging)")
         parser.add_argument("-h", "--help", action="store_true",dest="help",default=False)
+        parser.add_argument("--random", action="store_true",dest="random",default=False)
 
         # Override the default format/help/error functions so we only see the information we want
         parser.format_usage = skip
@@ -156,7 +174,8 @@ def getScreen():
         
         # Assign the important arguments on module init.
         verbose = True if args.verbose else False
-        if args.screen == None or (args.screen == None and args.help == True):
+        use_random = True if args.random else False
+        if args.screen is None and args.random is None or (args.screen is None and args.random is None and args.help == True):
             usage()
             show_stdout_cursor()
             sys.exit(0)
@@ -165,11 +184,19 @@ def getScreen():
         parsers = {}
         screenparsers = parser.add_subparsers()
         screen = None
+        random_screen_name = None
+        if use_random is True:
+            random_screen_name = random.choice(available_random_screens)
+
         for s in get_available_screens():
             # Create the parsers for each screen.
             parsers[s.__name__.lower()] = screenparsers.add_parser(s.__name__.lower(), formatter_class=SmartFormatter, conflict_handler='resolve')
-            if s().name.lower() == args.screen:
-                screen = s
+            if use_random is False:
+                if s().name.lower() == args.screen:
+                    screen = s
+            elif use_random is True:
+                if s().name.lower() == random_screen_name:
+                    screen = s
 
         if screen == None:
             print(_("Invalid Screen."))
