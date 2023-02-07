@@ -46,7 +46,7 @@ ubuntu_suffix=ubuntu1
 
 
 function get_prop() {
-    python -c "from termsaverlib import constants; print constants.App.$@"
+    python -c "from termsaver.termsaverlib import constants; print constants.App.$@"
 }
 
 

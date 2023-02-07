@@ -28,5 +28,6 @@
 #
 # Add l10n files to package
 #
-recursive-include locale/ completion/ *.mo
+recursive-include locale completion *.mo
 
+include termsaver/data/*

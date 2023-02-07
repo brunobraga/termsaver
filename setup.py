@@ -25,79 +25,38 @@
 # under the License.
 #
 ###############################################################################
-"""
-The installation script of termsaver application.
 
-    sudo python setup.py install
+import setuptools
 
-    # For debian based installation style
-    sudo ./setup.py install --install-lib=/usr/local/share/termsaver --install-scripts=/usr/local/share/termsaver --install-data=/usr/local
-    sudo ln -s /usr/local/share/termsaver/termsaver /usr/local/bin/termsaver
+from termsaver.termsaverlib import constants
 
-You may also refer to:
+long_desc = open("README.md").read()
+required = ['pillow', 'requests'] # Comma seperated dependent libraries name
 
-    sudo pip install termsaver
-
-"""
-
-import os
-import platform
-from distutils.core import setup
-from termsaverlib import constants
-
-
-if platform.system() == 'FreeBSD':
-    man_dir = 'man'
-else:
-    man_dir = 'share/man'
-
-data_files = [(os.path.join('share', 'locale', lang, 'LC_MESSAGES'),
-                [os.path.join('locale', lang, 'LC_MESSAGES',
-                'termsaver.mo')]) for lang in os.listdir('locale')]
-data_files.append((os.path.join(man_dir, 'man1'), ['doc/termsaver.1']))
-data_files.append(('etc/bash_completion.d',
-                   ['completion/termsaver-completion.bash']))
-data_files.append(('share/zsh/site-functions', ['completion/_termsaver']))
-
-setup(name='termsaver',
-      version=constants.App.VERSION,
-      description='Simple text-based terminal screensaver.',
-      author='Bruno Braga',
-      author_email='bruno@brunobraga.net',
-      classifiers=[
-            'Development Status :: 5 - Production/Stable',
-            'Environment :: Console',
-            'Intended Audience :: Developers',
-            'Intended Audience :: Information Technology',
-            'Intended Audience :: System Administrators',
-            'License :: OSI Approved :: Apache Software License',
-            'Natural Language :: English',
-            'Operating System :: MacOS',
-            'Operating System :: POSIX',
-            'Programming Language :: Python',
-            'Topic :: Terminals',
-            'Topic :: Utilities',
-      ],
-      url='http://termsaver.brunobraga.net',
-      keywords=['command-line', 'terminal', 'screensaver'],
-      packages=[
-            'termsaverlib',
-            'termsaverlib.plugins',
-            'termsaverlib.screen',
-            'termsaverlib.screen.base',
-            'termsaverlib.screen.helper',
-      ],
-      license='Apache License v2',
-      scripts=['termsaver'],
-      data_files=data_files,
+setuptools.setup(
+    name="termsaver",
+    version=constants.App.VERSION,
+    author="Bruno Braga",
+    author_email="bruno@brunobraga.net",
+    maintainer="Eddie Dover",
+    maintainer_email="ed@eddiedover.dev",
+    license="Apache License v2",
+    description="Simple text-based terminal screensaver.",
+    long_description=long_desc,
+    long_description_content_type="text/markdown",
+    url="https://www.github.com/brunobraga/termsaver",
+    packages=setuptools.find_packages(where="."),
+    # project_urls is optional
+    project_urls={
+        "Bug Tracker": "https://github.com/brunobraga/termsaver/issues",
+    },
+    keywords=['command-line', 'terminal', 'screensaver'],
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'termsaver = termsaver:entryPoint'
+        ]
+    },
+    install_requires=required,
+    python_requires=">=3.6",
 )
-
-
-if __name__ == '__main__':
-    #
-    # The entry point of this application, as this should not be accessible as
-    # a python module to be imported by another application.
-    #
-    print("""
-Thank you for trying termsaver.
-""")

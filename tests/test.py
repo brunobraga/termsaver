@@ -29,8 +29,9 @@
 # Python built-in modules
 #
 import os
-import unittest
 import sys
+import unittest
+
 #
 # Import from parent path
 #
@@ -40,7 +41,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 #
 # Internal Modules (can only call this after the above PATH update)
 #
-from termsaverlib.screen.helper import position
+from termsaver.termsaverlib.screen.helper import position
 
 
 class PositionHelperTestCase(unittest.TestCase):
