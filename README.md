@@ -242,11 +242,6 @@ participate. You can:
 Uninstall
 ----------
 
-### Using Apt (Advanced Packaging Tool) or PPA (Personal Package Archive)
-
-        sudo apt-get remove termsaver
-
-
 ### Using Pip (Pip Install Packages, for Python Package Index)
 
         sudo pip uninstall termsaver
