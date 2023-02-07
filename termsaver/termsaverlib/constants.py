@@ -72,7 +72,7 @@ class App(PropertyClass):
     Defines the main description of the termsaver application.
     """
 
-    URL = 'http://termsaver.brunobraga.net'
+    URL = 'http://github.com/brunobraga/termsaver'
     """
     Defines the termsaver official website address.
     """
@@ -83,7 +83,7 @@ class App(PropertyClass):
     """
 
     AUTHORS = [
-               'Bruno Braga <bruno.braga@gmail.com>',
+               'Bruno Braga <bruno@brunobraga.net>',
                'Shelby Jueden <shelbyjueden@gmail.com>',
                'Alexander Riccio <alexander@riccio.com>',
                'Eddie Dover <ed@eddiedover.dev>',
