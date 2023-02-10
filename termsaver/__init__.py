@@ -194,9 +194,11 @@ def getScreen():
             if use_random is False:
                 if s().name.lower() == args.screen:
                     screen = s
+                    break
             elif use_random is True:
                 if s().name.lower() == random_screen_name:
                     screen = s
+                    break
 
         if screen == None:
             print(_("Invalid Screen."))
