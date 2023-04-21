@@ -1,0 +1,31 @@
+[tool.pdm]
+
+[project]
+name = "termsaver"
+version = "0.6"
+description = "Simple text-based terminal screensaver."
+keywords = ["command-line", "terminal", "screensaver"]
+readme = "README.md"
+authors = [
+    {name = "Bruno Braga", email = "bruno@brunobraga.net"},
+]
+maintainers = [
+    {name = "Eddie Dover", email = "ed@eddiedover.dev"},
+]
+requires-python = ">=3.6"
+dependencies = [
+    "pillow",
+    "requests",
+]
+license = {text = "Apache License v2"}
+
+[project.urls]
+Homepage = "https://www.github.com/brunobraga/termsaver"
+"Bug Tracker" = "https://github.com/brunobraga/termsaver/issues"
+
+[project.scripts]
+termsaver = "termsaver:entryPoint"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"

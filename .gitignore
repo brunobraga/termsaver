@@ -55,3 +55,4 @@ termsaver_cache.list
 
 dev_env/
 .vscode/launch.json
+.pdm-python
