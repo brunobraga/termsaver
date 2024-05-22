@@ -2,7 +2,7 @@
 
 [project]
 name = "termsaver"
-version = "0.6"
+version = "0.7"
 description = "Simple text-based terminal screensaver."
 keywords = ["command-line", "terminal", "screensaver"]
 readme = "README.md"
@@ -12,7 +12,7 @@ authors = [
 maintainers = [
     {name = "Eddie Dover", email = "ed@eddiedover.dev"},
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.12"
 dependencies = [
     "pillow",
     "requests",
