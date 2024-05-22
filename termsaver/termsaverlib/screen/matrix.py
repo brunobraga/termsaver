@@ -326,8 +326,8 @@ class MatrixScreen(ScreenBase, PositionHelperBase):
         while(len(result) == 0):
             bt = [self.space for __ in range(0, 
                     min((self.geometry['y'], random.randint(0, 
-                        self.geometry['y'] * 20 / (self.granularity * \
-                            self.proportion)))))]
+                        int(self.geometry['y'] * 20 / (self.granularity * \
+                            self.proportion))))))]
             cl = [self.digmap[random.randint(0, len(self.digmap)) - 1] \
                   for __ in range(0, random.randint(0, 
                       self.geometry['y'] - len(bt)))]
